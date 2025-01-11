@@ -29,7 +29,9 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+    System.out.println("enabled");
+  }
 
   @Override
   public void autonomousInit() {
