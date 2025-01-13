@@ -12,6 +12,10 @@
 		}
 	},
 
+	"containerEnv": {
+		"JAVA_HOME": "/usr/lib/jvm/msopenjdk-current"
+	},
+
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
