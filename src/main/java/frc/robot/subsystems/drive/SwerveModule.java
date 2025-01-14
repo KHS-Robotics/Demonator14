@@ -7,12 +7,12 @@
 package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.spark.SparkMax; //here
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.math.MathUtil;
@@ -22,54 +22,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-
-
+import frc.robot.Constants;
 
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
-​
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-​
-public class ExampleSubsystem extends SubsystemBase {
-    private SparkMax exampleMotor;
-    private SparkClosedLoopController examplePidController;
-​
-//     public ExampleSubsystem() {
-//         // Create motor configuration
-//         // https://codedocs.revrobotics.com/java/com/revrobotics/spark/config/sparkbaseconfig
-//         // below are a few example configuration options for the motor
-//         SparkMaxConfig exampleMotorConfig = new SparkMaxConfig();
-//         exampleMotorConfig.idleMode(IdleMode.kBrake);
-//         exampleMotorConfig.inverted(true);
-//         exampleMotorConfig.smartCurrentLimit(40);
-// ​
-//         // Integrated encoder
-//         EncoderConfig encoderConfig = new EncoderConfig();
-//         encoderConfig.positionConversionFactor(1);
-//         encoderConfig.velocityConversionFactor(1);
-//         exampleMotorConfig.apply(encoderConfig);
-        
-//         // PIDF controller configuration
-//         // https://codedocs.revrobotics.com/java/com/revrobotics/spark/config/closedloopconfig
-//         ClosedLoopConfig pidfConfig = new ClosedLoopConfig();
-//         // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/introduction-to-pid.html
-//         pidfConfig.pidf(0, 0, 0, 0);
-//         exampleMotorConfig.apply(pidfConfig);
-// ​
-//         // set any other motor configurations here...
-        
-//         // Create and configure the motor as Brushless (NEO motor)
-//         // https://codedocs.revrobotics.com/java/com/revrobotics/spark/sparkmax
-        
-//         this.exampleMotor = new SparkMax(RobotMap.kExampleMotorPort, MotorType.kBrushless);
-//         this.exampleMotor.configure(exampleMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-        
-//         // Get PIDF controller AKA a Closed Loop Controller
-//         this.examplePidController = this.exampleMotor.getClosedLoopController();
-//     }
-}
 
 /**
  * Swerve Module
@@ -114,42 +71,33 @@ public class SwerveModule extends SubsystemBase {
     this.name = name;
     setName("Module-" + name);
 
+    var driveMotorConfig = new SparkMaxConfig();
+    driveMotorConfig.idleMode(IdleMode.kBrake);
+    driveMotorConfig.inverted(reversed);
+    driveMotorConfig.smartCurrentLimit(40);
+    var driveEncoderConfig = new EncoderConfig();
+    driveEncoderConfig.positionConversionFactor(Constants.DRIVE_POS_ENCODER);
+    driveEncoderConfig.velocityConversionFactor(Constants.DRIVE_VEL_ENCODER);
+    var driveClosedLoopConfig = new ClosedLoopConfig();
+    driveClosedLoopConfig.pid(Constants.DRIVE_P, Constants.DRIVE_I, Constants.DRIVE_D, ClosedLoopSlot.kSlot0);
     driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
-    driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 20);
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    drivePID = driveMotor.getClosedLoopController();
+    driveFeedForward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
+    driveEncoder = driveMotor.getEncoder();
+
+    var pivotMotorConfig = new SparkMaxConfig();
+    pivotMotorConfig.smartCurrentLimit(30);
+    pivotMotorConfig.idleMode(IdleMode.kBrake);
     pivotMotor = new SparkMax(pivotMotorChannel, MotorType.kBrushless);
-    pivotMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 20);
-    pivotMotor.setSmartCurrentLimit(30);
-
-    driveMotor.setSmartCurrentLimit(40);
-
-    pivotMotor.setIdleMode(IdleMode.kBrake);
-    driveMotor.setIdleMode(IdleMode.kBrake);
+    pivotMotor.configure(pivotMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     pivotEncoder = new CANcoder(pivotEncoderId);
-
-    driveEncoder = driveMotor.getEncoder();
-    driveMotor.setInverted(reversed);
-    driveEncoder.setVelocityConversionFactor(Constants.DRIVE_VEL_ENCODER); // 4" diameter wheel (0.0508 meter radius), , in meters/minute so divide by 60 to get meters/seconds
-                                                                           // 6.75:1 -> 2*pi*0.0508 / (6.75 * 60)
-    driveEncoder.setPositionConversionFactor(Constants.DRIVE_POS_ENCODER); // 4" diameter wheel (0.0508 meter radius)
-                                                                           // 6.75:1 -> 2*pi*0.0508 / 6.75
-
-    drivePID = driveMotor.getPIDController();
-    drivePID.setP(driveP);
-    drivePID.setI(driveI);
-    drivePID.setD(driveD);
-
-    driveFeedForward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
-
     pivotPID = new PIDController(pivotP, pivotI, pivotD);
-
     pivotPID.enableContinuousInput(-180, 180);
     pivotPID.setTolerance(1);
-    this.offsetAngle = offsetAngle;
-  }
 
-  public void setDriveCurrentLimit(int amps) {
-    driveMotor.setSmartCurrentLimit(amps);
+    this.offsetAngle = offsetAngle;
   }
 
   /**
@@ -171,9 +119,9 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //var state = getState();
-    //SmartDashboard.putNumber("Speed", state.speedMetersPerSecond);
-    //SmartDashboard.putNumber("Angle", state.angle.getDegrees());
+    // var state = getState();
+    // SmartDashboard.putNumber("Speed", state.speedMetersPerSecond);
+    // SmartDashboard.putNumber("Angle", state.angle.getDegrees());
   }
 
   /**
@@ -212,7 +160,7 @@ public class SwerveModule extends SubsystemBase {
 
     var sign = isFlipped && useShortestPath ? -1 : 1;
     drivePID.setReference(sign * state.speedMetersPerSecond,
-        SparkMax.ControlType.kVoltage, 1,
+        SparkMax.ControlType.kVoltage, ClosedLoopSlot.kSlot0,
         driveFeedForward.calculate(sign * state.speedMetersPerSecond));
   }
 

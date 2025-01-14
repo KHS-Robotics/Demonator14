@@ -7,12 +7,7 @@
 
 package frc.robot.subsystems.drive;
 
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -24,9 +19,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,10 +44,9 @@ public class SwerveDrive extends SubsystemBase {
   private final Translation2d rearRightLocation = Constants.REAR_RIGHT_OFFSET;
 
   public boolean fullyTrustVision = false;
-  private double[] poseArray = new double[] {0, 0, 0, 0, 0};
+  private double[] poseArray = new double[] { 0, 0, 0, 0, 0 };
   public Pose2d frontVisionPose = new Pose2d();
   public Pose2d rearVisionPose = new Pose2d();
-
 
   public static final SwerveModule frontLeft = new SwerveModule(
       "FL",
@@ -122,7 +113,7 @@ public class SwerveDrive extends SubsystemBase {
       frontRightLocation, rearLeftLocation, rearRightLocation);
 
   private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics,
-      RobotContainer.navx.getRotation2d(), new SwerveModulePosition[] { //kau labs
+      RobotContainer.navx.getRotation2d(), new SwerveModulePosition[] { // kau labs
           new SwerveModulePosition(0, new Rotation2d(frontLeft.getAngle())),
           new SwerveModulePosition(0, new Rotation2d(frontRight.getAngle())),
           new SwerveModulePosition(0, new Rotation2d(rearLeft.getAngle())),
@@ -142,13 +133,6 @@ public class SwerveDrive extends SubsystemBase {
     anglePid.setTolerance(1);
     xPid.setTolerance(0.1);
     yPid.setTolerance(0.1);
-  }
-
-  public void setDriveCurrentLimits(int amps) {
-    frontLeft.setDriveCurrentLimit(amps);
-    frontRight.setDriveCurrentLimit(amps);
-    rearLeft.setDriveCurrentLimit(amps);
-    rearRight.setDriveCurrentLimit(amps);
   }
 
   /**
@@ -190,7 +174,7 @@ public class SwerveDrive extends SubsystemBase {
    *                      field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    
+
     if (Math.abs(rot) < 0.005 && Math.abs(xSpeed) < 0.005 && Math.abs(ySpeed) < 0.005) {
       frontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(frontLeft.getAngle())));
       frontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(frontRight.getAngle())));
@@ -198,20 +182,20 @@ public class SwerveDrive extends SubsystemBase {
       rearRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(rearRight.getAngle())));
     } else {
 
-      ChassisSpeeds desiredChassisSpeeds =
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed, ySpeed, rot, getPose().getRotation())
-            : new ChassisSpeeds(xSpeed, ySpeed, rot);
+      ChassisSpeeds desiredChassisSpeeds = fieldRelative
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(
+              xSpeed, ySpeed, rot, getPose().getRotation())
+          : new ChassisSpeeds(xSpeed, ySpeed, rot);
 
       desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
       var swerveModuleStates = kinematics.toSwerveModuleStates(desiredChassisSpeeds);
 
       SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeedMetersPerSecond);
       // var swerveModuleStates = kinematics
-      //     .toSwerveModuleStates(
-      //         fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation())
-      //             : new ChassisSpeeds(xSpeed, ySpeed, rot));
+      // .toSwerveModuleStates(
+      // fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot,
+      // getPose().getRotation())
+      // : new ChassisSpeeds(xSpeed, ySpeed, rot));
 
       this.vX = desiredChassisSpeeds.vxMetersPerSecond;
       this.vY = desiredChassisSpeeds.vyMetersPerSecond;
@@ -248,17 +232,15 @@ public class SwerveDrive extends SubsystemBase {
    */
   private static ChassisSpeeds correctForDynamics(ChassisSpeeds originalSpeeds) {
     final double LOOP_TIME_S = 0.02;
-    Pose2d futureRobotPose =
-        new Pose2d(
-            originalSpeeds.vxMetersPerSecond * LOOP_TIME_S,
-            originalSpeeds.vyMetersPerSecond * LOOP_TIME_S,
-            Rotation2d.fromRadians(originalSpeeds.omegaRadiansPerSecond * LOOP_TIME_S));
+    Pose2d futureRobotPose = new Pose2d(
+        originalSpeeds.vxMetersPerSecond * LOOP_TIME_S,
+        originalSpeeds.vyMetersPerSecond * LOOP_TIME_S,
+        Rotation2d.fromRadians(originalSpeeds.omegaRadiansPerSecond * LOOP_TIME_S));
     Twist2d twistForPose = log(futureRobotPose);
-    ChassisSpeeds updatedSpeeds =
-        new ChassisSpeeds(
-            twistForPose.dx / LOOP_TIME_S,
-            twistForPose.dy / LOOP_TIME_S,
-            twistForPose.dtheta / LOOP_TIME_S);
+    ChassisSpeeds updatedSpeeds = new ChassisSpeeds(
+        twistForPose.dx / LOOP_TIME_S,
+        twistForPose.dy / LOOP_TIME_S,
+        twistForPose.dtheta / LOOP_TIME_S);
     return updatedSpeeds;
   }
 
@@ -275,13 +257,11 @@ public class SwerveDrive extends SubsystemBase {
     if (Math.abs(cos_minus_one) < kEps) {
       halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
     } else {
-      halftheta_by_tan_of_halfdtheta =
-          -(half_dtheta * Math.sin(transform.getRotation().getRadians())) / cos_minus_one;
+      halftheta_by_tan_of_halfdtheta = -(half_dtheta * Math.sin(transform.getRotation().getRadians())) / cos_minus_one;
     }
-    final Translation2d translation_part =
-        transform
-            .getTranslation()
-            .rotateBy(new Rotation2d(halftheta_by_tan_of_halfdtheta, -half_dtheta));
+    final Translation2d translation_part = transform
+        .getTranslation()
+        .rotateBy(new Rotation2d(halftheta_by_tan_of_halfdtheta, -half_dtheta));
     return new Twist2d(translation_part.getX(), translation_part.getY(), dtheta);
   }
 
@@ -313,7 +293,8 @@ public class SwerveDrive extends SubsystemBase {
     double xSpeed = MathUtil.clamp(xPid.calculate(pose.getX(), target.getX()), -1, 1) * kMaxSpeedMetersPerSecond;
     double ySpeed = MathUtil.clamp(yPid.calculate(pose.getY(), target.getY()), -1, 1) * kMaxSpeedMetersPerSecond;
     double vTheta = MathUtil
-        .clamp(anglePid.calculate(normalizeAngle(pose.getRotation().getDegrees()), normalizeAngle(target.getRotation().getDegrees())), -1, 1)
+        .clamp(anglePid.calculate(normalizeAngle(pose.getRotation().getDegrees()),
+            normalizeAngle(target.getRotation().getDegrees())), -1, 1)
         * kMaxAngularSpeedRadiansPerSecond;
     this.drive(xSpeed, ySpeed, vTheta, fieldOriented);
   }
@@ -338,12 +319,14 @@ public class SwerveDrive extends SubsystemBase {
     // traction
     var modulePositions = getSwerveModulePositions();
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), modulePositions);
+  }
 
-
-  // private void updateOdometryUsingVisionMeasurement(EstimatedRobotPose ePose, Matrix<N3, N1> visionMeasurementStdDevs,
-  //     double timestamp) {
-  //   //poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
-  //   poseEstimator.addVisionMeasurement(ePose.estimatedPose.toPose2d(), ePose.timestampSeconds, visionMeasurementStdDevs);
+  // private void updateOdometryUsingVisionMeasurement(EstimatedRobotPose ePose,
+  // Matrix<N3, N1> visionMeasurementStdDevs,
+  // double timestamp) {
+  // //poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
+  // poseEstimator.addVisionMeasurement(ePose.estimatedPose.toPose2d(),
+  // ePose.timestampSeconds, visionMeasurementStdDevs);
   // }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -419,7 +402,6 @@ public class SwerveDrive extends SubsystemBase {
 
     var pose = getPose();
 
-
     RobotContainer.field.setRobotPose(pose);
     RobotContainer.field.getObject("RearVisionPose").setPose(rearVisionPose);
     RobotContainer.field.getObject("FrontVisionPose").setPose(frontVisionPose);
@@ -429,7 +411,6 @@ public class SwerveDrive extends SubsystemBase {
     // poseArray[3] = vY;
     // poseArray[4] = pose.getRotation().getRadians();
     SmartDashboard.putNumberArray("robotPose", poseArray);
-    
 
     // var yaw = RobotContainer.getRobotYaw();
     // var roll = RobotContainer.getRobotRoll();
@@ -441,7 +422,6 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Pose-X", pose.getX());
     SmartDashboard.putNumber("Pose-Y", pose.getY());
     SmartDashboard.putNumber("Pose-Radians", pose.getRotation().getRadians());
-
 
   }
 }
