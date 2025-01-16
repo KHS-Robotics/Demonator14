@@ -20,7 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.Constants;
@@ -38,15 +37,11 @@ public class SwerveDrive extends SubsystemBase {
   private PIDController yPid;
   public double vX;
   public double vY;
+  
   private final Translation2d frontLeftLocation = Constants.FRONT_LEFT_OFFSET;
   private final Translation2d frontRightLocation = Constants.FRONT_RIGHT_OFFSET;
   private final Translation2d rearLeftLocation = Constants.REAR_LEFT_OFFSET;
   private final Translation2d rearRightLocation = Constants.REAR_RIGHT_OFFSET;
-
-  public boolean fullyTrustVision = false;
-  private double[] poseArray = new double[] { 0, 0, 0, 0, 0 };
-  public Pose2d frontVisionPose = new Pose2d();
-  public Pose2d rearVisionPose = new Pose2d();
 
   public static final SwerveModule frontLeft = new SwerveModule(
       "FL",
@@ -321,14 +316,6 @@ public class SwerveDrive extends SubsystemBase {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), modulePositions);
   }
 
-  // private void updateOdometryUsingVisionMeasurement(EstimatedRobotPose ePose,
-  // Matrix<N3, N1> visionMeasurementStdDevs,
-  // double timestamp) {
-  // //poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
-  // poseEstimator.addVisionMeasurement(ePose.estimatedPose.toPose2d(),
-  // ePose.timestampSeconds, visionMeasurementStdDevs);
-  // }
-
   public ChassisSpeeds getChassisSpeeds() {
     return this.kinematics.toChassisSpeeds(getSwerveModuleStates());
   }
@@ -401,27 +388,6 @@ public class SwerveDrive extends SubsystemBase {
     updateOdometry();
 
     var pose = getPose();
-
     RobotContainer.field.setRobotPose(pose);
-    RobotContainer.field.getObject("RearVisionPose").setPose(rearVisionPose);
-    RobotContainer.field.getObject("FrontVisionPose").setPose(frontVisionPose);
-    // poseArray[0] = pose.getX();
-    // poseArray[1] = pose.getY();
-    // poseArray[2] = vX;
-    // poseArray[3] = vY;
-    // poseArray[4] = pose.getRotation().getRadians();
-    SmartDashboard.putNumberArray("robotPose", poseArray);
-
-    // var yaw = RobotContainer.getRobotYaw();
-    // var roll = RobotContainer.getRobotRoll();
-    // var pitch = RobotContainer.getRobotPitch();
-    // SmartDashboard.putNumber("Navx-Yaw", yaw);
-    // SmartDashboard.putNumber("Navx-Roll", roll);
-    // SmartDashboard.putNumber("Navx-Pitch", pitch);
-
-    SmartDashboard.putNumber("Pose-X", pose.getX());
-    SmartDashboard.putNumber("Pose-Y", pose.getY());
-    SmartDashboard.putNumber("Pose-Radians", pose.getRotation().getRadians());
-
   }
 }

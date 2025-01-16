@@ -1,11 +1,5 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-// PIZZA IS THE BEST WITH EXTRA SAUCE
-// pizza is the worst sauce
-//Luke is also here
-// among is
-// hi - byee
-//go to github
 
 package frc.robot;
 
@@ -16,6 +10,7 @@ import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -57,6 +52,7 @@ public class RobotContainer {
   public RobotContainer() {
     this.configureSubsystemDefaultCommands();
     this.configureBindings();
+    this.configureAutonomous();
   }
 
   /** Configures the subsystem's default commands. */
@@ -77,6 +73,11 @@ public class RobotContainer {
 
   /** Binds commands to xbox controller buttons. */
   private void configureXboxControllerBindings() {
+  }
+
+  /** Configures any autonomous resources. */
+  private void configureAutonomous() {
+    SmartDashboard.putData(field);
   }
 }
 
