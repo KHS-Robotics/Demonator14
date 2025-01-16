@@ -21,6 +21,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -43,7 +44,6 @@ public class SwerveModule extends SubsystemBase {
   private final SparkMax pivotMotor;
   private final SparkClosedLoopController drivePID;
   private final SimpleMotorFeedforward driveFeedForward;
-  // private final SimpleMotorFeedforward pivotFeedForward;
 
   private final PIDController pivotPID;
 
@@ -71,26 +71,30 @@ public class SwerveModule extends SubsystemBase {
     this.name = name;
     setName("Module-" + name);
 
-    var driveMotorConfig = new SparkMaxConfig();
-    driveMotorConfig.idleMode(IdleMode.kBrake);
-    driveMotorConfig.inverted(reversed);
-    driveMotorConfig.smartCurrentLimit(40);
-    var driveEncoderConfig = new EncoderConfig();
-    driveEncoderConfig.positionConversionFactor(Constants.DRIVE_POS_ENCODER);
-    driveEncoderConfig.velocityConversionFactor(Constants.DRIVE_VEL_ENCODER);
-    var driveClosedLoopConfig = new ClosedLoopConfig();
-    driveClosedLoopConfig.pid(Constants.DRIVE_P, Constants.DRIVE_I, Constants.DRIVE_D, ClosedLoopSlot.kSlot0);
+    var driveEncoderConfig = new EncoderConfig()
+        .positionConversionFactor(Constants.DRIVE_POS_ENCODER)
+        .velocityConversionFactor(Constants.DRIVE_VEL_ENCODER);
+    var driveClosedLoopConfig = new ClosedLoopConfig()
+        .pid(driveP, driveI, driveD, ClosedLoopSlot.kSlot0);
+    var driveMotorConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(40)
+        .inverted(reversed)
+        .apply(driveEncoderConfig)
+        .apply(driveClosedLoopConfig);
     driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
-    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    driveMotor.configure(driveMotorConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
     drivePID = driveMotor.getClosedLoopController();
     driveFeedForward = new SimpleMotorFeedforward(drivekS, drivekV, drivekA);
     driveEncoder = driveMotor.getEncoder();
 
-    var pivotMotorConfig = new SparkMaxConfig();
-    pivotMotorConfig.smartCurrentLimit(30);
-    pivotMotorConfig.idleMode(IdleMode.kBrake);
+    var pivotMotorConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30);
     pivotMotor = new SparkMax(pivotMotorChannel, MotorType.kBrushless);
-    pivotMotor.configure(pivotMotorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    pivotMotor.configure(pivotMotorConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
 
     pivotEncoder = new CANcoder(pivotEncoderId);
     pivotPID = new PIDController(pivotP, pivotI, pivotD);
@@ -119,9 +123,9 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // var state = getState();
-    // SmartDashboard.putNumber("Speed", state.speedMetersPerSecond);
-    // SmartDashboard.putNumber("Angle", state.angle.getDegrees());
+    var state = getState();
+    SmartDashboard.putNumber(this.name + "-Speed", state.speedMetersPerSecond);
+    SmartDashboard.putNumber(this.name + "-Angle", state.angle.getDegrees());
   }
 
   /**
