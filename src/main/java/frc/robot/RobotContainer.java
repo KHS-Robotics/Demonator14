@@ -4,6 +4,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -29,12 +31,6 @@ public class RobotContainer {
     var selected = autoChooser.getSelected();
     return selected != null ? selected
         : new InstantCommand(() -> DriverStation.reportWarning("Null autonomous was selected.", false));
-  }
-
-  private AutoBuilder autoBuilder;
-
-  public AutoBuilder getAutoBuilder() {
-    return autoBuilder;
   }
 
   public static final AHRS navx = new AHRS(NavXComType.kUSB1);
@@ -63,7 +59,7 @@ public class RobotContainer {
   private void configureBindings() {
     this.configureAutomatedBindings();
     this.configureXboxControllerBindings();
-   
+
   }
 
   /** Automated bindings that happen without pressing any buttons. */
@@ -78,6 +74,40 @@ public class RobotContainer {
   /** Configures any autonomous resources. */
   private void configureAutonomous() {
     SmartDashboard.putData(field);
+
+    configureNamedCommandsForAuto();
+
+    // Build an auto chooser. This will use Commands.none() as the default option.
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    // Another option that allows you to specify the default auto by its name
+    // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    this.configurePathPlannerLogging();
+  }
+
+  private void configureNamedCommandsForAuto() {
+    NamedCommands.registerCommand("StopSwerve", new InstantCommand(() -> swerveDrive.stop(), swerveDrive));
+  }
+
+  private void configurePathPlannerLogging() {
+    // Logging callback for current robot pose
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+      // Do whatever you want with the pose here
+      field.setRobotPose(pose);
+    });
+
+    // Logging callback for target robot pose
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+      // Do whatever you want with the pose here
+      field.getObject("target pose").setPose(pose);
+    });
+
+    // Logging callback for the active path, this is sent as a list of poses
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
+      // Do whatever you want with the poses here
+      field.getObject("path").setPoses(poses);
+    });
   }
 }
-

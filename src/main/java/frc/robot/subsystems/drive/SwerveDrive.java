@@ -7,6 +7,11 @@
 
 package frc.robot.subsystems.drive;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -19,9 +24,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.vision.LimelightHelpers;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
@@ -37,7 +44,7 @@ public class SwerveDrive extends SubsystemBase {
   private PIDController yPid;
   public double vX;
   public double vY;
-  
+
   private final Translation2d frontLeftLocation = Constants.FRONT_LEFT_OFFSET;
   private final Translation2d frontRightLocation = Constants.FRONT_RIGHT_OFFSET;
   private final Translation2d rearLeftLocation = Constants.REAR_LEFT_OFFSET;
@@ -128,6 +135,49 @@ public class SwerveDrive extends SubsystemBase {
     anglePid.setTolerance(1);
     xPid.setTolerance(0.1);
     yPid.setTolerance(0.1);
+    this.configurePathPlannerAutoBuilder();
+  }
+
+  /** https://pathplanner.dev/pplib-getting-started.html#holonomic-swerve */
+  private void configurePathPlannerAutoBuilder() {
+    // Load the RobotConfig from the GUI settings. You should probably
+    // store this in your Constants file
+    RobotConfig config;
+    try {
+      config = RobotConfig.fromGUISettings();
+
+      // Configure AutoBuilder last
+      AutoBuilder.configure(
+          this::getPose, // Robot pose supplier
+          this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+          this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+          (speeds, feedforwards) -> setModuleStates(speeds), // Method that will drive the robot given ROBOT RELATIVE
+                                                             // ChassisSpeeds. Also optionally outputs individual module
+                                                             // feedforwards
+          new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
+                                          // holonomic drive trains
+              new PIDConstants(Constants.DRIVE_X_P, Constants.DRIVE_X_I, Constants.DRIVE_X_D), // Translation PID constants
+              new PIDConstants(Constants.DRIVE_Y_P, Constants.DRIVE_Y_I, Constants.DRIVE_Y_D) // Rotation PID constants
+          ),
+          config, // The robot configuration
+          () -> {
+            // Boolean supplier that controls when the path will be mirrored for the red
+            // alliance
+            // This will flip the path being followed to the red side of the field.
+            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()) {
+              return alliance.get() == DriverStation.Alliance.Red;
+            }
+            return false;
+          },
+          this // Reference to this subsystem to set requirements
+      );
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -307,6 +357,10 @@ public class SwerveDrive extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  public void resetPose(Pose2d pose) {
+    poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), pose);
+  }
+
   /**
    * Updates the field relative position of the robot.
    */
@@ -314,6 +368,54 @@ public class SwerveDrive extends SubsystemBase {
     // traction
     var modulePositions = getSwerveModulePositions();
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), modulePositions);
+  }
+
+  /**
+   * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization
+   */
+  public void updateOdometryUsingLimelightMegatag1() {
+    boolean doRejectUpdate = false;
+    LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
+      if (mt1.rawFiducials[0].ambiguity > .7) {
+        doRejectUpdate = true;
+      }
+      if (mt1.rawFiducials[0].distToCamera > 3) {
+        doRejectUpdate = true;
+      }
+    }
+    if (mt1.tagCount == 0) {
+      doRejectUpdate = true;
+    }
+
+    if (!doRejectUpdate) {
+      // poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+      // poseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+      RobotContainer.field.getObject("LL-MTag1").setPose(mt1.pose);
+    }
+  }
+
+  /**
+   * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2#using-wpilibs-pose-estimator
+   */
+  public void updateOdometryUsingLimelightMegatag2() {
+    boolean doRejectUpdate = false;
+    LimelightHelpers.SetRobotOrientation("limelight", poseEstimator.getEstimatedPosition().getRotation().getDegrees(),
+        0, 0, 0, 0, 0);
+    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    if (Math.abs(RobotContainer.navx.getRate()) > 720) // if our angular velocity is greater than 720 degrees per
+                                                       // second, ignore vision updates
+    {
+      doRejectUpdate = true;
+    }
+    if (mt2.tagCount == 0) {
+      doRejectUpdate = true;
+    }
+    if (!doRejectUpdate) {
+      // poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      // poseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+      RobotContainer.field.getObject("LL-MTag2").setPose(mt2.pose);
+    }
   }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -386,6 +488,8 @@ public class SwerveDrive extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometry();
+    updateOdometryUsingLimelightMegatag1();
+    updateOdometryUsingLimelightMegatag2();
 
     var pose = getPose();
     RobotContainer.field.setRobotPose(pose);

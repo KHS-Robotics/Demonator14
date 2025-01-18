@@ -1,11 +1,17 @@
 package frc.robot;
-//jo
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
-public class Constants {
+/**
+ * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants should be declared
+ * globally (i.e. public static). Do not put anything functional in this class.
+ *
+ * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * constants are needed, to reduce verbosity.
+ */
+public final class Constants {
   /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */ 
   public static final double JOYSTICK_SENSITIVITY = 0.5;
 
@@ -19,7 +25,6 @@ public class Constants {
   public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(Units.inchesToMeters(10.7), Units.inchesToMeters(-11.7));
   public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(Units.inchesToMeters(-10.7), Units.inchesToMeters(11.7));
   public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(Units.inchesToMeters(-10.7), Units.inchesToMeters(-11.7));
-
 
   public static final double PIVOT_P = 0.007;  
   public static final double PIVOT_I = 0.0;
@@ -48,19 +53,5 @@ public class Constants {
   public static final double DRIVE_Y_P = 0.3;
   public static final double DRIVE_Y_I = 0;
   public static final double DRIVE_Y_D = 0;
-
-  public static final Transform3d FRONT_APRILTAG_CAMERA_OFFSET = new Transform3d(Units.inchesToMeters(7.6882), Units.inchesToMeters(13.0), Units.inchesToMeters(12.1545), new Rotation3d(0, Math.toRadians(-60), 0));
-  public static final Transform3d REAR_APRILTAG_CAMERA_OFFSET = new Transform3d(Units.inchesToMeters(-7.25), Units.inchesToMeters(-6.75), Units.inchesToMeters(8.5), new Rotation3d(0, Math.toRadians(-60), Math.PI));
-  public static final Transform3d INTAKE_NOTE_CAMERA_OFFSET = new Transform3d(Units.inchesToMeters(7.8971), Units.inchesToMeters(-12.99815), Units.inchesToMeters(18.3493), new Rotation3d(0, Math.toRadians(-20), Math.toRadians(20)));
-  public static final double INTAKE_NOTE_CAMERA_HFOV = 53;
-
-  public static final double INTAKE_RADIUS = 0.5;
-
-  public static final int LED_LENGTH = 40;
-
-  public static final double INTAKE_TOP = 0.582;
-  public static final double INTAKE_BOTTOM = 0.223;
-
-  //public static final double PODIUM_ANGLE_RED = Math.atan2()
 
 }
