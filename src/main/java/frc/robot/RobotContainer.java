@@ -33,14 +33,14 @@ public class RobotContainer {
         : new InstantCommand(() -> DriverStation.reportWarning("Null autonomous was selected.", false));
   }
 
-  public static final AHRS navx = new AHRS(NavXComType.kUSB1);
-  public static final Field2d field = new Field2d();
+  public static final AHRS kNavx = new AHRS(NavXComType.kUSB1);
+  public static final Field2d kField = new Field2d();
 
   // Human Interface Devices (HIDs)
-  public static final CommandXboxController driverController = new CommandXboxController(RobotMap.XBOX_PORT);
+  public static final CommandXboxController kDriverController = new CommandXboxController(RobotMap.XBOX_PORT);
 
   // Subsystems
-  public static final SwerveDrive swerveDrive = new SwerveDrive();
+  public static final SwerveDrive kSwerveDrive = new SwerveDrive();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -53,13 +53,12 @@ public class RobotContainer {
 
   /** Configures the subsystem's default commands. */
   private void configureSubsystemDefaultCommands() {
-    swerveDrive.setDefaultCommand(new DriveSwerveWithXbox(true));
+    kSwerveDrive.setDefaultCommand(new DriveSwerveWithXbox(true, Constants.DRIVE_JOYSTICK_SENSITIVITY));
   }
 
   private void configureBindings() {
     this.configureAutomatedBindings();
     this.configureXboxControllerBindings();
-
   }
 
   /** Automated bindings that happen without pressing any buttons. */
@@ -73,7 +72,7 @@ public class RobotContainer {
 
   /** Configures any autonomous resources. */
   private void configureAutonomous() {
-    SmartDashboard.putData(field);
+    SmartDashboard.putData(kField);
 
     configureNamedCommandsForAuto();
 
@@ -88,26 +87,26 @@ public class RobotContainer {
   }
 
   private void configureNamedCommandsForAuto() {
-    NamedCommands.registerCommand("StopSwerve", new InstantCommand(() -> swerveDrive.stop(), swerveDrive));
+    NamedCommands.registerCommand("StopSwerve", new InstantCommand(() -> kSwerveDrive.stop(), kSwerveDrive));
   }
 
   private void configurePathPlannerLogging() {
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
       // Do whatever you want with the pose here
-      field.setRobotPose(pose);
+      kField.setRobotPose(pose);
     });
 
     // Logging callback for target robot pose
     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
       // Do whatever you want with the pose here
-      field.getObject("target pose").setPose(pose);
+      kField.getObject("target pose").setPose(pose);
     });
 
     // Logging callback for the active path, this is sent as a list of poses
     PathPlannerLogging.setLogActivePathCallback((poses) -> {
       // Do whatever you want with the poses here
-      field.getObject("path").setPoses(poses);
+      kField.getObject("path").setPoses(poses);
     });
   }
 }
