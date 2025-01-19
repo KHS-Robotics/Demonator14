@@ -150,11 +150,6 @@ public class SwerveDrive extends SubsystemBase {
     try {
       config = RobotConfig.fromGUISettings();
 
-      if (!config.hasValidConfig()) {
-        DriverStation.reportError("Invalid RobotConfig for PathPlanner. See NetworkTables Alerts for more details.",
-            false);
-      }
-
       // Configure AutoBuilder last
       AutoBuilder.configure(
           this::getPose, // Robot pose supplier
@@ -406,7 +401,7 @@ public class SwerveDrive extends SubsystemBase {
   private void updateOdometryUsingLimelightMegatag1() {
     boolean doRejectUpdate = false;
     LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-    if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
+    if (mt1 != null && mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
       if (mt1.rawFiducials[0].ambiguity > .7) {
         doRejectUpdate = true;
       }
@@ -414,7 +409,7 @@ public class SwerveDrive extends SubsystemBase {
         doRejectUpdate = true;
       }
     }
-    if (mt1.tagCount == 0) {
+    if (mt1 == null || mt1.tagCount == 0) {
       doRejectUpdate = true;
     }
 
@@ -438,7 +433,7 @@ public class SwerveDrive extends SubsystemBase {
     {
       doRejectUpdate = true;
     }
-    if (mt2.tagCount == 0) {
+    if (mt2 == null || mt2.tagCount == 0) {
       doRejectUpdate = true;
     }
     if (!doRejectUpdate) {
