@@ -146,6 +146,10 @@ public class SwerveDrive extends SubsystemBase {
     try {
       config = RobotConfig.fromGUISettings();
 
+      if (!config.hasValidConfig()) {
+        DriverStation.reportError("Invalid RobotConfig for PathPlanner. See NetworkTables Alerts for more details.", false);
+      }
+
       // Configure AutoBuilder last
       AutoBuilder.configure(
           this::getPose, // Robot pose supplier
