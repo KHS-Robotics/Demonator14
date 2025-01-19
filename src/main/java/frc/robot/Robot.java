@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+/**
+ * https://docs.wpilib.org/en/stable/docs/software/vscode-overview/creating-robot-program.html#timedrobot
+ */
 public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
   private Command m_autonomousCommand;
@@ -33,6 +36,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    // Get selected auto from SmartDashboard
+    // https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html#starting-an-autonomous-command
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {

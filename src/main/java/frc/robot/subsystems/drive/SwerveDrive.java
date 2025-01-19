@@ -34,6 +34,10 @@ import frc.robot.RobotContainer;
 
 /**
  * Represents a swerve drive style drivetrain.
+ * 
+ * @see https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/intro-and-chassis-speeds.html
+ * @see https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html
+ * @see https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
  */
 public class SwerveDrive extends SubsystemBase {
   public static double maxSpeedMetersPerSecond = 4.6;
@@ -109,14 +113,14 @@ public class SwerveDrive extends SubsystemBase {
 
   private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
       kinematics,
-      RobotContainer.kNavx.getRotation2d(),
+      getAngle(),
       new SwerveModulePosition[] {
           new SwerveModulePosition(0, Rotation2d.fromDegrees(frontLeft.getAngle())),
           new SwerveModulePosition(0, Rotation2d.fromDegrees(frontRight.getAngle())),
           new SwerveModulePosition(0, Rotation2d.fromDegrees(rearLeft.getAngle())),
           new SwerveModulePosition(0, Rotation2d.fromDegrees(rearRight.getAngle()))
       },
-      new Pose2d(8.5, 4.0, Rotation2d.fromDegrees(0)),
+      new Pose2d(8.5, 4.0, getAngle()),
       VecBuilder.fill(0.1, 0.1, 0.1),
       VecBuilder.fill(6, 6, Double.MAX_VALUE));
 
@@ -147,7 +151,8 @@ public class SwerveDrive extends SubsystemBase {
       config = RobotConfig.fromGUISettings();
 
       if (!config.hasValidConfig()) {
-        DriverStation.reportError("Invalid RobotConfig for PathPlanner. See NetworkTables Alerts for more details.", false);
+        DriverStation.reportError("Invalid RobotConfig for PathPlanner. See NetworkTables Alerts for more details.",
+            false);
       }
 
       // Configure AutoBuilder last
@@ -189,12 +194,17 @@ public class SwerveDrive extends SubsystemBase {
 
   /**
    * Returns the angle of the robot as a Rotation2d as read by the navx.
+   * <p>
+   * Note that {@link #getPose()} should be used when trying to access the robot's
+   * actual heading (rotation)
+   * relative to the field. This method is only used internally to update the
+   * odometry.
    *
    * @return The angle of the robot.
+   * @see #getPose()
    */
-  public Rotation2d getAngle() {
-    // Negating the angle because WPILib gyros are CW positive.
-    return Rotation2d.fromDegrees((-RobotContainer.kNavx.getAngle()) % 360);
+  private Rotation2d getAngle() {
+    return RobotContainer.kNavx.getRotation2d();
   }
 
   /**
@@ -289,8 +299,13 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void setModuleStates(ChassisSpeeds chassisSpeeds) {
-    var desiredChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getAngle());
-    var desiredModuleStates = kinematics.toSwerveModuleStates(desiredChassisSpeed);
+    var desiredChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getPose().getRotation());
+
+    // corrections + desaturating
+    desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
+    var desiredModuleStates = kinematics.toSwerveModuleStates(desiredChassisSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredModuleStates, maxSpeedMetersPerSecond);
+
     this.setModuleStates(desiredModuleStates);
   }
 
@@ -373,8 +388,13 @@ public class SwerveDrive extends SubsystemBase {
     // TODO(work in progress): Vision adjustments using AprilTags
     // ...
     // updateOdometryUsingVision();
+    updateOdometryUsingLimelightMegatag1();
+    updateOdometryUsingLimelightMegatag2();
   }
 
+  /**
+   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
+   */
   private void updateOdometryUsingTraction() {
     var modulePositions = getSwerveModulePositions();
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), modulePositions);
@@ -406,7 +426,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2#using-wpilibs-pose-estimator
+   * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2
    */
   private void updateOdometryUsingLimelightMegatag2() {
     boolean doRejectUpdate = false;
@@ -431,8 +451,6 @@ public class SwerveDrive extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometry();
-    updateOdometryUsingLimelightMegatag1();
-    updateOdometryUsingLimelightMegatag2();
 
     var pose = getPose();
     RobotContainer.kField.setRobotPose(pose);
