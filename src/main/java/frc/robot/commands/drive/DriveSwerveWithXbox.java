@@ -104,7 +104,7 @@ public class DriveSwerveWithXbox extends Command {
    * 
    * @param s the sensitivity from [0, 1] where 0 is full linear and 1 is full
    *          cubic
-   * @return
+   * @return the new dampened control value
    */
   private double sensControl(double s) {
     return joystickSensitivity.getAsDouble() * Math.pow(s, 3) + (1 - joystickSensitivity.getAsDouble()) * s;
