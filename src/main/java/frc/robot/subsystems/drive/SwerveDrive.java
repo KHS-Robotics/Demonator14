@@ -222,15 +222,21 @@ public class SwerveDrive extends SubsystemBase {
       ChassisSpeeds desiredChassisSpeeds = fieldRelative
           ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation())
           : new ChassisSpeeds(xSpeed, ySpeed, rot);
-
-      // corrections + desaturating
-      desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
-      var desiredModuleStates = kinematics.toSwerveModuleStates(desiredChassisSpeeds);
-      SwerveDriveKinematics.desaturateWheelSpeeds(desiredModuleStates, maxSpeedMetersPerSecond);
+        
+      // get optimized module states
+      var desiredModuleStates = this.getOptimizedModuleStatesFromChassisSpeeds(desiredChassisSpeeds);
 
       // set calculated states
       this.setModuleStates(desiredModuleStates);
     }
+  }
+
+  private SwerveModuleState[] getOptimizedModuleStatesFromChassisSpeeds(final ChassisSpeeds originalSpeeds) {
+    // corrections + desaturating
+    var optimizedChassisSpeeds = correctForDynamics(originalSpeeds);
+    var optimizedModuleStates = kinematics.toSwerveModuleStates(optimizedChassisSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(optimizedModuleStates, maxSpeedMetersPerSecond);
+    return optimizedModuleStates;
   }
 
   /**
@@ -239,7 +245,7 @@ public class SwerveDrive extends SubsystemBase {
    * Discussion:
    * https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964
    */
-  private static ChassisSpeeds correctForDynamics(ChassisSpeeds originalSpeeds) {
+  private static ChassisSpeeds correctForDynamics(final ChassisSpeeds originalSpeeds) {
     final double LOOP_TIME_S = 0.02;
     Pose2d futureRobotPose = new Pose2d(
         originalSpeeds.vxMetersPerSecond * LOOP_TIME_S,
@@ -278,7 +284,7 @@ public class SwerveDrive extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
-  public void resetPose(Pose2d pose) {
+  private void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), pose);
   }
 
@@ -286,21 +292,15 @@ public class SwerveDrive extends SubsystemBase {
     return this.kinematics.toChassisSpeeds(getSwerveModuleStates());
   }
 
-  public void setModuleStates(SwerveModuleState[] desiredStates) {
+  private void setModuleStates(SwerveModuleState[] desiredStates) {
     frontLeft.setDesiredState(desiredStates[0], true);
     frontRight.setDesiredState(desiredStates[1], true);
     rearLeft.setDesiredState(desiredStates[2], true);
     rearRight.setDesiredState(desiredStates[3], true);
   }
 
-  public void setModuleStates(ChassisSpeeds chassisSpeeds) {
-    var desiredChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getPose().getRotation());
-
-    // corrections + desaturating
-    desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
-    var desiredModuleStates = kinematics.toSwerveModuleStates(desiredChassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredModuleStates, maxSpeedMetersPerSecond);
-
+  private void setModuleStates(ChassisSpeeds robotRelativeChassisSpeeds) {
+    var desiredModuleStates = this.getOptimizedModuleStatesFromChassisSpeeds(robotRelativeChassisSpeeds);
     this.setModuleStates(desiredModuleStates);
   }
 
