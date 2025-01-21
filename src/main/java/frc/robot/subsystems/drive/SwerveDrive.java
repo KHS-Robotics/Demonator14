@@ -130,7 +130,7 @@ public class SwerveDrive extends SubsystemBase {
    * Standard deviations of the vision pose measurement (x position in meters, y
    * position in meters, and heading in radians).
    * <p>
-   * Increase these numbers to trust the state estimate less.
+   * Increase these numbers to trust the vision pose measurement less.
    */
   private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(6, 6, Double.MAX_VALUE);
 
