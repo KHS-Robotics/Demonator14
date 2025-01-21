@@ -30,24 +30,24 @@ import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 /**
- * Swerve Module
+ * Swerve module for a swerve drive style drivetrain.
+ * 
+ * @see {@link frc.robot.subsystems.drive.SwerveDrive}
  */
 public class SwerveModule extends SubsystemBase {
   public final String name;
-
-  private boolean isFlipped;
+  public final double offsetAngle;
 
   private final SparkMax driveMotor;
   private final RelativeEncoder driveEncoder;
-
-  private final CANcoder pivotEncoder;
-  private final SparkMax pivotMotor;
   private final SparkClosedLoopController drivePID;
   private final SimpleMotorFeedforward driveFeedForward;
 
+  private final CANcoder pivotEncoder;
+  private final SparkMax pivotMotor;
   private final PIDController pivotPID;
 
-  private double offsetAngle;
+  private boolean isCurrentlyFlippedForShorterPath;
 
   /**
    * Constructs a Swerve Module.
@@ -121,6 +121,7 @@ public class SwerveModule extends SubsystemBase {
         driveD, drivekS, drivekV, drivekA, pivotEncoderId, false, offsetAngle);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void periodic() {
     var state = getState();
@@ -129,14 +130,19 @@ public class SwerveModule extends SubsystemBase {
   }
 
   /**
-   * Returns the current state of the module.
-   *
-   * @return The current state of the module.
+   * Gets the current drive speed and pivot angle of the module.
+   * 
+   * @return the current drive speed and pivot angle of the module
    */
   public SwerveModuleState getState() {
     return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromDegrees(getAngle()));
   }
 
+  /**
+   * Gets the current drive distance traveled and pivot angle of the module.
+   * 
+   * @return the current drive distance traveled and pivot angle of the module
+   */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromDegrees(getAngle()));
   }
@@ -144,11 +150,11 @@ public class SwerveModule extends SubsystemBase {
   /**
    * Sets the PID values for the pivot module.
    *
-   * @param p the p value for the pivot module
-   * @param i the i value for the pivot module
-   * @param d the d value for the pivot module
+   * @param p the P value for the pivot module
+   * @param i the I value for the pivot module
+   * @param d the D value for the pivot module
    */
-  public void setPid(double p, double i, double d) {
+  public void setPivotPID(double p, double i, double d) {
     pivotPID.setPID(p, i, d);
   }
 
@@ -162,7 +168,7 @@ public class SwerveModule extends SubsystemBase {
     var targetAngle = useShortestPath ? calculateShortestPath(state.angle.getDegrees()) : state.angle.getDegrees();
     pivotMotor.set(MathUtil.clamp(pivotPID.calculate(getAngle(), targetAngle), -1, 1));
 
-    var sign = isFlipped && useShortestPath ? -1 : 1;
+    var sign = isCurrentlyFlippedForShorterPath && useShortestPath ? -1 : 1;
     drivePID.setReference(sign * state.speedMetersPerSecond,
         SparkMax.ControlType.kVoltage, ClosedLoopSlot.kSlot0,
         driveFeedForward.calculate(sign * state.speedMetersPerSecond));
@@ -223,7 +229,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   /**
-   * Stops the module.
+   * Stops the module and resets the pivot PID controller.
    */
   public void stop() {
     driveMotor.set(0);
@@ -244,9 +250,9 @@ public class SwerveModule extends SubsystemBase {
     var currentAngle = this.getAngle();
     var dAngle = Math.abs(targetAngle - currentAngle);
 
-    isFlipped = dAngle > 90 && dAngle < 270;
+    isCurrentlyFlippedForShorterPath = dAngle > 90 && dAngle < 270;
 
-    if (isFlipped) {
+    if (isCurrentlyFlippedForShorterPath) {
       if (targetAngle > 0 || targetAngle == 0 && currentAngle < 0) {
         targetAngle -= 180;
       } else if (targetAngle < 0 || targetAngle == 0 && currentAngle > 0) {

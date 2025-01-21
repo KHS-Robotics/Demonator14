@@ -21,6 +21,9 @@ import frc.robot.subsystems.drive.SwerveDrive;
  * Default command for swerve drive.
  */
 public class DriveSwerveWithXbox extends Command {
+  /** Deadband since joysticks vary in how well they snap back to zero. */
+  private static final double kJoystickDeadband = 0.035;
+
   private final BooleanSupplier fieldRelative;
   private final DoubleSupplier joystickSensitivity;
 
@@ -55,7 +58,7 @@ public class DriveSwerveWithXbox extends Command {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     var xSpeed = 0.0;
-    if (Math.abs(RobotContainer.kDriverController.getLeftY()) > 0.05) {
+    if (Math.abs(RobotContainer.kDriverController.getLeftY()) > kJoystickDeadband) {
       xSpeed = sensControl(-RobotContainer.kDriverController.getLeftY())
           * SwerveDrive.maxSpeedMetersPerSecond;
     }
@@ -64,7 +67,7 @@ public class DriveSwerveWithXbox extends Command {
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
     var ySpeed = 0.0;
-    if (Math.abs(RobotContainer.kDriverController.getLeftX()) > 0.05) {
+    if (Math.abs(RobotContainer.kDriverController.getLeftX()) > kJoystickDeadband) {
       ySpeed = sensControl(-RobotContainer.kDriverController.getLeftX())
           * SwerveDrive.maxSpeedMetersPerSecond;
     }
@@ -74,7 +77,7 @@ public class DriveSwerveWithXbox extends Command {
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
     double rot = 0;
-    if (Math.abs(RobotContainer.kDriverController.getRightX()) > 0.05) {
+    if (Math.abs(RobotContainer.kDriverController.getRightX()) > kJoystickDeadband) {
       rot = sensControl(-RobotContainer.kDriverController.getRightX())
           * SwerveDrive.maxAngularSpeedRadiansPerSecond;
     }

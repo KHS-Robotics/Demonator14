@@ -13,6 +13,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -24,6 +25,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,21 +36,22 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 /**
- * Represents a swerve drive style drivetrain.
+ * Swerve drive style drivetrain.
  * 
  * @see https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/intro-and-chassis-speeds.html
  * @see https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html
  * @see https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
  */
 public class SwerveDrive extends SubsystemBase {
+  /** Deadband for X and Y input speeds for joystick driving. */
+  private static final double kDriveVelocityDeadband = 0.005;
+  /** Deadband for rotational input speed for joystick driving. */
+  private static final double kDriveOmegaDeadband = 0.005;
+
   public static double maxSpeedMetersPerSecond = 4.6;
   public static double maxAngularSpeedRadiansPerSecond = 3 * Math.PI;
 
-  private final PIDController anglePid;
-  private final PIDController xPid;
-  private final PIDController yPid;
-
-  public static final SwerveModule frontLeft = new SwerveModule(
+  private final SwerveModule kFrontLeft = new SwerveModule(
       "FL",
       RobotMap.FRONT_LEFT_DRIVE,
       RobotMap.FRONT_LEFT_PIVOT,
@@ -62,7 +66,7 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_MODULE_KA,
       RobotMap.FRONT_LEFT_PIVOT_ENCODER,
       Constants.FRONT_LEFT_PIVOT_OFFSET_DEGREES);
-  public static final SwerveModule frontRight = new SwerveModule(
+  private final SwerveModule kFrontRight = new SwerveModule(
       "FR",
       RobotMap.FRONT_RIGHT_DRIVE,
       RobotMap.FRONT_RIGHT_PIVOT,
@@ -77,7 +81,7 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_MODULE_KA,
       RobotMap.FRONT_RIGHT_PIVOT_ENCODER,
       Constants.FRONT_RIGHT_PIVOT_OFFSET_DEGREES);
-  public static final SwerveModule rearLeft = new SwerveModule(
+  private final SwerveModule kRearLeft = new SwerveModule(
       "RL",
       RobotMap.REAR_LEFT_DRIVE,
       RobotMap.REAR_LEFT_PIVOT,
@@ -92,7 +96,7 @@ public class SwerveDrive extends SubsystemBase {
       Constants.DRIVE_MODULE_KA,
       RobotMap.REAR_LEFT_PIVOT_ENCODER,
       Constants.REAR_LEFT_PIVOT_OFFSET_DEGREES);
-  public static final SwerveModule rearRight = new SwerveModule(
+  private final SwerveModule kRearRight = new SwerveModule(
       "RR",
       RobotMap.REAR_RIGHT_DRIVE,
       RobotMap.REAR_RIGHT_PIVOT,
@@ -108,21 +112,42 @@ public class SwerveDrive extends SubsystemBase {
       RobotMap.REAR_RIGHT_PIVOT_ENCODER,
       Constants.REAR_RIGHT_PIVOT_OFFSET_DEGREES);
 
-  public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(Constants.FRONT_LEFT_OFFSET,
+  /**
+   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html
+   */
+  private final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(Constants.FRONT_LEFT_OFFSET,
       Constants.FRONT_RIGHT_OFFSET, Constants.REAR_LEFT_OFFSET, Constants.REAR_RIGHT_OFFSET);
 
-  private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
-      kinematics,
-      getAngle(),
-      new SwerveModulePosition[] {
-          new SwerveModulePosition(0, Rotation2d.fromDegrees(frontLeft.getAngle())),
-          new SwerveModulePosition(0, Rotation2d.fromDegrees(frontRight.getAngle())),
-          new SwerveModulePosition(0, Rotation2d.fromDegrees(rearLeft.getAngle())),
-          new SwerveModulePosition(0, Rotation2d.fromDegrees(rearRight.getAngle()))
-      },
-      new Pose2d(8.5, 4.0, getAngle()),
-      VecBuilder.fill(0.1, 0.1, 0.1),
-      VecBuilder.fill(6, 6, Double.MAX_VALUE));
+  /**
+   * Standard deviations of the pose estimate (x position in meters, y position in
+   * meters, and heading in radians).
+   * <p>
+   * Increase these numbers to trust the state estimate less.
+   */
+  private static final Matrix<N3, N1> kDefaultStateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
+
+  /**
+   * Standard deviations of the vision pose measurement (x position in meters, y
+   * position in meters, and heading in radians).
+   * <p>
+   * Increase these numbers to trust the state estimate less.
+   */
+  private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(6, 6, Double.MAX_VALUE);
+
+  /**
+   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
+   */
+  private final SwerveDrivePoseEstimator kPoseEstimator = new SwerveDrivePoseEstimator(
+      kSwerveKinematics,
+      getAngleForOdometry(),
+      getSwerveModulePositions(),
+      new Pose2d(8.5, 4.0, getAngleForOdometry()),
+      kDefaultStateStdDevs,
+      kDefaultVisionMeasurementStdDevs);
+
+  private final PIDController xPid;
+  private final PIDController yPid;
+  private final PIDController thetaPid;
 
   /**
    * Constructs the Swerve Drive.
@@ -135,11 +160,20 @@ public class SwerveDrive extends SubsystemBase {
     yPid.setTolerance(0.1);
 
     // degrees
-    anglePid = new PIDController(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
-    anglePid.enableContinuousInput(-180.0, 180.0);
-    anglePid.setTolerance(1);
+    thetaPid = new PIDController(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
+    thetaPid.enableContinuousInput(-180.0, 180.0);
+    thetaPid.setTolerance(1);
 
     this.configurePathPlannerAutoBuilder();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void periodic() {
+    updateOdometry();
+
+    var pose = getPose();
+    RobotContainer.kField.setRobotPose(pose);
   }
 
   /** https://pathplanner.dev/pplib-getting-started.html#holonomic-swerve */
@@ -188,53 +222,55 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Returns the angle of the robot as a Rotation2d as read by the navx.
-   * <p>
-   * Note that {@link #getPose()} should be used when trying to access the robot's
-   * actual heading (rotation)
-   * relative to the field. This method is only used internally to update the
-   * odometry.
-   *
-   * @return The angle of the robot.
-   * @see #getPose()
+   * Gets the robot's current position on the field.
+   * 
+   * @return the robot's position on the field from the odometry
    */
-  private Rotation2d getAngle() {
-    return RobotContainer.kNavx.getRotation2d();
+  public Pose2d getPose() {
+    return kPoseEstimator.getEstimatedPosition();
   }
 
   /**
-   * Method to drive the robot using joystick info. (used for teleop)
-   *
-   * @param xSpeed        Speed of the robot in the x direction (forward) in m/s.
-   * @param ySpeed        Speed of the robot in the y direction (sideways) in m/s.
-   * @param rot           Angular rate of the robot in rad/sec.
-   * @param fieldRelative Whether the provided x and y speeds are relative to the
-   *                      field.
+   * Resets the robot's pose for odometry
+   * 
+   * @param pose the robot's new pose
    */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    if (Math.abs(rot) < 0.005 && Math.abs(xSpeed) < 0.005 && Math.abs(ySpeed) < 0.005) {
-      frontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(frontLeft.getAngle())));
-      frontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(frontRight.getAngle())));
-      rearLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(rearLeft.getAngle())));
-      rearRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(rearRight.getAngle())));
-    } else {
-      // get desired chassis speeds
-      ChassisSpeeds desiredChassisSpeeds = fieldRelative
-          ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation())
-          : new ChassisSpeeds(xSpeed, ySpeed, rot);
-        
-      // get optimized module states
-      var desiredModuleStates = this.getOptimizedModuleStatesFromChassisSpeeds(desiredChassisSpeeds);
-
-      // set calculated states
-      this.setModuleStates(desiredModuleStates);
-    }
+  private void resetPose(Pose2d pose) {
+    kPoseEstimator.resetPosition(getAngleForOdometry(), getSwerveModulePositions(), pose);
   }
 
+  /**
+   * Gets the robot's current speed.
+   * 
+   * @return the robot's current speed
+   */
+  public ChassisSpeeds getChassisSpeeds() {
+    return kSwerveKinematics.toChassisSpeeds(getSwerveModuleStates());
+  }
+
+  /**
+   * Sets the module states based on the desired robot speed.
+   * 
+   * @param chassisSpeeds the desired robot speed
+   */
+  private void setModuleStates(final ChassisSpeeds chassisSpeeds) {
+    var desiredStates = this.getOptimizedModuleStatesFromChassisSpeeds(chassisSpeeds);
+    kFrontLeft.setDesiredState(desiredStates[0], true);
+    kFrontRight.setDesiredState(desiredStates[1], true);
+    kRearLeft.setDesiredState(desiredStates[2], true);
+    kRearRight.setDesiredState(desiredStates[3], true);
+  }
+
+  /**
+   * Optimizes the swerve module states given the desired robot speeds.
+   * 
+   * @param originalSpeeds the speeds to optimze
+   * @return the optimized swerve module states
+   */
   private SwerveModuleState[] getOptimizedModuleStatesFromChassisSpeeds(final ChassisSpeeds originalSpeeds) {
     // corrections + desaturating
     var optimizedChassisSpeeds = correctForDynamics(originalSpeeds);
-    var optimizedModuleStates = kinematics.toSwerveModuleStates(optimizedChassisSpeeds);
+    var optimizedModuleStates = kSwerveKinematics.toSwerveModuleStates(optimizedChassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(optimizedModuleStates, maxSpeedMetersPerSecond);
     return optimizedModuleStates;
   }
@@ -280,48 +316,94 @@ public class SwerveDrive extends SubsystemBase {
     return new Twist2d(translation_part.getX(), translation_part.getY(), dtheta);
   }
 
-  public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+  /**
+   * Returns the angle of the robot as a Rotation2d as read by the navx.
+   * <p>
+   * Note that {@link #getPose()} should be used when trying to access the robot's
+   * actual heading (rotation)
+   * relative to the field. This method is only used internally to update the
+   * odometry.
+   *
+   * @return The angle of the robot.
+   * @see #getPose()
+   */
+  private Rotation2d getAngleForOdometry() {
+    return RobotContainer.kNavx.getRotation2d();
   }
 
-  private void resetPose(Pose2d pose) {
-    poseEstimator.resetPosition(getAngle(), getSwerveModulePositions(), pose);
+  /**
+   * Method to drive the robot using joystick info. (used for teleop)
+   *
+   * @param vxMetersPerSecond     Speed of the robot in the x direction (forward)
+   *                              in m/s.
+   * @param vyMetersPerSecond     Speed of the robot in the y direction (sideways)
+   *                              in m/s.
+   * @param omegaRadiansPerSecond Angular rate of the robot in rad/sec.
+   * @param fieldRelative         Whether the provided x and y speeds are relative
+   *                              to the
+   *                              field.
+   */
+  public void drive(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond,
+      boolean fieldRelative) {
+    if (Math.abs(omegaRadiansPerSecond) < kDriveVelocityDeadband && Math.abs(vxMetersPerSecond) < kDriveVelocityDeadband
+        && Math.abs(vyMetersPerSecond) < kDriveOmegaDeadband) {
+      kFrontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kFrontLeft.getAngle())));
+      kFrontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kFrontRight.getAngle())));
+      kRearLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kRearLeft.getAngle())));
+      kRearRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kRearRight.getAngle())));
+    } else {
+      // get desired chassis speeds
+      ChassisSpeeds desiredChassisSpeeds = fieldRelative
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond,
+              getPose().getRotation())
+          : new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+
+      // set desired chassis speeds
+      this.setModuleStates(desiredChassisSpeeds);
+    }
   }
 
-  public ChassisSpeeds getChassisSpeeds() {
-    return this.kinematics.toChassisSpeeds(getSwerveModuleStates());
+  /**
+   * Gets the current drive speeds and pivot angles of all swerve modules in the
+   * following order: FL, FR, RL, RR.
+   * 
+   * @return the states of the module (speeds and angles) in the following order:
+   *         FL, FR, RL, RR.
+   */
+  public SwerveModuleState[] getSwerveModuleStates() {
+    return new SwerveModuleState[] {
+        kFrontLeft.getState(),
+        kFrontRight.getState(),
+        kRearLeft.getState(),
+        kRearRight.getState()
+    };
   }
 
-  private void setModuleStates(SwerveModuleState[] desiredStates) {
-    frontLeft.setDesiredState(desiredStates[0], true);
-    frontRight.setDesiredState(desiredStates[1], true);
-    rearLeft.setDesiredState(desiredStates[2], true);
-    rearRight.setDesiredState(desiredStates[3], true);
+  /**
+   * Gets the current drive distance traveled and pivot angles of all swerve
+   * modules in the following order: FL, FR, RL, RR.
+   * 
+   * @return the states of the module (speeds and angles) in the following order:
+   *         FL, FR, RL, RR.
+   */
+  public SwerveModulePosition[] getSwerveModulePositions() {
+    return new SwerveModulePosition[] {
+        kFrontLeft.getPosition(),
+        kFrontRight.getPosition(),
+        kRearLeft.getPosition(),
+        kRearRight.getPosition()
+    };
   }
 
-  private void setModuleStates(ChassisSpeeds robotRelativeChassisSpeeds) {
-    var desiredModuleStates = this.getOptimizedModuleStatesFromChassisSpeeds(robotRelativeChassisSpeeds);
-    this.setModuleStates(desiredModuleStates);
-  }
-
-  public void holdAngleWhileDriving(double x, double y, Rotation2d setAngle, boolean fieldOriented) {
-    var rotateOutput = MathUtil
-        .clamp(anglePid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setAngle.getDegrees())), -1, 1)
-        * maxAngularSpeedRadiansPerSecond;
-    this.drive(x, y, rotateOutput, fieldOriented);
-  }
-
-  public void rotateToAngleInPlace(double setAngle) {
-    this.holdAngleWhileDriving(0, 0, Rotation2d.fromDegrees(setAngle), false);
-  }
-
-  public void goToPose(Pose2d target, boolean fieldOriented) {
-    Pose2d pose = getPose();
-    double xSpeed = MathUtil.clamp(xPid.calculate(pose.getX(), target.getX()), -1, 1) * maxSpeedMetersPerSecond;
-    double ySpeed = MathUtil.clamp(yPid.calculate(pose.getY(), target.getY()), -1, 1) * maxSpeedMetersPerSecond;
-    double vTheta = MathUtil.clamp(anglePid.calculate(normalizeAngle(pose.getRotation().getDegrees()),
-        normalizeAngle(target.getRotation().getDegrees())), -1, 1) * maxAngularSpeedRadiansPerSecond;
-    this.drive(xSpeed, ySpeed, vTheta, fieldOriented);
+  /**
+   * Stops all modules and resets the internal PID controllers.
+   */
+  public void stop() {
+    kFrontRight.stop();
+    kFrontLeft.stop();
+    kRearRight.stop();
+    kRearLeft.stop();
+    resetPID();
   }
 
   /**
@@ -329,49 +411,10 @@ public class SwerveDrive extends SubsystemBase {
    * incline or to help prevent getting pushed by defense.
    */
   public void lock() {
-    frontRight.setDesiredState(0, 45);
-    frontLeft.setDesiredState(0, -45);
-    rearRight.setDesiredState(0, -45);
-    rearLeft.setDesiredState(0, 45);
-  }
-
-  public SwerveModuleState[] getSwerveModuleStates() {
-    return new SwerveModuleState[] {
-        frontLeft.getState(),
-        frontRight.getState(),
-        rearLeft.getState(),
-        rearRight.getState()
-    };
-  }
-
-  public SwerveModulePosition[] getSwerveModulePositions() {
-    return new SwerveModulePosition[] {
-        frontLeft.getPosition(),
-        frontRight.getPosition(),
-        rearLeft.getPosition(),
-        rearRight.getPosition()
-    };
-  }
-
-  public void stop() {
-    frontRight.stop();
-    frontLeft.stop();
-    rearRight.stop();
-    rearLeft.stop();
-  }
-
-  public boolean atAngleSetpoint() {
-    return anglePid.atSetpoint();
-  }
-
-  public void resetPid() {
-    xPid.reset();
-    yPid.reset();
-    anglePid.reset();
-  }
-
-  public Pose2d getPoseInverted() {
-    return new Pose2d(getPose().getX(), getPose().getY(), getPose().getRotation().plus(Rotation2d.fromDegrees(180)));
+    kFrontRight.setDesiredState(0, 45);
+    kFrontLeft.setDesiredState(0, -45);
+    kRearRight.setDesiredState(0, -45);
+    kRearLeft.setDesiredState(0, 45);
   }
 
   /**
@@ -388,11 +431,11 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
+   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html#updating-the-robot-pose
    */
   private void updateOdometryUsingTraction() {
     var modulePositions = getSwerveModulePositions();
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngle(), modulePositions);
+    kPoseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngleForOdometry(), modulePositions);
   }
 
   /**
@@ -425,7 +468,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   private void updateOdometryUsingLimelightMegatag2() {
     boolean doRejectUpdate = false;
-    LimelightHelpers.SetRobotOrientation("limelight", poseEstimator.getEstimatedPosition().getRotation().getDegrees(),
+    LimelightHelpers.SetRobotOrientation("limelight", kPoseEstimator.getEstimatedPosition().getRotation().getDegrees(),
         0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
     if (Math.abs(RobotContainer.kNavx.getRate()) > 720) // if our angular velocity is greater than 720 degrees per
@@ -443,14 +486,73 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
-  @Override
-  public void periodic() {
-    updateOdometry();
-
-    var pose = getPose();
-    RobotContainer.kField.setRobotPose(pose);
+  /**
+   * Holds the desired angle while translating.
+   * 
+   * @param xSpeed        x speed in m/s
+   * @param ySpeed        y speed in m/s
+   * @param setpointAngle the desired robot angle to hold about the robot's center
+   * @param fieldOriented field relative speeds (true) or robot relative speeds
+   *                      (false)
+   */
+  public void holdAngleWhileDriving(double xSpeed, double ySpeed, Rotation2d setpointAngle, boolean fieldOriented) {
+    var rotateOutput = MathUtil
+        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())), -1,
+            1)
+        * maxAngularSpeedRadiansPerSecond;
+    this.drive(xSpeed, ySpeed, rotateOutput, fieldOriented);
   }
 
+  /**
+   * Rotate to a desired angle about the robot's center.
+   * 
+   * @param setpointAngle
+   */
+  public void rotateToAngleInPlace(Rotation2d setpointAngle) {
+    this.holdAngleWhileDriving(0, 0, setpointAngle, false);
+  }
+
+  /**
+   * Sets the drive to go to the desired pose given the robot's current pose vs
+   * target
+   * 
+   * @param target        the desired pose the robot should go to
+   * @param fieldOriented field relative speeds (true) or robot relative speeds
+   *                      (false)
+   */
+  public void goToPose(Pose2d target, boolean fieldOriented) {
+    Pose2d pose = getPose();
+    double xSpeed = MathUtil.clamp(xPid.calculate(pose.getX(), target.getX()), -1, 1) * maxSpeedMetersPerSecond;
+    double ySpeed = MathUtil.clamp(yPid.calculate(pose.getY(), target.getY()), -1, 1) * maxSpeedMetersPerSecond;
+    double vTheta = MathUtil.clamp(thetaPid.calculate(normalizeAngle(pose.getRotation().getDegrees()),
+        normalizeAngle(target.getRotation().getDegrees())), -1, 1) * maxAngularSpeedRadiansPerSecond;
+    this.drive(xSpeed, ySpeed, vTheta, fieldOriented);
+  }
+
+  /**
+   * Gets if the robot's heading is at the desired angle.
+   * 
+   * @return true if the robot's heading is at the desired angle, false otherwise
+   */
+  public boolean atAngleSetpoint() {
+    return thetaPid.atSetpoint();
+  }
+
+  /**
+   * Resets the internal X, Y and Theta PID controllers.
+   */
+  public void resetPID() {
+    xPid.reset();
+    yPid.reset();
+    thetaPid.reset();
+  }
+
+  /**
+   * Clamps an angle to be from [-180, 180]
+   * 
+   * @param angle the angle to clamp
+   * @return the newly clamped angle from [-180, 180]
+   */
   private static double normalizeAngle(double angle) {
     if (angle > 0) {
       angle %= 360;
