@@ -72,8 +72,8 @@ public class SwerveModule extends SubsystemBase {
     setName("Module-" + name);
 
     var driveEncoderConfig = new EncoderConfig()
-        .positionConversionFactor(Constants.DRIVE_POS_ENCODER)
-        .velocityConversionFactor(Constants.DRIVE_VEL_ENCODER);
+        .positionConversionFactor(Constants.kDriveEncoderPositionConversionFactor)
+        .velocityConversionFactor(Constants.kDriveEncoderVelocityConversionFactor);
     var driveClosedLoopConfig = new ClosedLoopConfig()
         .pid(driveP, driveI, driveD, ClosedLoopSlot.kSlot0);
     var driveMotorConfig = new SparkMaxConfig()
