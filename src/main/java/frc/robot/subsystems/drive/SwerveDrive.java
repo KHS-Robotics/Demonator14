@@ -34,6 +34,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.vision.LimelightHelpers;
@@ -180,6 +181,9 @@ public class SwerveDrive extends SubsystemBase {
     updateOdometry();
 
     var pose = getPose();
+    SmartDashboard.putNumber("Pose-X", pose.getX());
+    SmartDashboard.putNumber("Pose-Y", pose.getY());
+    SmartDashboard.putNumber("Pose-Theta", pose.getRotation().getDegrees());
     RobotContainer.kField.setRobotPose(pose);
   }
 
@@ -242,7 +246,7 @@ public class SwerveDrive extends SubsystemBase {
    * 
    * @param pose the robot's new pose
    */
-  private void resetPose(Pose2d pose) {
+  public void resetPose(Pose2d pose) {
     kPoseEstimator.resetPosition(getAngleForOdometry(), getSwerveModulePositions(), pose);
   }
 
@@ -471,12 +475,15 @@ public class SwerveDrive extends SubsystemBase {
     if (!doRejectUpdate) {
       // kPoseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds,
       // kDefaultVisionMeasurementStdDevs);
-      RobotContainer.kField.getObject("LL-M1").setPose(mt1.pose);
+      // RobotContainer.kField.getObject("LL-M1").setPose(mt1.pose);
     }
   }
 
   /**
    * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2
+   * 
+   * Worked very well in the lab.
+   * Also worked very at very far distances!!
    */
   private void updateOdometryUsingLimelightMegatag2() {
     LimelightHelpers.SetRobotOrientation("limelight", getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
@@ -493,9 +500,8 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     if (!doRejectUpdate) {
-      // kPoseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds,
-      // kDefaultVisionMeasurementStdDevs);
-      RobotContainer.kField.getObject("LL-M2").setPose(mt2.pose);
+      // kPoseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds, kDefaultVisionMeasurementStdDevs);
+      // RobotContainer.kField.getObject("LL-M2").setPose(mt2.pose);
     }
   }
 
@@ -509,10 +515,9 @@ public class SwerveDrive extends SubsystemBase {
       var photonPoseUpdate = kPhotonPoseEstimator.update(cameraResultToProcess);
       
       if (photonPoseUpdate.isPresent()) {
-        var photonPose = photonPoseUpdate.get();
-        // kPoseEstimator.addVisionMeasurement(photonPose.estimatedPose.toPose2d(),
-        // photonPose.timestampSeconds, kDefaultVisionMeasurementStdDevs);
-        RobotContainer.kField.getObject("Photon").setPose(photonPose.estimatedPose.toPose2d());
+        // var photonPose = photonPoseUpdate.get();
+        // kPoseEstimator.addVisionMeasurement(photonPose.estimatedPose.toPose2d(), photonPose.timestampSeconds, kDefaultVisionMeasurementStdDevs);
+        // RobotContainer.kField.getObject("Photon").setPose(photonPose.estimatedPose.toPose2d());
       }
     }
   }
