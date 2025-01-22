@@ -352,8 +352,8 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void drive(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond,
       boolean fieldRelative) {
-    if (Math.abs(omegaRadiansPerSecond) < kDriveVelocityDeadband && Math.abs(vxMetersPerSecond) < kDriveVelocityDeadband
-        && Math.abs(vyMetersPerSecond) < kDriveOmegaDeadband) {
+    if (Math.abs(omegaRadiansPerSecond) < kDriveOmegaDeadband && Math.abs(vxMetersPerSecond) < kDriveVelocityDeadband
+        && Math.abs(vyMetersPerSecond) < kDriveVelocityDeadband) {
       kFrontLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kFrontLeft.getAngle())));
       kFrontRight.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kFrontRight.getAngle())));
       kRearLeft.setDesiredState(new SwerveModuleState(0.0, Rotation2d.fromDegrees(kRearLeft.getAngle())));
