@@ -38,6 +38,7 @@ public final class Constants {
 
   /** https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-a-photonposeestimator */
   public static final Transform3d kRobotToPhotonCamera = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+  public static final String kPhotonCameraName = "4342_AprilTag_1";
 
   // individual offsets after calibrating each module
   public static final double kFrontLeftPivotOffsetDegrees = 225;

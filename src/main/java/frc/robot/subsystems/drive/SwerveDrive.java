@@ -32,6 +32,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -136,7 +137,7 @@ public class SwerveDrive extends SubsystemBase {
    * <p>
    * Increase these numbers to trust the vision pose measurement less.
    */
-  private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(6, 6, Double.MAX_VALUE);
+  private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Double.MAX_VALUE);
 
   /**
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
@@ -149,30 +150,26 @@ public class SwerveDrive extends SubsystemBase {
       kDefaultStateStdDevs,
       kDefaultVisionMeasurementStdDevs);
 
-  private final PhotonCamera photonCamera;
+  private final PhotonCamera kPhotonCamera = new PhotonCamera(Constants.kPhotonCameraName);
   private final PhotonPoseEstimator kPhotonPoseEstimator = new PhotonPoseEstimator(RobotContainer.kAprilTagFieldLayout,
       PoseStrategy.CLOSEST_TO_REFERENCE_POSE, Constants.kRobotToPhotonCamera);
 
-  private final PIDController xPid;
-  private final PIDController yPid;
-  private final PIDController thetaPid;
+  private final PIDController xPid = new PIDController(Constants.DRIVE_X_P, Constants.DRIVE_X_I, Constants.DRIVE_X_D);
+  private final PIDController yPid = new PIDController(Constants.DRIVE_Y_P, Constants.DRIVE_Y_I, Constants.DRIVE_Y_D);
+  private final PIDController thetaPid = new PIDController(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I,
+      Constants.DRIVE_ANGLE_D);
 
   /**
    * Constructs the Swerve Drive.
    */
   public SwerveDrive() {
     // meters
-    xPid = new PIDController(Constants.DRIVE_X_P, Constants.DRIVE_X_I, Constants.DRIVE_X_D);
     xPid.setTolerance(0.1);
-    yPid = new PIDController(Constants.DRIVE_Y_P, Constants.DRIVE_Y_I, Constants.DRIVE_Y_D);
     yPid.setTolerance(0.1);
 
     // degrees
-    thetaPid = new PIDController(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I, Constants.DRIVE_ANGLE_D);
     thetaPid.enableContinuousInput(-180.0, 180.0);
     thetaPid.setTolerance(1);
-
-    photonCamera = new PhotonCamera("4342_AprilTag_1");
 
     this.configurePathPlannerAutoBuilder();
   }
@@ -431,14 +428,18 @@ public class SwerveDrive extends SubsystemBase {
    * Updates the field relative position of the robot.
    */
   private void updateOdometry() {
+    // always update using traction
     updateOdometryUsingTraction();
 
-    // TODO(work in progress): Vision adjustments using AprilTags
-    // ...
-    // updateOdometryUsingVision();
-    updateOdometryUsingLimelightMegatag1();
-    updateOdometryUsingLimelightMegatag2();
-    updateOdometryUsingPhotonVision();
+    // only update pose using vision when in disabled or teleop
+    if (RobotState.isDisabled() || RobotState.isTeleop()) {
+      // TODO(work in progress): Vision adjustments using AprilTags
+      // ...
+      // updateOdometryUsingVision();
+      updateOdometryUsingLimelightMegatag1();
+      updateOdometryUsingLimelightMegatag2();
+      updateOdometryUsingPhotonVision();
+    }
   }
 
   /**
@@ -453,8 +454,8 @@ public class SwerveDrive extends SubsystemBase {
    * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization
    */
   private void updateOdometryUsingLimelightMegatag1() {
-    boolean doRejectUpdate = false;
     LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    boolean doRejectUpdate = false;
     if (mt1 != null && mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
       if (mt1.rawFiducials[0].ambiguity > .7) {
         doRejectUpdate = true;
@@ -468,9 +469,9 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     if (!doRejectUpdate) {
-      // kPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
-      // kPoseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
-      RobotContainer.kField.getObject("LL-Megatag1").setPose(mt1.pose);
+      // kPoseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds,
+      // kDefaultVisionMeasurementStdDevs);
+      RobotContainer.kField.getObject("LL-M1").setPose(mt1.pose);
     }
   }
 
@@ -478,22 +479,23 @@ public class SwerveDrive extends SubsystemBase {
    * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2
    */
   private void updateOdometryUsingLimelightMegatag2() {
-    boolean doRejectUpdate = false;
-    LimelightHelpers.SetRobotOrientation("limelight", kPoseEstimator.getEstimatedPosition().getRotation().getDegrees(),
-        0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation("limelight", getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
     LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-    if (Math.abs(RobotContainer.kNavx.getRate()) > 720) // if our angular velocity is greater than 720 degrees per
-                                                        // second, ignore vision updates
-    {
+
+    boolean doRejectUpdate = false;
+    // if our angular velocity is greater than 720 degrees per second, ignore vision
+    // updates
+    if (Math.abs(RobotContainer.kNavx.getRate()) > 720) {
       doRejectUpdate = true;
     }
     if (mt2 == null || mt2.tagCount == 0) {
       doRejectUpdate = true;
     }
+
     if (!doRejectUpdate) {
-      // kPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-      // kPoseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
-      RobotContainer.kField.getObject("LL-Megatag2").setPose(mt2.pose);
+      // kPoseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds,
+      // kDefaultVisionMeasurementStdDevs);
+      RobotContainer.kField.getObject("LL-M2").setPose(mt2.pose);
     }
   }
 
@@ -501,15 +503,16 @@ public class SwerveDrive extends SubsystemBase {
    * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#using-a-photonposeestimator
    */
   private void updateOdometryUsingPhotonVision() {
-    var unprocessedResults = photonCamera.getAllUnreadResults();
-    for (var toProcess : unprocessedResults) {
+    var unprocessedCameraResults = kPhotonCamera.getAllUnreadResults();
+    for (var cameraResultToProcess : unprocessedCameraResults) {
       kPhotonPoseEstimator.setReferencePose(getPose());
-      var estimatedPose = kPhotonPoseEstimator.update(toProcess);
-      if (estimatedPose.isPresent()) {
-        var update = estimatedPose.get();
-        // kPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
-        // kPoseEstimator.addVisionMeasurement(update.estimatedPose.toPose2d(), update.timestampSeconds);
-        RobotContainer.kField.getObject("Photon").setPose(update.estimatedPose.toPose2d());
+      var photonPoseUpdate = kPhotonPoseEstimator.update(cameraResultToProcess);
+      
+      if (photonPoseUpdate.isPresent()) {
+        var photonPose = photonPoseUpdate.get();
+        // kPoseEstimator.addVisionMeasurement(photonPose.estimatedPose.toPose2d(),
+        // photonPose.timestampSeconds, kDefaultVisionMeasurementStdDevs);
+        RobotContainer.kField.getObject("Photon").setPose(photonPose.estimatedPose.toPose2d());
       }
     }
   }
