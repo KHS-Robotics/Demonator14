@@ -9,6 +9,8 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -54,6 +56,9 @@ public class RobotContainer {
   // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html
   public static final Field2d kField = new Field2d();
 
+  /** https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-an-apriltagfieldlayout */
+  public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+
   // Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
   public static final CommandXboxController kDriverController = new CommandXboxController(RobotMap.XBOX_PORT);
@@ -75,7 +80,7 @@ public class RobotContainer {
    * https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html#default-commands
    */
   private void configureSubsystemDefaultCommands() {
-    kSwerveDrive.setDefaultCommand(new DriveSwerveWithXbox(true, Constants.DRIVE_JOYSTICK_SENSITIVITY));
+    kSwerveDrive.setDefaultCommand(new DriveSwerveWithXbox(true, Constants.kJoystickSensitivity));
   }
 
   /**

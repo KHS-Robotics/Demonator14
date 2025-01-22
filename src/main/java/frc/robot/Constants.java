@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -17,26 +19,31 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */
-  public static final double DRIVE_JOYSTICK_SENSITIVITY = 0.5;
+  public static final double kJoystickSensitivity = 0.5;
 
-  public static final double WHEEL_RADIUS_METERS = Units.inchesToMeters(2);
+  public static final double kDriveWheelRadiusMeters = Units.inchesToMeters(2);
   public static final double SDS_L2_DRIVE_GEARING = 6.75;
-  public static final double DRIVE_POS_ENCODER = (2 * Math.PI * WHEEL_RADIUS_METERS) / SDS_L2_DRIVE_GEARING;
-  public static final double DRIVE_VEL_ENCODER = DRIVE_POS_ENCODER / 60.0;
+  public static final double kDriveEncoderPositionConversionFactor = (2 * Math.PI * kDriveWheelRadiusMeters) / SDS_L2_DRIVE_GEARING;
+  public static final double kDriveEncoderVelocityConversionFactor = kDriveEncoderPositionConversionFactor / 60.0;
 
-  public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(Units.inchesToMeters(10.7),
+  public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(10.7),
       Units.inchesToMeters(11.7));
-  public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(Units.inchesToMeters(10.7),
+  public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(10.7),
       Units.inchesToMeters(-11.7));
-  public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(Units.inchesToMeters(-10.7),
+  public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
       Units.inchesToMeters(11.7));
-  public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(Units.inchesToMeters(-10.7),
+  public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
       Units.inchesToMeters(-11.7));
 
-  public static final double FRONT_LEFT_PIVOT_OFFSET_DEGREES = 225;
-  public static final double FRONT_RIGHT_PIVOT_OFFSET_DEGREES = 135;
-  public static final double REAR_LEFT_PIVOT_OFFSET_DEGREES = 315;
-  public static final double REAR_RIGHT_PIVOT_OFFSET_DEGREES = 45;
+  /** https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-a-photonposeestimator */
+  public static final Transform3d kRobotToPhotonCamera = new Transform3d(Units.inchesToMeters(7.6882), Units.inchesToMeters(13.0), Units.inchesToMeters(12.1545), new Rotation3d(0, Math.toRadians(-60), 0));
+  public static final String kPhotonCameraName = "4342_AprilTag_1";
+
+  // individual offsets after calibrating each module
+  public static final double kFrontLeftPivotOffsetDegrees = 225;
+  public static final double kFrontRightPivotOffsetDegrees = 135;
+  public static final double kRearLeftPivotOffsetDegrees = 315;
+  public static final double kRearRightPivotOffsetDegrees = 45;
 
   public static final double DRIVE_MODULE_P = 0.01;
   public static final double DRIVE_MODULE_I = 0;
