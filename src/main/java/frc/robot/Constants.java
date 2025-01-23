@@ -18,6 +18,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final double kRobotElevatorStowHeight = Units.inchesToMeters(48);
+
   /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */
   public static final double kJoystickSensitivity = 0.5;
 
@@ -25,6 +27,12 @@ public final class Constants {
   public static final double SDS_L2_DRIVE_GEARING = 6.75;
   public static final double kDriveEncoderPositionConversionFactor = (2 * Math.PI * kDriveWheelRadiusMeters) / SDS_L2_DRIVE_GEARING;
   public static final double kDriveEncoderVelocityConversionFactor = kDriveEncoderPositionConversionFactor / 60.0;
+
+  public static final double kElevatorEncoderPositionConversionFactor = 1;
+  public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor / 60.0;
+
+  public static final double kCorallerEncoderPositionConversionFactor = 1;
+  public static final double kCorallerEncoderVelocityConversionFactor = kCorallerEncoderPositionConversionFactor / 60.0;
 
   public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(10.7),
       Units.inchesToMeters(11.7));
@@ -75,4 +83,12 @@ public final class Constants {
   public static final double DRIVE_PATHING_ROTATION_P = 1.5;
   public static final double DRIVE_PATHING_ROTATION_I = 0.0;
   public static final double DRIVE_PATHING_ROTATION_D = 0.8;
+
+  public static final double kElevatorP = 0.0;
+  public static final double kElevatorI = 0.0;
+  public static final double kElevatorD = 0.0;
+
+  public static final double kCorallerP = 0.0;
+  public static final double kCorallerI = 0.0;
+  public static final double kCorallerD = 0.0;
 }
