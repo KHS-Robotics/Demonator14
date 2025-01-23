@@ -11,7 +11,10 @@ import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,8 +59,11 @@ public class RobotContainer {
   // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html
   public static final Field2d kField = new Field2d();
 
-  /** https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-an-apriltagfieldlayout */
-  public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+  /**
+   * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-an-apriltagfieldlayout
+   */
+  public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
+      .loadField(AprilTagFields.k2025Reefscape);
 
   // Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
@@ -98,6 +104,14 @@ public class RobotContainer {
 
   /** Binds commands to xbox controller buttons. */
   private void configureXboxControllerBindings() {
+    kDriverController.start().onTrue(new InstantCommand(() -> {
+      var currentPose = kSwerveDrive.getPose();
+      var currentAlliance = DriverStation.getAlliance();
+      var awayAngle = currentAlliance.isPresent() && currentAlliance.get().equals(Alliance.Red)
+          ? 180
+          : 0;
+      kSwerveDrive.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
+    }, kSwerveDrive));
   }
 
   /** https://pathplanner.dev/home.html */
