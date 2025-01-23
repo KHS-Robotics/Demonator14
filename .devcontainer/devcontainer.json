@@ -21,6 +21,10 @@
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
+			"settings": {
+				"java.import.gradle.java.home": "/usr/lib/jvm/msopenjdk-current",
+				"workbench.colorTheme": "Default Dark Modern"
+			},
 			"extensions": [
 				"redhat.java",
 				"ms-vscode.cpptools",
