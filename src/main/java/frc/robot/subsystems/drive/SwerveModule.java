@@ -28,7 +28,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import static frc.robot.Constants.SwerveDriveConfig;
+import frc.robot.Constants.SwerveDriveConfig;
 
 /**
  * Swerve module for a swerve drive style drivetrain.
