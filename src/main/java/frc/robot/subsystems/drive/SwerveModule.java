@@ -23,11 +23,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import static frc.robot.Constants.SwerveDriveConfig;
 
 /**
  * Swerve module for a swerve drive style drivetrain.
@@ -72,8 +73,8 @@ public class SwerveModule extends SubsystemBase {
     setName("Module-" + name);
 
     var driveEncoderConfig = new EncoderConfig()
-        .positionConversionFactor(Constants.kDriveEncoderPositionConversionFactor)
-        .velocityConversionFactor(Constants.kDriveEncoderVelocityConversionFactor);
+        .positionConversionFactor(SwerveDriveConfig.kDriveEncoderPositionConversionFactor)
+        .velocityConversionFactor(SwerveDriveConfig.kDriveEncoderVelocityConversionFactor);
     var driveClosedLoopConfig = new ClosedLoopConfig()
         .pid(driveP, driveI, driveD, ClosedLoopSlot.kSlot0);
     var driveMotorConfig = new SparkMaxConfig()

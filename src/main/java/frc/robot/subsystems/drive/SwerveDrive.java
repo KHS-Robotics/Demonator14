@@ -10,6 +10,7 @@ package frc.robot.subsystems.drive;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -38,8 +39,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.vision.LimelightHelpers;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
+
+import static frc.robot.Constants.PhotonVisionConfig;
+import static frc.robot.Constants.SwerveDriveConfig;
 
 /**
  * Swerve drive style drivetrain.
@@ -61,68 +64,70 @@ public class SwerveDrive extends SubsystemBase {
       "FL",
       RobotMap.FRONT_LEFT_DRIVE,
       RobotMap.FRONT_LEFT_PIVOT,
-      Constants.DRIVE_MODULE_PIVOT_P,
-      Constants.DRIVE_MODULE_PIVOT_I,
-      Constants.DRIVE_MODULE_PIVOT_D,
-      Constants.DRIVE_MODULE_P,
-      Constants.DRIVE_MODULE_I,
-      Constants.DRIVE_MODULE_D,
-      Constants.DRIVE_MODULE_KS,
-      Constants.DRIVE_MODULE_KV,
-      Constants.DRIVE_MODULE_KA,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_P,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_I,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_D,
+      SwerveDriveConfig.DRIVE_MODULE_P,
+      SwerveDriveConfig.DRIVE_MODULE_I,
+      SwerveDriveConfig.DRIVE_MODULE_D,
+      SwerveDriveConfig.DRIVE_MODULE_KS,
+      SwerveDriveConfig.DRIVE_MODULE_KV,
+      SwerveDriveConfig.DRIVE_MODULE_KA,
       RobotMap.FRONT_LEFT_PIVOT_ENCODER,
-      Constants.kFrontLeftPivotOffsetDegrees);
+      SwerveDriveConfig.kFrontLeftPivotOffsetDegrees);
   private final SwerveModule kFrontRight = new SwerveModule(
       "FR",
       RobotMap.FRONT_RIGHT_DRIVE,
       RobotMap.FRONT_RIGHT_PIVOT,
-      Constants.DRIVE_MODULE_PIVOT_P,
-      Constants.DRIVE_MODULE_PIVOT_I,
-      Constants.DRIVE_MODULE_PIVOT_D,
-      Constants.DRIVE_MODULE_P,
-      Constants.DRIVE_MODULE_I,
-      Constants.DRIVE_MODULE_D,
-      Constants.DRIVE_MODULE_KS,
-      Constants.DRIVE_MODULE_KV,
-      Constants.DRIVE_MODULE_KA,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_P,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_I,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_D,
+      SwerveDriveConfig.DRIVE_MODULE_P,
+      SwerveDriveConfig.DRIVE_MODULE_I,
+      SwerveDriveConfig.DRIVE_MODULE_D,
+      SwerveDriveConfig.DRIVE_MODULE_KS,
+      SwerveDriveConfig.DRIVE_MODULE_KV,
+      SwerveDriveConfig.DRIVE_MODULE_KA,
       RobotMap.FRONT_RIGHT_PIVOT_ENCODER,
-      Constants.kFrontRightPivotOffsetDegrees);
+      SwerveDriveConfig.kFrontRightPivotOffsetDegrees);
   private final SwerveModule kRearLeft = new SwerveModule(
       "RL",
       RobotMap.REAR_LEFT_DRIVE,
       RobotMap.REAR_LEFT_PIVOT,
-      Constants.DRIVE_MODULE_PIVOT_P,
-      Constants.DRIVE_MODULE_PIVOT_I,
-      Constants.DRIVE_MODULE_PIVOT_D,
-      Constants.DRIVE_MODULE_P,
-      Constants.DRIVE_MODULE_I,
-      Constants.DRIVE_MODULE_D,
-      Constants.DRIVE_MODULE_KS,
-      Constants.DRIVE_MODULE_KV,
-      Constants.DRIVE_MODULE_KA,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_P,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_I,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_D,
+      SwerveDriveConfig.DRIVE_MODULE_P,
+      SwerveDriveConfig.DRIVE_MODULE_I,
+      SwerveDriveConfig.DRIVE_MODULE_D,
+      SwerveDriveConfig.DRIVE_MODULE_KS,
+      SwerveDriveConfig.DRIVE_MODULE_KV,
+      SwerveDriveConfig.DRIVE_MODULE_KA,
       RobotMap.REAR_LEFT_PIVOT_ENCODER,
-      Constants.kRearLeftPivotOffsetDegrees);
+      SwerveDriveConfig.kRearLeftPivotOffsetDegrees);
   private final SwerveModule kRearRight = new SwerveModule(
       "RR",
       RobotMap.REAR_RIGHT_DRIVE,
       RobotMap.REAR_RIGHT_PIVOT,
-      Constants.DRIVE_MODULE_PIVOT_P,
-      Constants.DRIVE_MODULE_PIVOT_I,
-      Constants.DRIVE_MODULE_PIVOT_D,
-      Constants.DRIVE_MODULE_P,
-      Constants.DRIVE_MODULE_I,
-      Constants.DRIVE_MODULE_D,
-      Constants.DRIVE_MODULE_KS,
-      Constants.DRIVE_MODULE_KV,
-      Constants.DRIVE_MODULE_KA,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_P,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_I,
+      SwerveDriveConfig.DRIVE_MODULE_PIVOT_D,
+      SwerveDriveConfig.DRIVE_MODULE_P,
+      SwerveDriveConfig.DRIVE_MODULE_I,
+      SwerveDriveConfig.DRIVE_MODULE_D,
+      SwerveDriveConfig.DRIVE_MODULE_KS,
+      SwerveDriveConfig.DRIVE_MODULE_KV,
+      SwerveDriveConfig.DRIVE_MODULE_KA,
       RobotMap.REAR_RIGHT_PIVOT_ENCODER,
-      Constants.kRearRightPivotOffsetDegrees);
+      SwerveDriveConfig.kRearRightPivotOffsetDegrees);
 
   /**
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html
    */
-  private final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(Constants.kFrontLeftModuleOffset,
-      Constants.kFrontRightModuleOffset, Constants.kRearLeftModuleOffset, Constants.kRearRightModuleOffset);
+  private final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(
+      SwerveDriveConfig.kFrontLeftModuleOffset,
+      SwerveDriveConfig.kFrontRightModuleOffset, SwerveDriveConfig.kRearLeftModuleOffset,
+      SwerveDriveConfig.kRearRightModuleOffset);
 
   /**
    * Standard deviations of the pose estimate (x position in meters, y position in
@@ -138,7 +143,7 @@ public class SwerveDrive extends SubsystemBase {
    * <p>
    * Increase these numbers to trust the vision pose measurement less.
    */
-  private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Double.MAX_VALUE);
+  private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(1, 1, Double.MAX_VALUE);
 
   /**
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
@@ -147,18 +152,21 @@ public class SwerveDrive extends SubsystemBase {
       kSwerveKinematics,
       getAngleForOdometry(),
       getSwerveModulePositions(),
-      new Pose2d(8.5, 4.0, getAngleForOdometry()),
+      new Pose2d(),
       kDefaultStateStdDevs,
       kDefaultVisionMeasurementStdDevs);
 
-  private final PhotonCamera kPhotonCamera = new PhotonCamera(Constants.kPhotonCameraName);
+  private final PhotonCamera kPhotonCamera = new PhotonCamera(PhotonVisionConfig.kCameraName);
   private final PhotonPoseEstimator kPhotonPoseEstimator = new PhotonPoseEstimator(RobotContainer.kAprilTagFieldLayout,
-      PoseStrategy.CLOSEST_TO_REFERENCE_POSE, Constants.kRobotToPhotonCamera);
+      PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonVisionConfig.kRobotToCamera);
 
-  private final PIDController xPid = new PIDController(Constants.DRIVE_X_P, Constants.DRIVE_X_I, Constants.DRIVE_X_D);
-  private final PIDController yPid = new PIDController(Constants.DRIVE_Y_P, Constants.DRIVE_Y_I, Constants.DRIVE_Y_D);
-  private final PIDController thetaPid = new PIDController(Constants.DRIVE_ANGLE_P, Constants.DRIVE_ANGLE_I,
-      Constants.DRIVE_ANGLE_D);
+  private final PIDController xPid = new PIDController(SwerveDriveConfig.DRIVE_X_P, SwerveDriveConfig.DRIVE_X_I,
+      SwerveDriveConfig.DRIVE_X_D);
+  private final PIDController yPid = new PIDController(SwerveDriveConfig.DRIVE_Y_P, SwerveDriveConfig.DRIVE_Y_I,
+      SwerveDriveConfig.DRIVE_Y_D);
+  private final PIDController thetaPid = new PIDController(SwerveDriveConfig.DRIVE_ANGLE_P,
+      SwerveDriveConfig.DRIVE_ANGLE_I,
+      SwerveDriveConfig.DRIVE_ANGLE_D);
 
   /**
    * Constructs the Swerve Drive.
@@ -173,6 +181,9 @@ public class SwerveDrive extends SubsystemBase {
     thetaPid.setTolerance(1);
 
     this.configurePathPlannerAutoBuilder();
+
+    resetPose(new Pose2d(8.5, 4.0, getAngleForOdometry()));
+    kPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
   }
 
   /** {@inheritDoc} */
@@ -206,10 +217,12 @@ public class SwerveDrive extends SubsystemBase {
           // feedforwards
           new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
                                           // holonomic drive trains
-              new PIDConstants(Constants.DRIVE_PATHING_TRANSLATION_P, Constants.DRIVE_PATHING_TRANSLATION_I,
-                  Constants.DRIVE_PATHING_TRANSLATION_D), // Translation PID constants
-              new PIDConstants(Constants.DRIVE_PATHING_ROTATION_P, Constants.DRIVE_PATHING_ROTATION_I,
-                  Constants.DRIVE_PATHING_ROTATION_D) // Rotation PID constants
+              new PIDConstants(SwerveDriveConfig.DRIVE_PATHING_TRANSLATION_P,
+                  SwerveDriveConfig.DRIVE_PATHING_TRANSLATION_I,
+                  SwerveDriveConfig.DRIVE_PATHING_TRANSLATION_D), // Translation PID constants
+              new PIDConstants(SwerveDriveConfig.DRIVE_PATHING_ROTATION_P,
+                  SwerveDriveConfig.DRIVE_PATHING_ROTATION_I,
+                  SwerveDriveConfig.DRIVE_PATHING_ROTATION_D) // Rotation PID constants
           ),
           config, // The robot configuration
           () -> {
@@ -248,6 +261,8 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void resetPose(Pose2d pose) {
     kPoseEstimator.resetPosition(getAngleForOdometry(), getSwerveModulePositions(), pose);
+    kPhotonPoseEstimator.setReferencePose(getPose());
+    kPhotonPoseEstimator.setLastPose(getPose());
   }
 
   /**
@@ -430,6 +445,10 @@ public class SwerveDrive extends SubsystemBase {
 
   /**
    * Updates the field relative position of the robot.
+   * 
+   * <p>
+   * 
+   * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-pose-estimators.html
    */
   private void updateOdometry() {
     // always update using traction
@@ -440,8 +459,8 @@ public class SwerveDrive extends SubsystemBase {
       // TODO(work in progress): Vision adjustments using AprilTags
       // ...
       // updateOdometryUsingVision();
-      updateOdometryUsingLimelightMegatag1();
-      updateOdometryUsingLimelightMegatag2();
+      // updateOdometryUsingLimelightMegatag1();
+      // updateOdometryUsingLimelightMegatag2();
       updateOdometryUsingPhotonVision();
     }
   }
@@ -456,6 +475,11 @@ public class SwerveDrive extends SubsystemBase {
 
   /**
    * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization
+   * 
+   * <p>
+   * 
+   * TODO: Test and determine if this is even needed at all since we have
+   * Megatag2? Might be able to remove it entirely.
    */
   private void updateOdometryUsingLimelightMegatag1() {
     LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
@@ -475,6 +499,8 @@ public class SwerveDrive extends SubsystemBase {
     if (!doRejectUpdate) {
       // kPoseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds,
       // kDefaultVisionMeasurementStdDevs);
+
+      // for debugging/testing
       // RobotContainer.kField.getObject("LL-M1").setPose(mt1.pose);
     }
   }
@@ -482,8 +508,17 @@ public class SwerveDrive extends SubsystemBase {
   /**
    * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2
    * 
+   * <p>
+   * 
    * Worked very well in the lab.
    * Also worked very at very far distances!!
+   * Still have to work out some kinks/set some configurations on LL but overall
+   * not too bad.
+   * 
+   * <p>
+   * 
+   * TODO: Work to make accurate+reliable. May not be able to know for sure until
+   * we get the robot on the test field.
    */
   private void updateOdometryUsingLimelightMegatag2() {
     LimelightHelpers.SetRobotOrientation("limelight", getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
@@ -500,23 +535,38 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     if (!doRejectUpdate) {
-      // kPoseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds, kDefaultVisionMeasurementStdDevs);
+      // kPoseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds,
+      // kDefaultVisionMeasurementStdDevs);
+
+      // for debugging/testing
       // RobotContainer.kField.getObject("LL-M2").setPose(mt2.pose);
     }
   }
 
   /**
    * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#using-a-photonposeestimator
+   * 
+   * <p>
+   * 
+   * Got sort of working in the lab. Could be better but at least the robot is no
+   * longer diverging off the screen.
+   * 
+   * <p>
+   * 
+   * TODO: Work to make accurate+reliable. May not be able to know for sure until
+   * we get the robot on the test field.
    */
   private void updateOdometryUsingPhotonVision() {
     var unprocessedCameraResults = kPhotonCamera.getAllUnreadResults();
-    for (var cameraResultToProcess : unprocessedCameraResults) {
-      kPhotonPoseEstimator.setReferencePose(getPose());
-      var photonPoseUpdate = kPhotonPoseEstimator.update(cameraResultToProcess);
-      
+    for (var cameraResult : unprocessedCameraResults) {
+      var photonPoseUpdate = kPhotonPoseEstimator.update(cameraResult);
+
       if (photonPoseUpdate.isPresent()) {
-        // var photonPose = photonPoseUpdate.get();
-        // kPoseEstimator.addVisionMeasurement(photonPose.estimatedPose.toPose2d(), photonPose.timestampSeconds, kDefaultVisionMeasurementStdDevs);
+        var photonPose = photonPoseUpdate.get();
+        var stdDevs = getEstimationStdDevsForPhoton(cameraResult, photonPose.estimatedPose.toPose2d());
+        kPoseEstimator.addVisionMeasurement(photonPose.estimatedPose.toPose2d(), photonPose.timestampSeconds, stdDevs);
+
+        // for debugging/testing
         // RobotContainer.kField.getObject("Photon").setPose(photonPose.estimatedPose.toPose2d());
       }
     }
@@ -581,6 +631,57 @@ public class SwerveDrive extends SubsystemBase {
     xPid.reset();
     yPid.reset();
     thetaPid.reset();
+  }
+
+  /**
+   * The standard deviations of the estimated pose from
+   * {@link #getEstimatedGlobalPose()}, for use
+   * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
+   * SwerveDrivePoseEstimator}.
+   * This should only be used when there are targets visible.
+   * 
+   * <p>
+   * 
+   * https://github.com/KHS-Robotics/Demonator13/blob/main/src/main/java/frc/robot/subsystems/cameras/AprilTagCamera.java#L73
+   *
+   * @param result        the result from photon
+   * @param estimatedPose The estimated pose to guess standard deviations for.
+   */
+  private Matrix<N3, N1> getEstimationStdDevsForPhoton(PhotonPipelineResult result, Pose2d estimatedPose) {
+    try {
+      if (result == null) {
+        return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+      }
+      var estStdDevs = VecBuilder.fill(0.5, 0.5, 999999999);
+      var targets = result.getTargets();
+      int numTags = 0;
+      double avgDist = 0;
+      for (var tgt : targets) {
+        var tagPose = kPhotonPoseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+        if (tagPose.isEmpty())
+          continue;
+        numTags++;
+        avgDist += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+      }
+      if (numTags == 0)
+        return estStdDevs;
+      avgDist /= numTags;
+      // Decrease std devs if multiple targets are visible
+      if (numTags > 1 && avgDist < 3.5)
+        estStdDevs = VecBuilder.fill(0.2, 0.2, 999999999);
+
+      // Increase std devs based on (average) distance
+      if (numTags == 1 && avgDist > 3.5)
+        estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+      else
+        estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+
+      return estStdDevs;
+    } catch (Exception exception) {
+      exception.printStackTrace();
+      DriverStation.reportError("Failed to calculate stddev for Photon.", false);
+      return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+    }
   }
 
   /**

@@ -29,8 +29,10 @@ public class DriveSwerveWithXbox extends Command {
 
   /**
    * Control the swerve drive with an Xbox controller.
-   * @param fod field oriented drive
-   * @param joystickSensitivity Ranges from [0, 1] where 0 is full linear and 1 is full cubic.
+   * 
+   * @param fod                 field oriented drive
+   * @param joystickSensitivity Ranges from [0, 1] where 0 is full linear and 1 is
+   *                            full cubic.
    */
   public DriveSwerveWithXbox(BooleanSupplier fod, DoubleSupplier joystickSensitivity) {
     this.addRequirements(RobotContainer.kSwerveDrive);
@@ -40,8 +42,10 @@ public class DriveSwerveWithXbox extends Command {
 
   /**
    * Control the swerve drive with an Xbox controller.
-   * @param fod field oriented drive
-   * @param joystickSensitivity Ranges from [0, 1] where 0 is full linear and 1 is full cubic.
+   * 
+   * @param fod                 field oriented drive
+   * @param joystickSensitivity Ranges from [0, 1] where 0 is full linear and 1 is
+   *                            full cubic.
    */
   public DriveSwerveWithXbox(boolean fod, double joystickSensitivity) {
     this(() -> fod, () -> joystickSensitivity);
@@ -82,8 +86,9 @@ public class DriveSwerveWithXbox extends Command {
           * SwerveDrive.maxAngularSpeedRadiansPerSecond;
     }
 
-    var sign = fieldRelative.getAsBoolean() && !DriverStation.getAlliance().isEmpty() && DriverStation.getAlliance().get() == Alliance.Red ? -1 : 1;
-    RobotContainer.kSwerveDrive.drive(sign*xSpeed, sign*ySpeed, rot, fieldRelative.getAsBoolean());
+    var sign = fieldRelative.getAsBoolean() && DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red ? -1 : 1;
+    RobotContainer.kSwerveDrive.drive(sign * xSpeed, sign * ySpeed, rot, fieldRelative.getAsBoolean());
   }
 
   // Make this return true when this Command no longer needs to run execute()
