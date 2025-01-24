@@ -166,13 +166,18 @@ public class SwerveModule extends SubsystemBase {
    * @param useShortestPath whether or not to use the shortest path
    */
   public void setDesiredState(SwerveModuleState state, boolean useShortestPath) {
-    var targetAngle = useShortestPath ? calculateShortestPath(state.angle.getDegrees()) : state.angle.getDegrees();
-    pivotMotor.set(MathUtil.clamp(pivotPID.calculate(getAngle(), targetAngle), -1, 1));
+    // pivot
+    var currentPivotAngle = getAngle();
+    var targetPivotAngle = useShortestPath ? calculateShortestPath(state.angle.getDegrees()) : state.angle.getDegrees();
+    var pivotOutput = MathUtil.clamp(pivotPID.calculate(currentPivotAngle, targetPivotAngle), -1, 1);
+    pivotMotor.set(pivotOutput);
 
+    // drive
     var sign = isCurrentlyFlippedForShorterPath && useShortestPath ? -1 : 1;
-    drivePID.setReference(sign * state.speedMetersPerSecond,
-        SparkMax.ControlType.kVoltage, ClosedLoopSlot.kSlot0,
-        driveFeedForward.calculate(sign * state.speedMetersPerSecond));
+    var cosineComp = calculateCosineCompensation(currentPivotAngle, targetPivotAngle);
+    var driveOutput = sign * cosineComp * state.speedMetersPerSecond;
+    drivePID.setReference(driveOutput, SparkMax.ControlType.kVoltage, ClosedLoopSlot.kSlot0,
+        driveFeedForward.calculate(driveOutput));
   }
 
   /**
@@ -242,6 +247,10 @@ public class SwerveModule extends SubsystemBase {
    * Calculates the shortest path the pivot module should take, it
    * might be the given <code>targetAngle</code>. Flips the drive motor
    * if there is a shorter path.
+   * 
+   * <p>
+   * 
+   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#module-angle-optimization
    *
    * @param targetAngle the desired angle of the module
    * @return the shortest path to the target angle, flips the
@@ -262,5 +271,23 @@ public class SwerveModule extends SubsystemBase {
     }
 
     return targetAngle;
+  }
+
+  /**
+   * Control optimization technique to reduce the amount the module translates
+   * before reaching the target pivot angle.
+   * 
+   * <p>
+   * 
+   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#cosine-compensation
+   * 
+   * @param currentAngle the current angle of the module
+   * @param targetAngle  the target angle of the module
+   * @return the cosine of the angle between the given angles
+   */
+  private double calculateCosineCompensation(double currentAngle, double targetAngle) {
+    var angleError = Math.abs(currentAngle - targetAngle);
+    var angle = Rotation2d.fromDegrees(angleError);
+    return angle.getCos();
   }
 }
