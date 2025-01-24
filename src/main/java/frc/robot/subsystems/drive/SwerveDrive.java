@@ -157,7 +157,7 @@ public class SwerveDrive extends SubsystemBase {
       kDefaultVisionMeasurementStdDevs);
 
   private final PhotonCamera kPhotonCamera = new PhotonCamera(PhotonVisionConfig.kCameraName);
-  private final PhotonPoseEstimator kPhotonPoseEstimator = new PhotonPoseEstimator(RobotContainer.kAprilTagFieldLayout,
+  private final PhotonPoseEstimator kPhotonPoseEstimator = new PhotonPoseEstimator(PhotonVisionConfig.kTagLayout,
       PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, PhotonVisionConfig.kRobotToCamera);
 
   private final PIDController xPid = new PIDController(SwerveDriveConfig.DRIVE_X_P, SwerveDriveConfig.DRIVE_X_I,

@@ -9,8 +9,6 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -58,12 +56,6 @@ public class RobotContainer {
 
   // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html
   public static final Field2d kField = new Field2d();
-
-  /**
-   * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-an-apriltagfieldlayout
-   */
-  public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
-      .loadField(AprilTagFields.k2025Reefscape);
 
   // Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
