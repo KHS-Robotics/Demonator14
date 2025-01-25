@@ -9,8 +9,6 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,7 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.PhotonVisionConfig;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
+import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
 
 /**
@@ -36,6 +36,10 @@ import frc.robot.subsystems.drive.SwerveDrive;
  * <p>
  * 
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/index.html
+ * 
+ * <p>
+ * 
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html
  */
 public class RobotContainer {
   private SendableChooser<Command> autoChooser;
@@ -59,18 +63,13 @@ public class RobotContainer {
   // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html
   public static final Field2d kField = new Field2d();
 
-  /**
-   * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-an-apriltagfieldlayout
-   */
-  public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFieldLayout
-      .loadField(AprilTagFields.k2025Reefscape);
-
   // Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
   public static final CommandXboxController kDriverController = new CommandXboxController(RobotMap.XBOX_PORT);
 
   // Subsystems
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
+  public static final DemonPhotonCamera kFrontCamera = new DemonPhotonCamera(PhotonVisionConfig.kCameraName, PhotonVisionConfig.kRobotToCamera);
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
 
   /**
