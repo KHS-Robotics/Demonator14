@@ -17,20 +17,20 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.RobotMap;
+import frc.robot.Constants.ElevatorConfig;
 
 public class Elevator extends SubsystemBase {
   public enum ElevatorPosition {
-    kStow(1.2192),
+    kStow(48),
     kLevel1(0),
     kLevel2(0),
     kLevel3(0),
-    kLevel4(0),
+    kLevel4(72),
     kCoralStation(0);
 
-    /** 
-     * meters
+    /**
+     * inches
      */
     public final double height;
 
@@ -39,16 +39,18 @@ public class Elevator extends SubsystemBase {
     }
   }
 
+  private ElevatorPosition currentSetpoint = ElevatorPosition.kStow;
+
   private final SparkMax leader;
   private final RelativeEncoder elevatorEncoder;
   private final SparkClosedLoopController elevatorPID;
 
   public Elevator() {
     var elevatorEncoderConfig = new EncoderConfig()
-        .positionConversionFactor(Constants.kElevatorEncoderPositionConversionFactor)
-        .velocityConversionFactor(Constants.kElevatorEncoderVelocityConversionFactor);
+        .positionConversionFactor(ElevatorConfig.kElevatorEncoderPositionConversionFactor)
+        .velocityConversionFactor(ElevatorConfig.kElevatorEncoderVelocityConversionFactor);
     var elevatorClosedLoopConfig = new ClosedLoopConfig()
-        .pid(Constants.kElevatorP, Constants.kElevatorI, Constants.kElevatorD, ClosedLoopSlot.kSlot0);
+        .pid(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD, ClosedLoopSlot.kSlot0);
     var elevatorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(45)
@@ -67,12 +69,24 @@ public class Elevator extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public double getHeight() {
-    return elevatorEncoder.getPosition() + Constants.kRobotElevatorStowHeight;
+  
+  public double getHeightFromGround() {
+    return elevatorEncoder.getPosition() + ElevatorConfig.kRobotElevatorStowHeightInches;
   }
 
+  // sets height relative to the robot
   public void setHeight(ElevatorPosition position) {
-    double setpoint = position.height - Constants.kRobotElevatorStowHeight;
+    currentSetpoint = position;
+    double setpoint = position.height - ElevatorConfig.kRobotElevatorStowHeightInches;
     elevatorPID.setReference(setpoint, ControlType.kPosition);
   }
+
+  // TODO() add once we know what sensor we are using
+  public boolean isElevatorAtBottom() {
+    return true;
+  }
+  public ElevatorPosition getSetpoint(){
+    return currentSetpoint;
+  }
+
 }
