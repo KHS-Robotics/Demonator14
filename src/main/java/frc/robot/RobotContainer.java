@@ -36,6 +36,10 @@ import frc.robot.subsystems.drive.SwerveDrive;
  * <p>
  * 
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/index.html
+ * 
+ * <p>
+ * 
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html
  */
 public class RobotContainer {
   private SendableChooser<Command> autoChooser;
