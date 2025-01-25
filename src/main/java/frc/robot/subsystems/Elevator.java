@@ -69,7 +69,6 @@ public class Elevator extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  
   public double getHeightFromGround() {
     return elevatorEncoder.getPosition() + ElevatorConfig.kRobotElevatorStowHeightInches;
   }
@@ -85,8 +84,14 @@ public class Elevator extends SubsystemBase {
   public boolean isElevatorAtBottom() {
     return true;
   }
-  public ElevatorPosition getSetpoint(){
+
+  public ElevatorPosition getSetpoint() {
     return currentSetpoint;
+  }
+
+  public boolean isAtSetpoint() {
+    var error = Math.abs(currentSetpoint.height - getHeightFromGround());
+    return (error < 1);
   }
 
 }

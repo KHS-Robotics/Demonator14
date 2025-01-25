@@ -20,65 +20,77 @@ import frc.robot.Constants.CorallerConfig;
 import frc.robot.RobotMap;
 
 public class Coraller extends SubsystemBase {
-    public enum CorallerPosition {
-        kStow(0),
-        kLevel1(0),
-        kLevel2(0),
-        kLevel3(0),
-        kLevel4(0),
-        kCoralStation(0);
+  public enum CorallerPosition {
+    kStow(0),
+    kLevel1(0),
+    kLevel2(0),
+    kLevel3(0),
+    kLevel4(0),
+    kCoralStation(0);
 
-        /**
-         * degrees
-         */
-        public final double degrees;
-
-        CorallerPosition(double degrees) {
-            this.degrees = degrees;
-        }
-    }
-    private CorallerPosition currentSetpoint = CorallerPosition.kStow;
-    private final SparkMax angler;
-    private final AbsoluteEncoder angleEncoder;
-    private final SparkClosedLoopController corallerPID;
     /**
-     * intake/outtake
+     * degrees
      */
-    private final SparkMax spitter;
+    public final double degrees;
 
-    public Coraller() {
-        var corallerClosedLoopConfig = new ClosedLoopConfig()
-                .pid(CorallerConfig.kCorallerP, CorallerConfig.kCorallerI, CorallerConfig.kCorallerD,
-                        ClosedLoopSlot.kSlot0);
-        var corallerConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(40)
-                .inverted(false)
-                .apply(corallerClosedLoopConfig);
-        angler = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
-        angler.configure(corallerConfig, SparkBase.ResetMode.kResetSafeParameters,
-                SparkBase.PersistMode.kPersistParameters);
-        angleEncoder = angler.getAbsoluteEncoder();
-        corallerPID = angler.getClosedLoopController();
+    CorallerPosition(double degrees) {
+      this.degrees = degrees;
+    }
+  }
 
-        var spitterConfig = new SparkMaxConfig()
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(30)
-                .inverted(false);
-        spitter = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
-        spitter.configure(spitterConfig, SparkBase.ResetMode.kResetSafeParameters,
-                SparkBase.PersistMode.kPersistParameters);
-    }
+  private CorallerPosition currentSetpoint = CorallerPosition.kStow;
+  private final SparkMax angler;
+  private final AbsoluteEncoder angleEncoder;
+  private final SparkClosedLoopController corallerPID;
+  /**
+   * intake/outtake
+   */
+  private final SparkMax spitter;
 
-    @Override
-    public void periodic() {
-        // This method will be called once per scheduler run
-    }
-    public void setAngle(CorallerPosition pos){
-        currentSetpoint = pos;
-        corallerPID.setReference(pos.degrees, ControlType.kPosition);
-    }
-    public CorallerPosition getSetpoint(){
+  public Coraller() {
+    var corallerClosedLoopConfig = new ClosedLoopConfig()
+        .pid(CorallerConfig.kCorallerP, CorallerConfig.kCorallerI, CorallerConfig.kCorallerD,
+            ClosedLoopSlot.kSlot0);
+    var corallerConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(40)
+        .inverted(false)
+        .apply(corallerClosedLoopConfig);
+    angler = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
+    angler.configure(corallerConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
+    angleEncoder = angler.getAbsoluteEncoder();
+    corallerPID = angler.getClosedLoopController();
+
+    var spitterConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .inverted(false);
+    spitter = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
+    spitter.configure(spitterConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
+
+  public double getAngle() {
+    return angleEncoder.getPosition();
+  }
+
+  public void setAngle(CorallerPosition pos) {
+    currentSetpoint = pos;
+    corallerPID.setReference(pos.degrees, ControlType.kPosition);
+  }
+
+  public CorallerPosition getSetpoint() {
     return currentSetpoint;
+  }
+
+  public boolean isAtSetpoint() {
+    var error = Math.abs(currentSetpoint.degrees - getAngle());
+    return (error < 1);
   }
 }

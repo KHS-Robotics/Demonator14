@@ -20,7 +20,6 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
   /**
    * Configurations for PhotonVision.
    */
