@@ -26,6 +26,7 @@ public class Climber extends SubsystemBase {
     reel.configure(reelConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
     anchor = new Servo(RobotMap.CLIMBER_ANCHOR_ID);
+    //does the servo need a config?
     
   }
 
@@ -33,5 +34,6 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
-  
+
+
 }
