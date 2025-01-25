@@ -464,12 +464,10 @@ public class SwerveDrive extends SubsystemBase {
    * Updates the odometry using the front Photon Vision April Tag camera.
    */
   private void updateOdometryUsingFrontCamera() {
-    var photonUpdate = RobotContainer.kFrontCamera.getAprilTagResults();
-    if (photonUpdate.isPresent()) {
-      var visionUpdate = photonUpdate.get();
-      kPoseEstimator.addVisionMeasurement(visionUpdate.estimatedRobotPose.estimatedPose.toPose2d(),
-          visionUpdate.estimatedRobotPose.timestampSeconds, visionUpdate.stdDevs);
-    }
+    RobotContainer.kFrontCamera.getAprilTagResults().ifPresent((result) -> {
+      kPoseEstimator.addVisionMeasurement(result.estimatedRobotPose.estimatedPose.toPose2d(),
+          result.estimatedRobotPose.timestampSeconds, result.stdDevs);
+    });
   }
 
   /**
