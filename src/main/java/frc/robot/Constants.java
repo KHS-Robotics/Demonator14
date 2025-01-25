@@ -22,7 +22,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */
   public static final double kJoystickSensitivity = 0.5;
-
+  
   /**
    * Configurations for PhotonVision.
    */
@@ -106,5 +106,24 @@ public final class Constants {
     public static final double DRIVE_PATHING_ROTATION_P = 1.5;
     public static final double DRIVE_PATHING_ROTATION_I = 0.0;
     public static final double DRIVE_PATHING_ROTATION_D = 0.8;
+  }
+
+  public static final class ElevatorConfig {
+    public static final double kElevatorP = 0.0;
+    public static final double kElevatorI = 0.0;
+    public static final double kElevatorD = 0.0;
+    public static final double kElevatorEncoderPositionConversionFactor = 1;
+    public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
+        / 60.0;
+    public static final double kRobotElevatorStowHeightInches = 48;
+  }
+
+  public static final class CorallerConfig {
+    public static final double kCorallerP = 0.0;
+    public static final double kCorallerI = 0.0;
+    public static final double kCorallerD = 0.0;
+    public static final double kCorallerEncoderPositionConversionFactor = 1;
+    public static final double kCorallerEncoderVelocityConversionFactor = kCorallerEncoderPositionConversionFactor
+        / 60.0;
   }
 }
