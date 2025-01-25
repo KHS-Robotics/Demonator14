@@ -35,7 +35,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
 import frc.robot.Constants.SwerveDriveConfig;
-import frc.robot.vision.LimelightHelpers;
+import frc.robot.subsystems.vision.Limelight;
 import frc.robot.RobotContainer;
 
 /**
@@ -477,7 +477,7 @@ public class SwerveDrive extends SubsystemBase {
    * Megatag2? Might be able to remove it entirely.
    */
   private void updateOdometryUsingLimelightMegatag1() {
-    LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    Limelight.PoseEstimate mt1 = Limelight.getBotPoseEstimate_wpiBlue("limelight");
     boolean doRejectUpdate = false;
     if (mt1 != null && mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
       if (mt1.rawFiducials[0].ambiguity > .7) {
@@ -516,8 +516,8 @@ public class SwerveDrive extends SubsystemBase {
    * we get the robot on the test field.
    */
   private void updateOdometryUsingLimelightMegatag2() {
-    LimelightHelpers.SetRobotOrientation("limelight", getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    Limelight.SetRobotOrientation("limelight", getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    Limelight.PoseEstimate mt2 = Limelight.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
 
     boolean doRejectUpdate = false;
     // if our angular velocity is greater than 720 degrees per second, ignore vision

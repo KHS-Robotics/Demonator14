@@ -3,6 +3,8 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.PhotonVisionConfig.kRobotToCam;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -65,7 +67,7 @@ public class RobotContainer {
 
   // Subsystems
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
-  public static final PhotonAprilTagCamera kFrontCamera = new PhotonAprilTagCamera(PhotonVisionConfig.kCameraName, PhotonVisionConfig.kRobotToCamera);
+  public static final PhotonAprilTagCamera kFrontCamera = new PhotonAprilTagCamera(PhotonVisionConfig.kCameraName, kRobotToCam);
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
 
   /**
