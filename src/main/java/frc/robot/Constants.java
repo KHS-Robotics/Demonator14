@@ -20,6 +20,9 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */
+  public static final double kJoystickSensitivity = 0.5;
+  
   /**
    * Configurations for PhotonVision.
    */
