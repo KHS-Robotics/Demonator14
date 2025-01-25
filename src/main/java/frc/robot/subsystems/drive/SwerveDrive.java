@@ -173,14 +173,6 @@ public class SwerveDrive extends SubsystemBase {
     this.configurePathPlannerAutoBuilder();
 
     resetPose(new Pose2d(8.5, 4.0, getAngleForOdometry()));
-    RobotContainer.kFrontCamera.addProcessResultsConsumer("FrontPhotonPoseUpdater",
-        (result) -> {
-          // just disabled and teleop for now
-          if (RobotState.isDisabled() || RobotState.isTeleop()) {
-            kPoseEstimator.addVisionMeasurement(result.estimatedRobotPose.estimatedPose.toPose2d(),
-                result.estimatedRobotPose.timestampSeconds, result.stdDevs);
-          }
-        });
   }
 
   /** {@inheritDoc} */
@@ -454,9 +446,9 @@ public class SwerveDrive extends SubsystemBase {
     if (RobotState.isDisabled() || RobotState.isTeleop()) {
       // TODO(work in progress): Vision adjustments using AprilTags
       // ...
-      // updateOdometryUsingVision();
       // updateOdometryUsingLimelightMegatag1();
       // updateOdometryUsingLimelightMegatag2();
+      updateOdometryUsingFrontCamera();
     }
   }
 
@@ -466,6 +458,18 @@ public class SwerveDrive extends SubsystemBase {
   private void updateOdometryUsingTraction() {
     var modulePositions = getSwerveModulePositions();
     kPoseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngleForOdometry(), modulePositions);
+  }
+
+  /**
+   * Updates the odometry using the front Photon Vision April Tag camera.
+   */
+  private void updateOdometryUsingFrontCamera() {
+    var photonUpdate = RobotContainer.kFrontCamera.getAprilTagResults();
+    if (photonUpdate.isPresent()) {
+      var visionUpdate = photonUpdate.get();
+      kPoseEstimator.addVisionMeasurement(visionUpdate.estimatedRobotPose.estimatedPose.toPose2d(),
+          visionUpdate.estimatedRobotPose.timestampSeconds, visionUpdate.stdDevs);
+    }
   }
 
   /**
