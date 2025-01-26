@@ -3,11 +3,12 @@
 
 package frc.robot;
 
-// import com.pathplanner.lib.auto.AutoBuilder;
-// import com.pathplanner.lib.auto.NamedCommands;
-// import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -144,40 +145,40 @@ public class RobotContainer {
   // private void configureAutonomous() {
   //   configureNamedCommandsForAuto();
 
-  //   // Build an auto chooser. This will use Commands.none() as the default option.
-  //   // https://pathplanner.dev/pplib-build-an-auto.html#create-a-sendablechooser-with-all-autos-in-project
-  //   m_autoChooser = AutoBuilder.buildAutoChooser();
+   //Build an auto chooser. This will use Commands.none() as the default option.
+  //https://pathplanner.dev/pplib-build-an-auto.html#create-a-sendablechooser-with-all-autos-in-project
+    m_autoChooser = AutoBuilder.buildAutoChooser();
 
-  //   // Another option that allows you to specify the default auto by its name
-  //   // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+    // Another option that allows you to specify the default auto by its name
+    // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
-  //   SmartDashboard.putData("Auto Chooser", m_autoChooser);
-  //   this.configurePathPlannerLogging();
-  // }
-
-  // /** https://pathplanner.dev/pplib-named-commands.html */
-  // private void configureNamedCommandsForAuto() {
-  //   NamedCommands.registerCommand("StopSwerve", new InstantCommand(() -> kSwerveDrive.stop(), kSwerveDrive));
-  // }
-
-  // /** https://pathplanner.dev/pplib-custom-logging.html */
-  // private void configurePathPlannerLogging() {
-  //   // Logging callback for current robot pose
-  //   PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-  //     // Do whatever you want with the pose here
-  //     kField.setRobotPose(pose);
-  //   });
-
-  //   // Logging callback for target robot pose
-  //   PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-  //     // Do whatever you want with the pose here
-  //     kField.getObject("target pose").setPose(pose);
-  //   });
-
-  //   // Logging callback for the active path, this is sent as a list of poses
-  //   PathPlannerLogging.setLogActivePathCallback((poses) -> {
-  //     // Do whatever you want with the poses here
-  //     kField.getObject("path").setPoses(poses);
-  //   });
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
+    this.configurePathPlannerLogging();
   }
-//}
+
+  /** https://pathplanner.dev/pplib-named-commands.html */
+  private void configureNamedCommandsForAuto() {
+    NamedCommands.registerCommand("StopSwerve", new InstantCommand(() -> kSwerveDrive.stop(), kSwerveDrive));
+  }
+
+  /** https://pathplanner.dev/pplib-custom-logging.html */
+  private void configurePathPlannerLogging() {
+    // Logging callback for current robot pose
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+      // Do whatever you want with the pose here
+      kField.setRobotPose(pose);
+    });
+
+    // Logging callback for target robot pose
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+      // Do whatever you want with the pose here
+      kField.getObject("target pose").setPose(pose);
+    });
+
+    // Logging callback for the active path, this is sent as a list of poses
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
+      // Do whatever you want with the poses here
+      kField.getObject("path").setPoses(poses);
+    });
+  }
+}
