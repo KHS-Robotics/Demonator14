@@ -36,7 +36,7 @@ public class DemonLimelightCamera extends SubsystemBase {
 
   private Optional<PoseEstimate> latestPoseEstimate = Optional.empty();
   private LimelightPoseEstimateAlgorithm currentPEAlgorithm = LimelightPoseEstimateAlgorithm.kMegatag2;
-  private boolean enableUpdates = true;
+  private boolean enableAprilTagUpdates = true;
 
   private final String limelightName;
   private final Supplier<Pose2d> currentPose;
@@ -98,10 +98,10 @@ public class DemonLimelightCamera extends SubsystemBase {
   /**
    * Sets the camera to receive AprilTag updates or not for the odometry.
    * 
-   * @param enableUpdates true to enable AprilTag updates, false to disable AprilTag updates
+   * @param enableAprilTagUpdates true to enable AprilTag updates, false to disable AprilTag updates
    */
-  public void setEnableAprilTagUpdates(boolean enableUpdates) {
-    this.enableUpdates = enableUpdates;
+  public void setEnableAprilTagUpdates(boolean enableAprilTagUpdates) {
+    this.enableAprilTagUpdates = enableAprilTagUpdates;
   }
 
   /**
@@ -109,7 +109,7 @@ public class DemonLimelightCamera extends SubsystemBase {
    */
   private void updateLatestPoseEstimate() {
     // check if updates are enabled
-    if (!enableUpdates) {
+    if (!enableAprilTagUpdates) {
       latestPoseEstimate = Optional.empty();
       return;
     }
@@ -184,7 +184,7 @@ public class DemonLimelightCamera extends SubsystemBase {
   private void putLatestTelemetryToSmartDashboard() {
     SmartDashboard.putBoolean(getName() + "-HasPoseEstimate", latestPoseEstimate.isPresent());
     SmartDashboard.putString(getName() + "-Algorithm", currentPEAlgorithm.toString());
-    SmartDashboard.putBoolean(getName() + "-Enabled", enableUpdates);
+    SmartDashboard.putBoolean(getName() + "-Enabled", enableAprilTagUpdates);
 
     if (latestPoseEstimate.isPresent()) {
       SmartDashboard.putNumber(getName() + "NumAprilTags", latestPoseEstimate.get().tagCount);
