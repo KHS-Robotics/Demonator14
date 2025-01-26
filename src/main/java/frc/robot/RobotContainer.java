@@ -23,8 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
-import frc.robot.subsystems.Coraller;
-import frc.robot.subsystems.Elevator;
+import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
@@ -75,6 +74,7 @@ public class RobotContainer {
   // Operator / Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
   public static final CommandXboxController kDriverController = new CommandXboxController(RobotMap.XBOX_PORT);
+  public static final OperatorStick kOperatorStick = new OperatorStick(RobotMap.JOYSTICK_PORT);
 
   // Subsystems
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
@@ -116,6 +116,7 @@ public class RobotContainer {
   private void configureBindings() {
     this.configureAutomatedBindings();
     this.configureXboxControllerBindings();
+    this.configureOpertatorStickBindings();
   }
 
   /** Automated bindings that happen without pressing any buttons. */
@@ -133,6 +134,11 @@ public class RobotContainer {
           : 0;
       kSwerveDrive.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
     }, kSwerveDrive));
+
+  }
+
+  /** Binds commands to operator stick buttons. */
+  private void configureOpertatorStickBindings() {
   }
 
   /** https://pathplanner.dev/home.html */
@@ -150,12 +156,12 @@ public class RobotContainer {
     this.configurePathPlannerLogging();
   }
 
-  /** https://pathplanner.dev/pplib-named-commands.html */
+  // /** https://pathplanner.dev/pplib-named-commands.html */
   private void configureNamedCommandsForAuto() {
     NamedCommands.registerCommand("StopSwerve", new InstantCommand(() -> kSwerveDrive.stop(), kSwerveDrive));
   }
 
-  /** https://pathplanner.dev/pplib-custom-logging.html */
+  // /** https://pathplanner.dev/pplib-custom-logging.html */
   private void configurePathPlannerLogging() {
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
