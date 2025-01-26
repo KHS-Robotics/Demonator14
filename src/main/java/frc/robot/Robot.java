@@ -86,6 +86,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    // disable AprilTag updates: potentially temporary and may remove this later
+    RobotContainer.kLowerFrontPhotonCamera.setEnableAprilTagUpdates(false);
+    RobotContainer.kRearLimelightCamera.setEnableAprilTagUpdates(false);
   }
 
   /** This method is called periodically during autonomous mode. */
@@ -96,6 +100,8 @@ public class Robot extends TimedRobot {
   /** This method is called once each time the robot exits autonomous mode. */
   @Override
   public void autonomousExit() {
+    RobotContainer.kLowerFrontPhotonCamera.setEnableAprilTagUpdates(true);
+    RobotContainer.kRearLimelightCamera.setEnableAprilTagUpdates(true);
   }
 
   /**

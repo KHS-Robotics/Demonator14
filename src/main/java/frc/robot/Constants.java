@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
+import frc.robot.subsystems.cameras.DemonLimelightCamera.LimelightPoseEstimateAlgorithm;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -38,7 +40,7 @@ public final class Constants {
      * <p>
      * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-a-photonposeestimator
      */
-    public static final Transform3d kLowerFrontRobotToCamera = new Transform3d(Units.inchesToMeters(7.6882),
+    public static final Transform3d kRobotToLowerFrontCamera = new Transform3d(Units.inchesToMeters(7.6882),
         Units.inchesToMeters(13.0), Units.inchesToMeters(12.1545), new Rotation3d(0, Math.toRadians(-60), 0));
 
     /**
@@ -49,6 +51,26 @@ public final class Constants {
      * https://docs.wpilib.org/en/stable/docs/software/vision-processing/apriltag/apriltag-intro.html
      */
     public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+  }
+
+  /**
+   * Configurations for Limelight.
+   */
+  public static final class LimelightConfig {
+    /** The name of the camera from the UI. */
+    public static final String kRearCameraName = "limelight";
+
+    /** The pose estimation algorithm to use, */
+    public static final LimelightPoseEstimateAlgorithm kPoseAlgorithm = LimelightPoseEstimateAlgorithm.kMegatag2;
+
+    /**
+     * Transform3d from the center of the robot to the camera mount position (ie,
+     * robot ➔ camera) in the <a href=
+     * "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/geometry/coordinate-systems.html#robot-coordinate-system">Robot
+     * Coordinate System</a>.
+     */
+    public static final Transform3d kRobotToRearCamera = new Transform3d(Units.inchesToMeters(0),
+        Units.inchesToMeters(0), Units.inchesToMeters(0), new Rotation3d(0, 0, 0));
   }
 
   /**
@@ -108,6 +130,9 @@ public final class Constants {
     public static final double DRIVE_PATHING_ROTATION_D = 0.8;
   }
 
+  /**
+   * Configurations for the elevator.
+   */
   public static final class ElevatorConfig {
     public static final double kElevatorP = 0.0;
     public static final double kElevatorI = 0.0;
@@ -118,6 +143,9 @@ public final class Constants {
     public static final double kRobotElevatorStowHeightInches = 48;
   }
 
+  /**
+   * Configurations for the coraller.
+   */
   public static final class CorallerConfig {
     public static final double kCorallerP = 0.0;
     public static final double kCorallerI = 0.0;

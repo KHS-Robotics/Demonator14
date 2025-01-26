@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.PhotonVisionConfig;
@@ -47,6 +48,7 @@ public class DemonPhotonCamera extends SubsystemBase {
   private Optional<PhotonPoseUpdate> aprilTagUpdate = Optional.empty();
   private Optional<List<PhotonTrackedTarget>> algaeTargets = Optional.empty();
   private Optional<PhotonTrackedTarget> bestAlgaeTarget = Optional.empty();
+  private boolean enableAprilTagUpdates = true;
 
   private final PhotonCamera camera;
   private final PhotonPoseEstimator poseEstimator;
@@ -78,7 +80,8 @@ public class DemonPhotonCamera extends SubsystemBase {
   @Override
   public void periodic() {
     // make sure to call once per loop to get consistent results
-    processVisionResults();
+    updateLatestVisionResults();
+    putLatestTelemetryToSmartDashboard();
   }
 
   /**
@@ -123,7 +126,7 @@ public class DemonPhotonCamera extends SubsystemBase {
    * 
    * @return the latest processed update from photon vision for AprilTags
    */
-  public Optional<PhotonPoseUpdate> getAprilTagResults() {
+  public Optional<PhotonPoseUpdate> getLatestAprilTagResults() {
     if (currentPipelineMode != PhotonPipelineMode.kAprilTags) {
       DriverStation.reportWarning("Attempting to get AprilTags results in Algae mode!", false);
     }
@@ -137,7 +140,7 @@ public class DemonPhotonCamera extends SubsystemBase {
    * 
    * @return all targets from the latest pipeline result
    */
-  public Optional<List<PhotonTrackedTarget>> getAlgaeTargets() {
+  public Optional<List<PhotonTrackedTarget>> getLatestAlgaeTargets() {
     if (currentPipelineMode != PhotonPipelineMode.kAlgae) {
       DriverStation.reportWarning("Attempting to get Algae results in AprilTag mode!", false);
     }
@@ -151,7 +154,7 @@ public class DemonPhotonCamera extends SubsystemBase {
    * 
    * @return the best target from the latest pipeline result
    */
-  public Optional<PhotonTrackedTarget> getBestAlgaeTarget() {
+  public Optional<PhotonTrackedTarget> getLatestBestAlgaeTarget() {
     if (currentPipelineMode != PhotonPipelineMode.kAlgae) {
       DriverStation.reportWarning("Attempting to get Algae results in AprilTag mode!", false);
     }
@@ -160,11 +163,21 @@ public class DemonPhotonCamera extends SubsystemBase {
   }
 
   /**
+   * Sets the camera to receive AprilTag updates or not for the odometry.
+   * 
+   * @param enableAprilTagUpdates true to enable AprilTag updates, false to disable AprilTag updates
+   */
+  public void setEnableAprilTagUpdates(boolean enableAprilTagUpdates) {
+    this.enableAprilTagUpdates = enableAprilTagUpdates;
+  }
+
+  /**
    * Processes all current unread results.
    */
-  private void processVisionResults() {
+  private void updateLatestVisionResults() {
     // get unprocessed results from photon
     var unprocessedCameraResults = camera.getAllUnreadResults();
+
     for (var cameraResult : unprocessedCameraResults) {
       // process based on selected pipeline mode
       switch (currentPipelineMode) {
@@ -186,6 +199,12 @@ public class DemonPhotonCamera extends SubsystemBase {
    * @param cameraResult the camera result from Photon
    */
   private void processAprilTagResult(PhotonPipelineResult cameraResult) {
+    // check if AprilTag updates are enabled
+    if (!enableAprilTagUpdates) {
+      aprilTagUpdate = Optional.empty();
+      return;
+    }
+
     // process results from photon
     var photonPoseUpdate = poseEstimator.update(cameraResult);
 
@@ -264,6 +283,23 @@ public class DemonPhotonCamera extends SubsystemBase {
       exception.printStackTrace();
       DriverStation.reportError("Failed to calculate stddev for Photon.", false);
       return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+    }
+  }
+
+  /**
+   * Updates the telemetry from the camera on SmartDashboard.
+   */
+  private void putLatestTelemetryToSmartDashboard() {
+    SmartDashboard.putBoolean(getName() + "-Enabled", enableAprilTagUpdates);
+    SmartDashboard.putBoolean(getName() + "-HasAprilTagUpdate", aprilTagUpdate.isPresent());
+    SmartDashboard.putBoolean(getName() + "-HasAlgaeTargets", algaeTargets.isPresent());
+    SmartDashboard.putBoolean(getName() + "-HasBestAlgaeTarget", bestAlgaeTarget.isPresent());
+
+    if (aprilTagUpdate.isPresent()) {
+      SmartDashboard.putNumber(getName() + "NumAprilTags", aprilTagUpdate.get().cameraResult.getTargets().size());
+    }
+    if (algaeTargets.isPresent()) {
+      SmartDashboard.putNumber(getName() + "NumAlgae", algaeTargets.get().size());
     }
   }
 

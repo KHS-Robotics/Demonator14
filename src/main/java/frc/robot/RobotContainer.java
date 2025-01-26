@@ -19,8 +19,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
+import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
 
@@ -73,9 +76,15 @@ public class RobotContainer {
 
   // Subsystems
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
-  public static final DemonPhotonCamera kLowerFrontCamera = new DemonPhotonCamera(
-      PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kLowerFrontRobotToCamera);
+
+  // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
+
+  // Subsystems - Cameras
+  public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
+      PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
+  public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
+      LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,
@@ -86,6 +95,7 @@ public class RobotContainer {
     this.configureBindings();
     this.configureAutonomous();
 
+    kSwerveDrive.resetPose(new Pose2d(8.5, 4.0, Rotation2d.fromDegrees(0)));
     SmartDashboard.putData(kField);
   }
 
