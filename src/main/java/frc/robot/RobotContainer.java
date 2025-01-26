@@ -81,6 +81,9 @@ public class RobotContainer {
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
 
+  // temporary
+  public static final TwistServo kCageTwist = new TwistServo();
+
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
       PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
@@ -130,8 +133,10 @@ public class RobotContainer {
           : 0;
       kSwerveDrive.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
     }, kSwerveDrive));
-    //kDriverController.a().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
-    //kDriverController.b().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
+
+    // servo testing
+    kDriverController.a().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
+    kDriverController.b().onTrue(new InstantCommand(() -> kCageTwist.unlatch(), kCageTwist));
 
   }
 
