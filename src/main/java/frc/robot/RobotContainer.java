@@ -19,8 +19,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
+import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
 
@@ -42,43 +45,58 @@ import frc.robot.subsystems.drive.SwerveDrive;
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html
  */
 public class RobotContainer {
-  private SendableChooser<Command> autoChooser;
+  private SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
   /**
-   * Gets the selected autonomous routine from SmartDashboard.
+   * Gets the selected autonomous routine from the Dashboard GUI.
    * <p>
    * https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html
    * 
-   * @return the selected autonomous routine from the dropdown in SmartDashboard
+   * @return the selected autonomous routine from the dropdown in the Dashboard
+   *         GUI
    */
   public Command getAutonomousCommand() {
-    var selected = autoChooser.getSelected();
-    return selected != null ? selected
-        : new InstantCommand(() -> DriverStation.reportWarning("Null autonomous was selected.", false));
+    return m_autoChooser.getSelected();
   }
 
-  // https://www.kauailabs.com/public_files/navx-mxp/apidocs/java/com/kauailabs/navx/frc/AHRS.html
-  public static final AHRS kNavx = new AHRS(NavXComType.kUSB1);
-
+  // Widget for the Dashboard GUI to view the robot's position and heading on the
+  // field.
   // https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/field2d-widget.html
   public static final Field2d kField = new Field2d();
 
-  // Human Interface Devices (HIDs)
+  // Gyro / IMU (Inertial Measurement Unit) for Robot Orientation in 3-D space
+  // https://docs.wpilib.org/en/stable/docs/hardware/sensors/gyros-hardware.html
+  // https://pdocs.kauailabs.com/navx-mxp/
+  // https://www.kauailabs.com/public_files/navx-mxp/apidocs/java/com/kauailabs/navx/frc/AHRS.html
+  public static final AHRS kNavx = new AHRS(NavXComType.kUSB1);
+
+  // Operator / Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
   public static final CommandXboxController kDriverController = new CommandXboxController(RobotMap.XBOX_PORT);
 
   // Subsystems
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
-  public static final DemonPhotonCamera kFrontCamera = new DemonPhotonCamera(PhotonVisionConfig.kCameraName, PhotonVisionConfig.kRobotToCamera);
+
+  // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
 
+  // Subsystems - Cameras
+  public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
+      PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
+  public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
+      LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, operator interface devices,
+   * and commands.
    */
   public RobotContainer() {
     this.configureSubsystemDefaultCommands();
     this.configureBindings();
     this.configureAutonomous();
+
+    kSwerveDrive.resetPose(new Pose2d(8.5, 4.0, Rotation2d.fromDegrees(0)));
+    SmartDashboard.putData(kField);
   }
 
   /**
@@ -115,18 +133,16 @@ public class RobotContainer {
 
   /** https://pathplanner.dev/home.html */
   private void configureAutonomous() {
-    SmartDashboard.putData(kField);
-
     configureNamedCommandsForAuto();
 
     // Build an auto chooser. This will use Commands.none() as the default option.
     // https://pathplanner.dev/pplib-build-an-auto.html#create-a-sendablechooser-with-all-autos-in-project
-    autoChooser = AutoBuilder.buildAutoChooser();
+    m_autoChooser = AutoBuilder.buildAutoChooser();
 
     // Another option that allows you to specify the default auto by its name
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
     this.configurePathPlannerLogging();
   }
 

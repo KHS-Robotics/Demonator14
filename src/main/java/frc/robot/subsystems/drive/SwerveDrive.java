@@ -28,14 +28,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
 import frc.robot.Constants.SwerveDriveConfig;
-import frc.robot.vision.LimelightHelpers;
 import frc.robot.RobotContainer;
 
 /**
@@ -51,7 +49,9 @@ public class SwerveDrive extends SubsystemBase {
   /** Deadband for rotational input speed for joystick driving. */
   private static final double kDriveOmegaDeadband = 0.005;
 
+  /** Max translational speed of the robot in meters per second. */
   public static double maxSpeedMetersPerSecond = 4.6;
+  /** Max angular speed of the robot in radians per second. */
   public static double maxAngularSpeedRadiansPerSecond = 3 * Math.PI;
 
   private final SwerveModule kFrontLeft = new SwerveModule(
@@ -137,7 +137,7 @@ public class SwerveDrive extends SubsystemBase {
    * <p>
    * Increase these numbers to trust the vision pose measurement less.
    */
-  private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(1, 1, Double.MAX_VALUE);
+  private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(0.7, 0.7, Double.MAX_VALUE);
 
   /**
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
@@ -171,8 +171,6 @@ public class SwerveDrive extends SubsystemBase {
     thetaPid.setTolerance(1);
 
     this.configurePathPlannerAutoBuilder();
-
-    resetPose(new Pose2d(8.5, 4.0, getAngleForOdometry()));
   }
 
   /** {@inheritDoc} */
@@ -184,7 +182,51 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Pose-X", pose.getX());
     SmartDashboard.putNumber("Pose-Y", pose.getY());
     SmartDashboard.putNumber("Pose-Theta", pose.getRotation().getDegrees());
-    RobotContainer.kField.setRobotPose(pose);
+  }
+
+  /**
+   * Updates the field relative position of the robot.
+   * 
+   * <p>
+   * 
+   * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-pose-estimators.html
+   */
+  private void updateOdometry() {
+    updateOdometryUsingTraction();
+    updateOdometryUsingLowerFrontPhotonCamera();
+
+    // TODO(work in progress): Vision adjustments using Limelight for rear camera
+    updateOdometryUsingRearLimelight();
+  }
+
+  /**
+   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html#updating-the-robot-pose
+   */
+  private void updateOdometryUsingTraction() {
+    kPoseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngleForOdometry(), getSwerveModulePositions());
+  }
+
+  /**
+   * Updates the odometry using the lower front Photon Vision camera.
+   * 
+   * @see {@link frc.robot.subsystems.cameras.DemonPhotonCamera#getLatestAprilTagResults}
+   */
+  private void updateOdometryUsingLowerFrontPhotonCamera() {
+    RobotContainer.kLowerFrontPhotonCamera.getLatestAprilTagResults().ifPresent((result) -> {
+      kPoseEstimator.addVisionMeasurement(result.estimatedRobotPose.estimatedPose.toPose2d(),
+          result.estimatedRobotPose.timestampSeconds, result.stdDevs);
+    });
+  }
+
+  /**
+   * Updates the odometry using the rear Limelight camera.
+   * 
+   * @see {@link frc.robot.subsystems.cameras.DemonLimelightCamera#getLatestPoseEstimate}
+   */
+  private void updateOdometryUsingRearLimelight() {
+    RobotContainer.kRearLimelightCamera.getLatestPoseEstimate().ifPresent((estimate) -> {
+      kPoseEstimator.addVisionMeasurement(estimate.pose, estimate.timestampSeconds, kDefaultVisionMeasurementStdDevs);
+    });
   }
 
   /** https://pathplanner.dev/pplib-getting-started.html#holonomic-swerve */
@@ -244,13 +286,17 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Resets the robot's pose for odometry
+   * Resets the robot's pose for odometry.
+   * 
+   * <p>
+   * 
+   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html#resetting-the-robot-pose
    * 
    * @param pose the robot's new pose
    */
   public void resetPose(Pose2d pose) {
     kPoseEstimator.resetPosition(getAngleForOdometry(), getSwerveModulePositions(), pose);
-    RobotContainer.kFrontCamera.setInitialPose(pose);
+    RobotContainer.kLowerFrontPhotonCamera.setInitialPose(pose);
   }
 
   /**
@@ -429,115 +475,6 @@ public class SwerveDrive extends SubsystemBase {
     kFrontLeft.setDesiredState(0, -45);
     kRearRight.setDesiredState(0, -45);
     kRearLeft.setDesiredState(0, 45);
-  }
-
-  /**
-   * Updates the field relative position of the robot.
-   * 
-   * <p>
-   * 
-   * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-pose-estimators.html
-   */
-  private void updateOdometry() {
-    // always update using traction
-    updateOdometryUsingTraction();
-
-    // only update pose using vision when in disabled or teleop
-    if (RobotState.isDisabled() || RobotState.isTeleop()) {
-      // TODO(work in progress): Vision adjustments using AprilTags
-      // ...
-      // updateOdometryUsingLimelightMegatag1();
-      // updateOdometryUsingLimelightMegatag2();
-      updateOdometryUsingFrontCamera();
-    }
-  }
-
-  /**
-   * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html#updating-the-robot-pose
-   */
-  private void updateOdometryUsingTraction() {
-    var modulePositions = getSwerveModulePositions();
-    kPoseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngleForOdometry(), modulePositions);
-  }
-
-  /**
-   * Updates the odometry using the front Photon Vision April Tag camera.
-   */
-  private void updateOdometryUsingFrontCamera() {
-    RobotContainer.kFrontCamera.getAprilTagResults().ifPresent((result) -> {
-      kPoseEstimator.addVisionMeasurement(result.estimatedRobotPose.estimatedPose.toPose2d(),
-          result.estimatedRobotPose.timestampSeconds, result.stdDevs);
-    });
-  }
-
-  /**
-   * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization
-   * 
-   * <p>
-   * 
-   * TODO: Test and determine if this is even needed at all since we have
-   * Megatag2? Might be able to remove it entirely.
-   */
-  private void updateOdometryUsingLimelightMegatag1() {
-    LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-    boolean doRejectUpdate = false;
-    if (mt1 != null && mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-      if (mt1.rawFiducials[0].ambiguity > .7) {
-        doRejectUpdate = true;
-      }
-      if (mt1.rawFiducials[0].distToCamera > 3) {
-        doRejectUpdate = true;
-      }
-    }
-    if (mt1 == null || mt1.tagCount == 0) {
-      doRejectUpdate = true;
-    }
-
-    if (!doRejectUpdate) {
-      // kPoseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds,
-      // kDefaultVisionMeasurementStdDevs);
-
-      // for debugging/testing
-      // RobotContainer.kField.getObject("LL-M1").setPose(mt1.pose);
-    }
-  }
-
-  /**
-   * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2
-   * 
-   * <p>
-   * 
-   * Worked very well in the lab.
-   * Also worked very at very far distances!!
-   * Still have to work out some kinks/set some configurations on LL but overall
-   * not too bad.
-   * 
-   * <p>
-   * 
-   * TODO: Work to make accurate+reliable. May not be able to know for sure until
-   * we get the robot on the test field.
-   */
-  private void updateOdometryUsingLimelightMegatag2() {
-    LimelightHelpers.SetRobotOrientation("limelight", getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-
-    boolean doRejectUpdate = false;
-    // if our angular velocity is greater than 720 degrees per second, ignore vision
-    // updates
-    if (Math.abs(RobotContainer.kNavx.getRate()) > 720) {
-      doRejectUpdate = true;
-    }
-    if (mt2 == null || mt2.tagCount == 0) {
-      doRejectUpdate = true;
-    }
-
-    if (!doRejectUpdate) {
-      // kPoseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds,
-      // kDefaultVisionMeasurementStdDevs);
-
-      // for debugging/testing
-      // RobotContainer.kField.getObject("LL-M2").setPose(mt2.pose);
-    }
   }
 
   /**

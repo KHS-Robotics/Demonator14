@@ -287,7 +287,6 @@ public class SwerveModule extends SubsystemBase {
    */
   private double calculateCosineCompensation(double currentAngle, double targetAngle) {
     var angleError = Math.abs(currentAngle - targetAngle);
-    var angle = Rotation2d.fromDegrees(angleError);
-    return angle.getCos();
+    return Math.cos(Math.toRadians(angleError));
   }
 }
