@@ -130,8 +130,8 @@ public class RobotContainer {
           : 0;
       kSwerveDrive.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
     }, kSwerveDrive));
-    kDriverController.a().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
-    kDriverController.b().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
+    //kDriverController.a().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
+    //kDriverController.b().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
 
   }
 
