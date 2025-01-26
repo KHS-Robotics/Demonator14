@@ -184,7 +184,6 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Pose-X", pose.getX());
     SmartDashboard.putNumber("Pose-Y", pose.getY());
     SmartDashboard.putNumber("Pose-Theta", pose.getRotation().getDegrees());
-    RobotContainer.kField.setRobotPose(pose);
   }
 
   /** https://pathplanner.dev/pplib-getting-started.html#holonomic-swerve */
@@ -250,7 +249,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void resetPose(Pose2d pose) {
     kPoseEstimator.resetPosition(getAngleForOdometry(), getSwerveModulePositions(), pose);
-    RobotContainer.kFrontCamera.setInitialPose(pose);
+    RobotContainer.kLowerFrontCamera.setInitialPose(pose);
   }
 
   /**
@@ -442,13 +441,15 @@ public class SwerveDrive extends SubsystemBase {
     // always update using traction
     updateOdometryUsingTraction();
 
-    // only update pose using vision when in disabled or teleop
+    // for now only update pose using vision when in disabled or teleop
     if (RobotState.isDisabled() || RobotState.isTeleop()) {
-      // TODO(work in progress): Vision adjustments using AprilTags
+      // TODO(work in progress): Vision adjustments using Limelight for rear camera
+      // Can probably just go with Megatag2
       // ...
       // updateOdometryUsingLimelightMegatag1();
       // updateOdometryUsingLimelightMegatag2();
-      updateOdometryUsingFrontCamera();
+
+      updateOdometryUsingLowerFrontCamera();
     }
   }
 
@@ -461,10 +462,10 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Updates the odometry using the front Photon Vision April Tag camera.
+   * Updates the odometry using the lower front Photon Vision April Tag camera.
    */
-  private void updateOdometryUsingFrontCamera() {
-    RobotContainer.kFrontCamera.getAprilTagResults().ifPresent((result) -> {
+  private void updateOdometryUsingLowerFrontCamera() {
+    RobotContainer.kLowerFrontCamera.getAprilTagResults().ifPresent((result) -> {
       kPoseEstimator.addVisionMeasurement(result.estimatedRobotPose.estimatedPose.toPose2d(),
           result.estimatedRobotPose.timestampSeconds, result.stdDevs);
     });

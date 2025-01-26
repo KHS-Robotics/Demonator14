@@ -55,6 +55,9 @@ public class Robot extends TimedRobot {
     // the Command-based framework to work.
     // https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html
     CommandScheduler.getInstance().run();
+
+    // Update the robot's position and heading on the Dashboard GUI
+    RobotContainer.kField.setRobotPose(RobotContainer.kSwerveDrive.getPose());
   }
 
   /** This method is called once each time the robot enters disabled mode. */

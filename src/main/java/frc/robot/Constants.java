@@ -22,13 +22,13 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */
   public static final double kJoystickSensitivity = 0.5;
-  
+
   /**
    * Configurations for PhotonVision.
    */
   public static final class PhotonVisionConfig {
     /** The nickname of the camera (found in the PhotonVision UI). */
-    public static final String kCameraName = "4342_AprilTag_1";
+    public static final String kLowerFrontCameraName = "4342_AprilTag_1";
 
     /**
      * Transform3d from the center of the robot to the camera mount position (ie,
@@ -38,7 +38,7 @@ public final class Constants {
      * <p>
      * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-a-photonposeestimator
      */
-    public static final Transform3d kRobotToCamera = new Transform3d(Units.inchesToMeters(7.6882),
+    public static final Transform3d kLowerFrontRobotToCamera = new Transform3d(Units.inchesToMeters(7.6882),
         Units.inchesToMeters(13.0), Units.inchesToMeters(12.1545), new Rotation3d(0, Math.toRadians(-60), 0));
 
     /**
