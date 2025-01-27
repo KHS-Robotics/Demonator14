@@ -73,10 +73,15 @@ public class Elevator extends SubsystemBase {
     return elevatorEncoder.getPosition() + ElevatorConfig.kRobotElevatorStowHeightInches;
   }
 
-  // sets height relative to the robot
-  public void setHeight(ElevatorPosition position) {
+  // sets height relative to the floor
+  public void setPosition(ElevatorPosition position) {
     currentSetpoint = position;
     double setpoint = position.height - ElevatorConfig.kRobotElevatorStowHeightInches;
+    setSetpoint(setpoint);
+  }
+
+  // set height relative to bottom of elevator
+  public void setSetpoint(double setpoint) {
     elevatorPID.setReference(setpoint, ControlType.kPosition);
   }
 
@@ -94,4 +99,8 @@ public class Elevator extends SubsystemBase {
     return (error < 1);
   }
 
+  // get height relative to bottom of elevator
+  public double getRelativePosition() {
+    return elevatorEncoder.getPosition();
+  }
 }

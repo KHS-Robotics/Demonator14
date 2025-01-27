@@ -76,13 +76,25 @@ public class Coraller extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  public void spitterIn() {
+    spitter.setVoltage(6);
+  }
+  // TODO() find out volts and which are inversed
+  public void spitterOut() {
+    spitter.setVoltage(-6);
+  }
+
   public double getAngle() {
     return angleEncoder.getPosition();
   }
 
-  public void setAngle(CorallerPosition pos) {
+  public void setPosition(CorallerPosition pos) {
     currentSetpoint = pos;
-    corallerPID.setReference(pos.degrees, ControlType.kPosition);
+    setSetpoint(pos.degrees);
+  }
+
+  public void setSetpoint(double setpoint) {
+    corallerPID.setReference(setpoint, ControlType.kPosition);
   }
 
   public CorallerPosition getSetpoint() {
