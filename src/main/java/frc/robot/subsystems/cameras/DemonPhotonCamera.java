@@ -73,7 +73,7 @@ public class DemonPhotonCamera extends SubsystemBase {
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
-    setAprilTagMode();
+    setCloseRangeAprilTagMode();
   }
 
   /** {@inheritDoc} */
@@ -85,15 +85,30 @@ public class DemonPhotonCamera extends SubsystemBase {
   }
 
   /**
-   * Sets the camera pipeline to AprilTag mode.
+   * Sets the camera pipeline to AprilTag mode using lower resolution but higher
+   * FPS.
    */
-  public void setAprilTagMode() {
-    if (currentPipelineMode == PhotonPipelineMode.kAprilTags)
+  public void setCloseRangeAprilTagMode() {
+    if (currentPipelineMode == PhotonPipelineMode.kAprilTagsLowResolution)
       return;
 
     algaeTargets = Optional.empty();
     bestAlgaeTarget = Optional.empty();
-    currentPipelineMode = PhotonPipelineMode.kAprilTags;
+    currentPipelineMode = PhotonPipelineMode.kAprilTagsLowResolution;
+    camera.setPipelineIndex(currentPipelineMode.index);
+  }
+
+  /**
+   * Sets the camera pipeline to AprilTag mode using higher resolution but lower
+   * FPS.
+   */
+  public void setFarRangeAprilTagMode() {
+    if (currentPipelineMode == PhotonPipelineMode.kAprilTagsHighResolution)
+      return;
+
+    algaeTargets = Optional.empty();
+    bestAlgaeTarget = Optional.empty();
+    currentPipelineMode = PhotonPipelineMode.kAprilTagsHighResolution;
     camera.setPipelineIndex(currentPipelineMode.index);
   }
 
@@ -127,7 +142,8 @@ public class DemonPhotonCamera extends SubsystemBase {
    * @return the latest processed update from photon vision for AprilTags
    */
   public Optional<PhotonPoseUpdate> getLatestAprilTagResults() {
-    if (currentPipelineMode != PhotonPipelineMode.kAprilTags) {
+    if (currentPipelineMode != PhotonPipelineMode.kAprilTagsLowResolution
+        || currentPipelineMode != PhotonPipelineMode.kAprilTagsHighResolution) {
       DriverStation.reportWarning("Attempting to get AprilTags results in Algae mode!", false);
     }
 
@@ -165,7 +181,8 @@ public class DemonPhotonCamera extends SubsystemBase {
   /**
    * Sets the camera to receive AprilTag updates or not for the odometry.
    * 
-   * @param enableAprilTagUpdates true to enable AprilTag updates, false to disable AprilTag updates
+   * @param enableAprilTagUpdates true to enable AprilTag updates, false to
+   *                              disable AprilTag updates
    */
   public void setEnableAprilTagUpdates(boolean enableAprilTagUpdates) {
     this.enableAprilTagUpdates = enableAprilTagUpdates;
@@ -181,7 +198,9 @@ public class DemonPhotonCamera extends SubsystemBase {
     for (var cameraResult : unprocessedCameraResults) {
       // process based on selected pipeline mode
       switch (currentPipelineMode) {
-        case kAprilTags:
+        // same AprilTag process for both resolutions
+        case kAprilTagsLowResolution:
+        case kAprilTagsHighResolution:
           processAprilTagResult(cameraResult);
           break;
         case kAlgae:
@@ -307,10 +326,20 @@ public class DemonPhotonCamera extends SubsystemBase {
    * Enumeration for Photon pipeline modes for the camera.
    */
   private static enum PhotonPipelineMode {
-    /** AprilTag detection mode. */
-    kAprilTags(0),
-    /** Algae detection mode. */
-    kAlgae(1);
+    /**
+     * AprilTag detection mode for close range (lower resolution but higher FPS).
+     */
+    kAprilTagsLowResolution(0),
+
+    /**
+     * AprilTag detection mode for far range (higher resolution for but lower FPS).
+     */
+    kAprilTagsHighResolution(1),
+
+    /**
+     * Algae detection mode.
+     */
+    kAlgae(2);
 
     /** The Photon pipeline index. */
     public final int index;
