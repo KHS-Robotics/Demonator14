@@ -142,11 +142,6 @@ public class DemonPhotonCamera extends SubsystemBase {
    * @return the latest processed update from photon vision for AprilTags
    */
   public Optional<PhotonPoseUpdate> getLatestAprilTagResults() {
-    if (currentPipelineMode != PhotonPipelineMode.kAprilTagsLowResolution
-        || currentPipelineMode != PhotonPipelineMode.kAprilTagsHighResolution) {
-      DriverStation.reportWarning("Attempting to get AprilTags results in Algae mode!", false);
-    }
-
     return aprilTagUpdate;
   }
 
