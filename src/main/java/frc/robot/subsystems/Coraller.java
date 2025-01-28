@@ -48,6 +48,7 @@ public class Coraller extends SubsystemBase {
   private final SparkMax spitter;
 
   public Coraller() {
+    // This code configures the angle to the coraller arm
     var corallerClosedLoopConfig = new ClosedLoopConfig()
         .pid(CorallerConfig.kCorallerP, CorallerConfig.kCorallerI, CorallerConfig.kCorallerD,
             ClosedLoopSlot.kSlot0);
@@ -62,6 +63,7 @@ public class Coraller extends SubsystemBase {
     angleEncoder = angler.getAbsoluteEncoder();
     corallerPID = angler.getClosedLoopController();
 
+    // This configures the intake/outake
     var spitterConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
