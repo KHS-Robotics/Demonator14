@@ -25,7 +25,6 @@ import frc.robot.Constants.PhotonVisionConfig;
 import frc.robot.commands.drive.DriveSwerveWithXbox;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.Coraller;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
@@ -83,7 +82,6 @@ public class RobotContainer {
 
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
-  public static final Elevator kElevator = new Elevator();
   public static final Coraller kCoraller = new Coraller();
 
   // Subsystems - Cameras

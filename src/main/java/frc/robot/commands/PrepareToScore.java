@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Coraller.CorallerPosition;
-import frc.robot.subsystems.Elevator.ElevatorPosition;
+import frc.robot.subsystems.Coraller.ElevatorPosition;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PrepareToScore extends Command {
@@ -30,13 +30,16 @@ public class PrepareToScore extends Command {
   private final Level level;
 
   public PrepareToScore(Level level) {
-    addRequirements(RobotContainer.kElevator, RobotContainer.kCoraller);
+    addRequirements(RobotContainer.kCoraller);
     this.level = level;
   }
 
+  
+
+
   @Override
   public void initialize() {
-    RobotContainer.kCoraller.setPosition(level.corallerPosition);
-    RobotContainer.kElevator.setPosition(level.elevatorPosition);
+    RobotContainer.kCoraller.setCorallerPosition(level.corallerPosition);
+    RobotContainer.kCoraller.
   }
 }
