@@ -92,6 +92,17 @@ public final class Constants {
     public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
         Units.inchesToMeters(-11.7));
 
+    // for 2025 robot, 23.5 wide by 22 inches drivebase
+
+    //     public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(11.75),
+    //     Units.inchesToMeters(11));
+    // public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(10.7),
+    //     Units.inchesToMeters(-11));
+    // public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
+    //     Units.inchesToMeters(11));
+    // public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
+    //     Units.inchesToMeters(-11));
+
     // individual offsets after calibrating each module
     public static final double kFrontLeftPivotOffsetDegrees = 225;
     public static final double kFrontRightPivotOffsetDegrees = 135;
