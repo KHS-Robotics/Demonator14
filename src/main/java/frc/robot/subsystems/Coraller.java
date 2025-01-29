@@ -126,6 +126,7 @@ public class Coraller extends SubsystemBase {
     angleEncoder = angler.getAbsoluteEncoder();
     anglerPID = angler.getClosedLoopController();
 
+    // This configures the intake/outake
     var spitterConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
