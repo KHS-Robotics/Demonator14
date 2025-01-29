@@ -10,7 +10,6 @@ import frc.robot.subsystems.Coraller.Level;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PrepareToScore extends Command {
-  
 
   private final Level level;
 
@@ -18,9 +17,6 @@ public class PrepareToScore extends Command {
     addRequirements(RobotContainer.kCoraller);
     this.level = level;
   }
-
-  
-
 
   @Override
   public void initialize() {

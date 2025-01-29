@@ -22,8 +22,6 @@ import frc.robot.Constants.CorallerConfig;
 import frc.robot.RobotMap;
 import frc.robot.Constants.ElevatorConfig;
 
-
-
 public class Coraller extends SubsystemBase {
   public enum Level {
     STOW(ElevatorPosition.kStow, CorallerPosition.kStow),
@@ -40,6 +38,7 @@ public class Coraller extends SubsystemBase {
       this.corallerPosition = corallerPosition;
     }
   }
+
   private enum CorallerPosition {
     kStow(0),
     kLevel1(0),
@@ -57,6 +56,7 @@ public class Coraller extends SubsystemBase {
       this.degrees = degrees;
     }
   }
+
   private enum ElevatorPosition {
     kStow(48),
     kLevel1(0),
@@ -81,13 +81,10 @@ public class Coraller extends SubsystemBase {
   private final RelativeEncoder elevatorEncoder;
   private final SparkClosedLoopController elevatorPID;
 
-
-  private CorallerPosition corallerSetPoint= CorallerPosition.kStow;
+  private CorallerPosition corallerSetPoint = CorallerPosition.kStow;
   private final SparkMax angler;
   private final AbsoluteEncoder angleEncoder;
   private final SparkClosedLoopController anglerPID;
-
-
 
   /**
    * intake/outtake
@@ -136,7 +133,7 @@ public class Coraller extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters);
   }
 
-  public void setPosition(Level level){
+  public void setPosition(Level level) {
     setElevatorPosition(level.elevatorPosition);
     setCorallerPosition(level.corallerPosition);
   }
@@ -150,39 +147,37 @@ public class Coraller extends SubsystemBase {
     return elevatorEncoder.getPosition() + ElevatorConfig.kRobotElevatorStowHeightInches;
   }
 
-    // sets height relative to the floor
+  // sets height relative to the floor
   private void setElevatorPosition(ElevatorPosition position) {
     elevatorSetPoint = position;
     double setpoint = position.height - ElevatorConfig.kRobotElevatorStowHeightInches;
     setElevatorSetPoint(setpoint);
   }
 
-
   // set height relative to bottom of elevator
-  public void setElevatorSetPoint (double setpoint) {
+  public void setElevatorSetPoint(double setpoint) {
     elevatorPID.setReference(setpoint, ControlType.kPosition);
   }
 
-  
   // TODO() add once we know what sensor we are using
   public boolean isElevatorAtBottom() {
     return true;
   }
-  
-  public ElevatorPosition getElevatorSetPoint(){
+
+  public ElevatorPosition getElevatorSetPoint() {
     return elevatorSetPoint;
   }
 
-  public boolean elevatorIsAtSetPoint(){
+  public boolean elevatorIsAtSetPoint() {
     var error = Math.abs(elevatorSetPoint.height - getHeightFromGround());
     return (error < 1);
   }
 
-    // get height relative to bottom of elevator
+  // get height relative to bottom of elevator
   public double getRelativePosition() {
     return elevatorEncoder.getPosition();
- }
-    //end of elevator functions and start of coraller (spitter and angler)
+  }
+  // end of elevator functions and start of coraller (spitter and angler)
   // TODO() find out volts and which are inversed
 
   public void spitterIn() {
@@ -193,16 +188,16 @@ public class Coraller extends SubsystemBase {
     spitter.setVoltage(-6);
   }
 
-  public double getCorallerAngle(){
+  public double getCorallerAngle() {
     return angleEncoder.getPosition();
   }
 
   private void setCorallerPosition(CorallerPosition pos) {
-   corallerSetPoint = pos;
-    setCorallerSetPoint (pos.degrees);
+    corallerSetPoint = pos;
+    setCorallerSetPoint(pos.degrees);
   }
 
-  public void setCorallerSetPoint (double setpoint) {
+  public void setCorallerSetPoint(double setpoint) {
     anglerPID.setReference(setpoint, ControlType.kPosition);
   }
 
@@ -210,8 +205,8 @@ public class Coraller extends SubsystemBase {
     return corallerSetPoint;
   }
 
-  public boolean isAtCorallerSetPoint () {
-    var error = Math.abs(corallerSetPoint.degrees - getCorallerAngle ());
+  public boolean isAtCorallerSetPoint() {
+    var error = Math.abs(corallerSetPoint.degrees - getCorallerAngle());
     return (error < 1);
   }
 }
