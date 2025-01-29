@@ -14,31 +14,33 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CorallerConfig;
-import frc.robot.RobotMap;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.Constants.ElevatorConfig;
 
 
 
 public class Coraller extends SubsystemBase {
-  public enum CorallerPosition {
+  public enum Level {
+    STOW(ElevatorPosition.kStow, CorallerPosition.kStow),
+    L1(ElevatorPosition.kLevel1, CorallerPosition.kLevel1),
+    L2(ElevatorPosition.kLevel2, CorallerPosition.kLevel2),
+    L3(ElevatorPosition.kLevel3, CorallerPosition.kLevel3),
+    L4(ElevatorPosition.kLevel4, CorallerPosition.kLevel4);
+
+    private final ElevatorPosition elevatorPosition;
+    private final CorallerPosition corallerPosition;
+
+    private Level(ElevatorPosition elevatorPosition, CorallerPosition corallerPosition) {
+      this.elevatorPosition = elevatorPosition;
+      this.corallerPosition = corallerPosition;
+    }
+  }
+  private enum CorallerPosition {
     kStow(0),
     kLevel1(0),
     kLevel2(0),
@@ -55,9 +57,7 @@ public class Coraller extends SubsystemBase {
       this.degrees = degrees;
     }
   }
-
-  
-  public enum ElevatorPosition {
+  private enum ElevatorPosition {
     kStow(48),
     kLevel1(0),
     kLevel2(0),
@@ -85,7 +85,7 @@ public class Coraller extends SubsystemBase {
   private CorallerPosition corallerSetPoint= CorallerPosition.kStow;
   private final SparkMax angler;
   private final AbsoluteEncoder angleEncoder;
-  private final SparkClosedLoopController corallerPID;
+  private final SparkClosedLoopController anglerPID;
 
 
 
@@ -112,19 +112,19 @@ public class Coraller extends SubsystemBase {
     elevatorPID = leader.getClosedLoopController();
     elevatorEncoder = leader.getEncoder();
 
-    var corallerClosedLoopConfig = new ClosedLoopConfig()
+    var anglerClosedLoopConfig = new ClosedLoopConfig()
         .pid(CorallerConfig.kCorallerP, CorallerConfig.kCorallerI, CorallerConfig.kCorallerD,
             ClosedLoopSlot.kSlot0);
-    var corallerConfig = new SparkMaxConfig()
+    var anglerConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)
         .inverted(false)
-        .apply(corallerClosedLoopConfig);
+        .apply(anglerClosedLoopConfig);
     angler = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
-    angler.configure(corallerConfig, SparkBase.ResetMode.kResetSafeParameters,
+    angler.configure(anglerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
     angleEncoder = angler.getAbsoluteEncoder();
-    corallerPID = angler.getClosedLoopController();
+    anglerPID = angler.getClosedLoopController();
 
     var spitterConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
@@ -133,6 +133,11 @@ public class Coraller extends SubsystemBase {
     spitter = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
     spitter.configure(spitterConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
+  }
+
+  public void setPosition(Level level){
+    setElevatorPosition(level.elevatorPosition);
+    setCorallerPosition(level.corallerPosition);
   }
 
   @Override
@@ -145,15 +150,15 @@ public class Coraller extends SubsystemBase {
   }
 
     // sets height relative to the floor
-  public void setHeightPosition(ElevatorPosition position) {
+  private void setElevatorPosition(ElevatorPosition position) {
     elevatorSetPoint = position;
     double setpoint = position.height - ElevatorConfig.kRobotElevatorStowHeightInches;
-    elevatorSetPosition(setpoint);
+    setElevatorSetPoint(setpoint);
   }
 
 
   // set height relative to bottom of elevator
-  public void elevatorSetPosition (double setpoint) {
+  public void setElevatorSetPoint (double setpoint) {
     elevatorPID.setReference(setpoint, ControlType.kPosition);
   }
 
@@ -172,18 +177,11 @@ public class Coraller extends SubsystemBase {
     return (error < 1);
   }
 
-    // sets height relative to the floor
-  public void setElevatorPosition(ElevatorPosition position) {
-    elevatorSetPoint = position;
-    double setpoint = position.height - ElevatorConfig.kRobotElevatorStowHeightInches;
-    elevatorSetPosition(setpoint);
-  }
-
     // get height relative to bottom of elevator
   public double getRelativePosition() {
     return elevatorEncoder.getPosition();
  }
-    //end of elevator functions
+    //end of elevator functions and start of coraller (spitter and angler)
   // TODO() find out volts and which are inversed
 
   public void spitterIn() {
@@ -198,13 +196,13 @@ public class Coraller extends SubsystemBase {
     return angleEncoder.getPosition();
   }
 
-  public void setCorallerPosition(CorallerPosition pos) {
+  private void setCorallerPosition(CorallerPosition pos) {
    corallerSetPoint = pos;
     setCorallerSetPoint (pos.degrees);
   }
 
   public void setCorallerSetPoint (double setpoint) {
-    corallerPID.setReference(setpoint, ControlType.kPosition);
+    anglerPID.setReference(setpoint, ControlType.kPosition);
   }
 
   public CorallerPosition getCorallerPosition() {
