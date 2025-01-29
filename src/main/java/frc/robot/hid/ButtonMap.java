@@ -16,4 +16,7 @@ public class ButtonMap {
   public static final int INTAKE_BUTTON = 2;
   public static final int CLIMB_BUTTON = 16;
   public static final int ENGAGEANCHOR_BUTTON = 15;
+
+  public static final int LATCH_BUTTON = 3;
+  public static final int UNLATCH_BUTTON = 4;
 }

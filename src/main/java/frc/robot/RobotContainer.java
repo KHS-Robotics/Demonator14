@@ -28,6 +28,8 @@ import frc.robot.subsystems.Coraller;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.drive.SwerveDrive;
+import frc.robot.subsystems.TwistServo;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -84,6 +86,9 @@ public class RobotContainer {
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
 
+  // temporary
+  public static final TwistServo kCageTwist = new TwistServo();
+
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
       PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
@@ -134,6 +139,11 @@ public class RobotContainer {
           : 0;
       kSwerveDrive.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
     }, kSwerveDrive));
+
+    // servo testing
+    kDriverController.a().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
+    kDriverController.b().onTrue(new InstantCommand(() -> kCageTwist.unlatch(), kCageTwist));
+    System.out.println("Xbox Controller Bound");
 
   }
 

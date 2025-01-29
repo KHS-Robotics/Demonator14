@@ -49,4 +49,5 @@ public class OperatorStick extends Joystick {
   public boolean isPressingEngageAnchor(){
     return this.getRawButton(ButtonMap.ENGAGEANCHOR_BUTTON);
   }
+  
 }
