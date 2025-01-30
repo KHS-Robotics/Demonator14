@@ -23,7 +23,7 @@ public class Angler {
 
   public Angler() {
     var anglerClosedLoopConfig = new ClosedLoopConfig()
-      .pid(CorallerConfig.kCorallerP, CorallerConfig.kCorallerI, CorallerConfig.kCorallerD,
+      .pid(CorallerConfig.kAnglerP, CorallerConfig.kAnglerI, CorallerConfig.kAnglerD,
           ClosedLoopSlot.kSlot0);
     var anglerConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)

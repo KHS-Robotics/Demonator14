@@ -13,7 +13,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.RobotMap;
-import frc.robot.Constants.ElevatorConfig;
+import frc.robot.Constants.CorallerConfig;
 
 public class Elevator {
   private final SparkMax motor;
@@ -25,10 +25,10 @@ public class Elevator {
 
   public Elevator(double base) {
     var elevatorEncoderConfig = new EncoderConfig()
-        .positionConversionFactor(ElevatorConfig.kElevatorEncoderPositionConversionFactor)
-        .velocityConversionFactor(ElevatorConfig.kElevatorEncoderVelocityConversionFactor);
+        .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
+        .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
     var elevatorClosedLoopConfig = new ClosedLoopConfig()
-        .pid(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD, ClosedLoopSlot.kSlot0);
+        .pid(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD, ClosedLoopSlot.kSlot0);
     var elevatorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(45)

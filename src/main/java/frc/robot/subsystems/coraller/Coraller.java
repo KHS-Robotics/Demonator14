@@ -3,16 +3,16 @@ package frc.robot.subsystems.coraller;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConfig;
+import frc.robot.Constants.CorallerConfig;
 
 public class Coraller extends SubsystemBase {
   public enum Configuration {
-    STOW(CorallerConstants.STOW_HEIGHT, CorallerConstants.STOW_ANGLE),
-    L1(CorallerConstants.L1_HEIGHT, CorallerConstants.L1_ANGLE),
-    L2(CorallerConstants.L2_HEIGHT, CorallerConstants.L2_ANGLE),
-    L3(CorallerConstants.L3_HEIGHT, CorallerConstants.L3_ANGLE),
-    L4(CorallerConstants.L4_HEIGHT, CorallerConstants.L4_ANGLE),
-    RECEIVE(CorallerConstants.RECEIVE_HEIGHT, CorallerConstants.RECEIVE_ANGLE);
+    STOW(CorallerConfig.STOW_HEIGHT, CorallerConfig.STOW_ANGLE),
+    L1(CorallerConfig.L1_HEIGHT, CorallerConfig.L1_ANGLE),
+    L2(CorallerConfig.L2_HEIGHT, CorallerConfig.L2_ANGLE),
+    L3(CorallerConfig.L3_HEIGHT, CorallerConfig.L3_ANGLE),
+    L4(CorallerConfig.L4_HEIGHT, CorallerConfig.L4_ANGLE),
+    RECEIVE(CorallerConfig.RECEIVE_HEIGHT, CorallerConfig.RECEIVE_ANGLE);
 
     private final double elevatorPosition;
     private final double anglerPosition;
@@ -28,7 +28,7 @@ public class Coraller extends SubsystemBase {
   private final Intake intake;
 
   public Coraller() {
-    elevator = new Elevator(ElevatorConfig.kRobotElevatorStowHeightInches);
+    elevator = new Elevator(CorallerConfig.kRobotElevatorStowHeightInches);
     angler = new Angler();
     intake = new Intake();
   }
