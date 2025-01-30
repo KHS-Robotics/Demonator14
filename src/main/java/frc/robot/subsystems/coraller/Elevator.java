@@ -12,10 +12,13 @@ import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.RobotMap;
 import frc.robot.Constants.CorallerConfig;
 
-class Elevator {
+class Elevator extends SubsystemBase {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
   private final SparkClosedLoopController pid;
@@ -41,8 +44,12 @@ class Elevator {
     encoder = motor.getEncoder();
   }
 
+  public Command setPosition(double position) {
+    return this.runOnce(() -> setPositionInternal(setPointHeight));
+  }
+
     // sets height relative to the floor
-  public void setPosition(double position) {
+  private void setPositionInternal(double position) {
     setPointHeight = position;
     double setpoint = position - CorallerConfig.kRobotElevatorStowHeightInches;
     changeSetPoint(setpoint);

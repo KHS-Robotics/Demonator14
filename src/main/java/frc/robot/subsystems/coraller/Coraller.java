@@ -12,8 +12,8 @@ public class Coraller extends SubsystemBase {
 
   public Command prepareToScore(Configuration cfg) {
     return Commands.parallel(
-      this.runOnce(() -> elevator.setPosition(cfg.elevatorPosition)),
-      this.runOnce(() -> angler.setPosition(cfg.anglerPosition))
+      elevator.setPosition(cfg.elevatorPosition),
+      angler.setPosition(cfg.anglerPosition)
     );
   }
 
