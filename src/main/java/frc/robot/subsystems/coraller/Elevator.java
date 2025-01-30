@@ -12,20 +12,20 @@ import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.RobotMap;
 import frc.robot.Constants.CorallerConfig;
 
-class Elevator {
+class Elevator extends SubsystemBase {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
   private final SparkClosedLoopController pid;
 
   private double setPointHeight;
 
-  private double baseHeight;
-
-  public Elevator(double base) {
-
+  public Elevator() {
     var elevatorEncoderConfig = new EncoderConfig()
         .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
         .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
@@ -44,12 +44,14 @@ class Elevator {
     encoder = motor.getEncoder();
   }
 
+  public Command setPosition(double position) {
+    return this.runOnce(() -> setPositionInternal(setPointHeight));
+  }
+
     // sets height relative to the floor
-  public void setPosition(double position) {
+  private void setPositionInternal(double position) {
     setPointHeight = position;
-
-    double setpoint = position - baseHeight;
-
+    double setpoint = position - CorallerConfig.kRobotElevatorStowHeightInches;
     changeSetPoint(setpoint);
   }
 
@@ -58,9 +60,7 @@ class Elevator {
   }
 
   public boolean isElevatorAtBottom() {
-
-    return getHeightFromGround() == baseHeight;
-
+    return getHeightFromGround() == CorallerConfig.kRobotElevatorStowHeightInches;
   }
 
   public double getSetPoint() {
@@ -78,8 +78,6 @@ class Elevator {
   }
 
   private double getHeightFromGround() {
-
-    return encoder.getPosition() + baseHeight;
-
+    return encoder.getPosition() + CorallerConfig.kRobotElevatorStowHeightInches;
   }
 }

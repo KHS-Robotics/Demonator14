@@ -6,28 +6,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CorallerConfig;
 
 public class Coraller extends SubsystemBase {
-
-  private final Elevator elevator;
-  private final Angler angler;
-  private final Intake intake;
-
-  public Coraller() {
-    elevator = new Elevator(CorallerConfig.kRobotElevatorStowHeightInches);
-    angler = new Angler();
-    intake = new Intake();
-  }
-
-
+  private final Elevator elevator = new Elevator();
+  private final Angler angler = new Angler();
+  private final Intake intake = new Intake();
 
   public Command prepareToScore(Configuration cfg) {
     return Commands.parallel(
-      this.runOnce(() -> elevator.setPosition(cfg.elevatorPosition)),
-      this.runOnce(() -> angler.setPosition(cfg.anglerPosition))
+      elevator.setPosition(cfg.elevatorPosition),
+      angler.setPosition(cfg.anglerPosition)
     );
   }
 
   public Command intakeCoral() {
-
     return this.startEnd(
       intake::start, // can also be written as () -> intake.start()
       intake::stop
@@ -43,7 +33,6 @@ public class Coraller extends SubsystemBase {
       intake::stop
     )
     .withTimeout(.5);
-
   }
 
   @Override

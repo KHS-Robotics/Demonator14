@@ -11,10 +11,13 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants.CorallerConfig;
 import frc.robot.RobotMap;
 
-class Angler {
+class Angler extends SubsystemBase {
   private final SparkMax motor;
   private final AbsoluteEncoder encoder;
   private final SparkClosedLoopController pid;
@@ -41,11 +44,12 @@ class Angler {
     return encoder.getPosition();
   }
 
-  public void setPosition(double pos) {
-    changeSetPoint(pos);
+  public Command setPosition(double pos) {
+    return this.runOnce(() -> changeSetPoint(pos));
   }
 
   private void changeSetPoint(double setpoint) {
+    setPointAngle = setpoint;
     pid.setReference(setpoint, ControlType.kPosition);
   }
 
