@@ -22,7 +22,10 @@ class Elevator {
 
   private double setPointHeight;
 
-  public Elevator() {
+  private double baseHeight;
+
+  public Elevator(double base) {
+
     var elevatorEncoderConfig = new EncoderConfig()
         .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
         .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
@@ -44,7 +47,9 @@ class Elevator {
     // sets height relative to the floor
   public void setPosition(double position) {
     setPointHeight = position;
-    double setpoint = position - CorallerConfig.kRobotElevatorStowHeightInches;
+
+    double setpoint = position - baseHeight;
+
     changeSetPoint(setpoint);
   }
 
@@ -53,7 +58,9 @@ class Elevator {
   }
 
   public boolean isElevatorAtBottom() {
-    return getHeightFromGround() == CorallerConfig.kRobotElevatorStowHeightInches;
+
+    return getHeightFromGround() == baseHeight;
+
   }
 
   public double getSetPoint() {
@@ -71,6 +78,8 @@ class Elevator {
   }
 
   private double getHeightFromGround() {
-    return encoder.getPosition() + CorallerConfig.kRobotElevatorStowHeightInches;
+
+    return encoder.getPosition() + baseHeight;
+
   }
 }

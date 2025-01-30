@@ -6,9 +6,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CorallerConfig;
 
 public class Coraller extends SubsystemBase {
-  private final Elevator elevator = new Elevator();
-  private final Angler angler = new Angler();
-  private final Intake intake = new Intake();
+
+  private final Elevator elevator;
+  private final Angler angler;
+  private final Intake intake;
+
+  public Coraller() {
+    elevator = new Elevator(CorallerConfig.kRobotElevatorStowHeightInches);
+    angler = new Angler();
+    intake = new Intake();
+  }
+
+
 
   public Command prepareToScore(Configuration cfg) {
     return Commands.parallel(
@@ -18,11 +27,23 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command intakeCoral() {
-    return this.runOnce(() -> intake.intake());
+
+    return this.startEnd(
+      intake::start, // can also be written as () -> intake.start()
+      intake::stop
+    )
+    // TODO: We need a sensor to tell us if we have coral
+    .until(() -> { return false; }) 
+    .withTimeout(3);
   }
 
   public Command releaseCoral() {
-    return this.runOnce(() -> intake.release());
+    return this.startEnd(
+      intake::reverse,
+      intake::stop
+    )
+    .withTimeout(.5);
+
   }
 
   @Override
