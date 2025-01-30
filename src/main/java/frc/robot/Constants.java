@@ -142,27 +142,36 @@ public final class Constants {
   }
 
   /**
-   * Configurations for the elevator.
+   * Configurations for the coraller.
    */
-  public static final class ElevatorConfig {
+  public static final class CorallerConfig {
+    // Angler
+    public static final double kAnglerP = 0.0;
+    public static final double kAnglerI = 0.0;
+    public static final double kAnglerD = 0.0;
+    public static final double kAnglerEncoderPositionConversionFactor = 1;
+    public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
+
+    // Elevator
     public static final double kElevatorP = 0.0;
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
     public static final double kElevatorEncoderPositionConversionFactor = 1;
-    public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
-        / 60.0;
+    public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor / 60.0;
     public static final double kRobotElevatorStowHeightInches = 48;
-  }
 
-  /**
-   * Configurations for the coraller.
-   */
-  public static final class CorallerConfig {
-    public static final double kCorallerP = 0.0;
-    public static final double kCorallerI = 0.0;
-    public static final double kCorallerD = 0.0;
-    public static final double kCorallerEncoderPositionConversionFactor = 1;
-    public static final double kCorallerEncoderVelocityConversionFactor = kCorallerEncoderPositionConversionFactor
-        / 60.0;
+    // Coraller Configuration
+    public static final double STOW_ANGLE = 0;
+    public static final double STOW_HEIGHT = 0;
+    public static final double L1_ANGLE = 0;
+    public static final double L1_HEIGHT = 0;
+    public static final double L2_ANGLE = 0;
+    public static final double L2_HEIGHT = 0;
+    public static final double L3_ANGLE = 0;
+    public static final double L3_HEIGHT = 0;
+    public static final double L4_ANGLE = 0;
+    public static final double L4_HEIGHT = 0;
+    public static final double RECEIVE_ANGLE = 0;
+    public static final double RECEIVE_HEIGHT = 0;
   }
 }
