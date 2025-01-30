@@ -1,6 +1,7 @@
 package frc.robot.subsystems.coraller;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConfig;
 
@@ -31,13 +32,11 @@ public class Coraller extends SubsystemBase {
     intake = new Intake();
   }
 
-  public void setPosition(Level level) {
-    elevator.setPosition(level.elevatorPosition);
-    angler.setPosition(level.anglerPosition);
-  }
-
   public Command prepareToScore(Level level) {
-    return this.runOnce(() -> setPosition(level));
+    return Commands.parallel(
+      this.runOnce(() -> elevator.setPosition(level.elevatorPosition)),
+      this.runOnce(() -> angler.setPosition(level.anglerPosition))
+    );
   }
 
   public Command intakeCoral() {
