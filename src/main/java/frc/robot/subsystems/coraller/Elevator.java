@@ -21,9 +21,8 @@ class Elevator {
   private final SparkClosedLoopController pid;
 
   private double setPointHeight;
-  private double baseHeight;
 
-  public Elevator(double base) {
+  public Elevator() {
     var elevatorEncoderConfig = new EncoderConfig()
         .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
         .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
@@ -45,7 +44,7 @@ class Elevator {
     // sets height relative to the floor
   public void setPosition(double position) {
     setPointHeight = position;
-    double setpoint = position - baseHeight;
+    double setpoint = position - CorallerConfig.kRobotElevatorStowHeightInches;
     changeSetPoint(setpoint);
   }
 
@@ -54,7 +53,7 @@ class Elevator {
   }
 
   public boolean isElevatorAtBottom() {
-    return getHeightFromGround() == baseHeight;
+    return getHeightFromGround() == CorallerConfig.kRobotElevatorStowHeightInches;
   }
 
   public double getSetPoint() {
@@ -72,6 +71,6 @@ class Elevator {
   }
 
   private double getHeightFromGround() {
-    return encoder.getPosition() + baseHeight;
+    return encoder.getPosition() + CorallerConfig.kRobotElevatorStowHeightInches;
   }
 }
