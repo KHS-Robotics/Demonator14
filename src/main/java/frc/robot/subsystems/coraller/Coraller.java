@@ -11,19 +11,18 @@ public class Coraller extends SubsystemBase {
   private final Intake intake = new Intake();
 
   public Command prepareToScore(Configuration cfg) {
-    return Commands.parallel(
+    return this.runOnce(() -> Commands.parallel(
       elevator.setPosition(cfg.elevatorPosition),
       angler.setPosition(cfg.anglerPosition)
-    );
+    ));
   }
 
   public Command intakeCoral() {
     return this.startEnd(
-      intake::start, // can also be written as () -> intake.start()
+      intake::start,
       intake::stop
     )
-    // TODO: We need a sensor to tell us if we have coral
-    .until(() -> { return false; }) 
+    .until(intake::hasCoral) 
     .withTimeout(3);
   }
 
