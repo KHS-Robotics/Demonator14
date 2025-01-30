@@ -49,6 +49,7 @@ class Angler extends SubsystemBase {
   }
 
   private void changeSetPoint(double setpoint) {
+    setPointAngle = setpoint;
     pid.setReference(setpoint, ControlType.kPosition);
   }
 
