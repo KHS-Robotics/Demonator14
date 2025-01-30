@@ -55,6 +55,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void reelOut() {
+
     reel.setVoltage(-6);
   }
 
