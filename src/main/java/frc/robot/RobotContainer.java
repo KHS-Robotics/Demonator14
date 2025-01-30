@@ -141,8 +141,8 @@ public class RobotContainer {
     }, kSwerveDrive));
 
     // servo testing
-    kDriverController.a().onTrue(new InstantCommand(() -> kCageTwist.latch(), kCageTwist));
-    kDriverController.b().onTrue(new InstantCommand(() -> kCageTwist.unlatch(), kCageTwist));
+    kDriverController.a().onTrue(kCageTwist.latch());
+    kDriverController.b().onTrue(kCageTwist.unlatch());
     System.out.println("Xbox Controller Bound");
 
   }
