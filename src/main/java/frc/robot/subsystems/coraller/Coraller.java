@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CorallerConfig;
 
 public class Coraller extends SubsystemBase {
+
   private final Elevator elevator;
   private final Angler angler;
   private final Intake intake;
@@ -16,6 +17,8 @@ public class Coraller extends SubsystemBase {
     intake = new Intake();
   }
 
+
+
   public Command prepareToScore(Configuration cfg) {
     return Commands.parallel(
       this.runOnce(() -> elevator.setPosition(cfg.elevatorPosition)),
@@ -24,6 +27,7 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command intakeCoral() {
+
     return this.startEnd(
       intake::start, // can also be written as () -> intake.start()
       intake::stop
@@ -39,6 +43,7 @@ public class Coraller extends SubsystemBase {
       intake::stop
     )
     .withTimeout(.5);
+
   }
 
   @Override
