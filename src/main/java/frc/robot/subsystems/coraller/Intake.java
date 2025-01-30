@@ -22,11 +22,15 @@ class Intake {
   }
 
   // TODO() find out volts and which are inversed
-  public void intake() {
+  public void start() {
     intake.setVoltage(6);
   }
 
-  public void release() {
+  public void reverse() {
     intake.setVoltage(-6);
+  }
+  
+  public void stop() {
+    intake.setVoltage(0);
   }
 }

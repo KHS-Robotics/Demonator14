@@ -18,11 +18,21 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command intakeCoral() {
-    return this.runOnce(() -> intake.intake());
+    return this.startEnd(
+      intake::start, // can also be written as () -> intake.start()
+      intake::stop
+    )
+    // TODO: We need a sensor to tell us if we have coral
+    .until(() -> { return false; }) 
+    .withTimeout(3);
   }
 
   public Command releaseCoral() {
-    return this.runOnce(() -> intake.release());
+    return this.startEnd(
+      intake::reverse,
+      intake::stop
+    )
+    .withTimeout(.5);
   }
 
   @Override
