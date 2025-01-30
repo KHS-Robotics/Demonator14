@@ -15,7 +15,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.RobotMap;
 import frc.robot.Constants.CorallerConfig;
 
-public class Elevator {
+class Elevator {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
   private final SparkClosedLoopController pid;

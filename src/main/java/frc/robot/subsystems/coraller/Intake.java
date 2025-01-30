@@ -8,7 +8,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.RobotMap;
 
-public class Intake {
+class Intake {
   private final SparkMax intake;
 
   public Intake() {

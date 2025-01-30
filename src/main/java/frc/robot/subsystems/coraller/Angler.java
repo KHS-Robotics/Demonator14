@@ -14,7 +14,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.CorallerConfig;
 import frc.robot.RobotMap;
 
-public class Angler {
+class Angler {
   private final SparkMax motor;
   private final AbsoluteEncoder encoder;
   private final SparkClosedLoopController pid;
