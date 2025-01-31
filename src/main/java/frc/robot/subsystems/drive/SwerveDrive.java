@@ -29,10 +29,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -175,17 +176,42 @@ public class SwerveDrive extends SubsystemBase {
     thetaPid.setTolerance(1);
 
     this.configurePathPlannerAutoBuilder();
+
+    SmartDashboard.putData(this);
+
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.addDoubleProperty("Pose-X", () -> getPose().getX(), (xPoseMeters) -> {
+      var currentPose = getPose();
+      var updatedPose = new Pose2d(xPoseMeters, currentPose.getY(), currentPose.getRotation());
+      this.resetPose(updatedPose);
+    });
+    builder.addDoubleProperty("Pose-Y", () -> getPose().getY(), (yPoseMeters) -> {
+      var currentPose = getPose();
+      var updatedPose = new Pose2d(currentPose.getX(), yPoseMeters, currentPose.getRotation());
+      this.resetPose(updatedPose);
+    });
+    builder.addDoubleProperty("Pose-Theta", () -> getPose().getRotation().getDegrees(), (thetaPoseDegrees) -> {
+      var currentPose = getPose();
+      var updatedPose = new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(thetaPoseDegrees));
+      this.resetPose(updatedPose);
+    });
+    builder.addDoubleProperty("MaxTranslationalSpeed", () -> maxSpeedMetersPerSecond,
+        (maxSpeed) -> maxSpeedMetersPerSecond = maxSpeed);
+    builder.addDoubleProperty("MaxAngularSpeed", () -> maxAngularSpeedRadiansPerSecond,
+        (maxSpeed) -> maxAngularSpeedRadiansPerSecond = maxSpeed);
   }
 
   /** {@inheritDoc} */
   @Override
   public void periodic() {
     updateOdometryWithModuleStates();
-
-    var pose = getPose();
-    SmartDashboard.putNumber("Pose-X", pose.getX());
-    SmartDashboard.putNumber("Pose-Y", pose.getY());
-    SmartDashboard.putNumber("Pose-Theta", pose.getRotation().getDegrees());
   }
 
   /**

@@ -21,6 +21,8 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -37,7 +39,6 @@ import frc.robot.Constants.SwerveDriveConfig;
  */
 public class SwerveModule extends SubsystemBase {
   public final String name;
-  public final double offsetAngle;
 
   private final SparkMax driveMotor;
   private final RelativeEncoder driveEncoder;
@@ -48,6 +49,7 @@ public class SwerveModule extends SubsystemBase {
   private final SparkMax pivotMotor;
   private final PIDController pivotPID;
 
+  public double offsetAngle;
   private boolean isCurrentlyFlippedForShorterPath;
 
   /**
@@ -103,6 +105,8 @@ public class SwerveModule extends SubsystemBase {
     pivotPID.setTolerance(1);
 
     this.offsetAngle = offsetAngle;
+
+    SmartDashboard.putData(this);
   }
 
   /**
@@ -124,10 +128,32 @@ public class SwerveModule extends SubsystemBase {
 
   /** {@inheritDoc} */
   @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.addDoubleProperty("Speed", () -> getState().speedMetersPerSecond, (speedMetersPerSecond) -> {
+      if (RobotState.isTest()) {
+        setDesiredState(new SwerveModuleState(speedMetersPerSecond, getState().angle));
+      }
+    });
+    builder.addDoubleProperty("Angle", () -> getState().angle.getDegrees(), (angleDegrees) -> {
+      if (RobotState.isTest()) {
+        setDesiredState(new SwerveModuleState(getState().speedMetersPerSecond, Rotation2d.fromDegrees(angleDegrees)));
+      }
+    });
+    builder.addBooleanProperty("OptimizingAngle", () -> isCurrentlyFlippedForShorterPath, (v) -> {
+    });
+    builder.addDoubleProperty("OffsetAngle", () -> offsetAngle, (angleOffsetDegrees) -> {
+      if (RobotState.isTest()) {
+        offsetAngle = angleOffsetDegrees;
+      }
+    });
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public void periodic() {
-    var state = getState();
-    SmartDashboard.putNumber(this.name + "-Speed", state.speedMetersPerSecond);
-    SmartDashboard.putNumber(this.name + "-Angle", state.angle.getDegrees());
   }
 
   /**

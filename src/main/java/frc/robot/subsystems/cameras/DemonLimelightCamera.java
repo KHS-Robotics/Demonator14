@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -58,13 +59,30 @@ public class DemonLimelightCamera extends SubsystemBase {
 
     setName(limelightName);
     setPoseEstimateAlgorithm(peAlgorithm);
+
+    SmartDashboard.putData(this);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+
+    builder.setSmartDashboardType(getName());
+    builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates, (enable) -> enableAprilTagUpdates = enable);
+    builder.addBooleanProperty("HasPoseEstimate", latestPoseEstimate::isPresent, (v) -> {
+    });
+    builder.addStringProperty("Algorithm", () -> currentPEAlgorithm.toString(), (v) -> {
+    });
+    builder.addDoubleProperty("NumAprilTags",
+        () -> latestPoseEstimate.isPresent() ? latestPoseEstimate.get().tagCount : 0, (v) -> {
+        });
   }
 
   /** {@inheritDoc} */
   @Override
   public void periodic() {
     updateLatestPoseEstimate();
-    putLatestTelemetryToSmartDashboard();
   }
 
   /**
@@ -98,7 +116,8 @@ public class DemonLimelightCamera extends SubsystemBase {
   /**
    * Sets the camera to receive AprilTag updates or not for the odometry.
    * 
-   * @param enableAprilTagUpdates true to enable AprilTag updates, false to disable AprilTag updates
+   * @param enableAprilTagUpdates true to enable AprilTag updates, false to
+   *                              disable AprilTag updates
    */
   public void setEnableAprilTagUpdates(boolean enableAprilTagUpdates) {
     this.enableAprilTagUpdates = enableAprilTagUpdates;
@@ -176,18 +195,5 @@ public class DemonLimelightCamera extends SubsystemBase {
 
     // set latest update
     latestPoseEstimate = !doRejectUpdate ? Optional.of(mt2) : Optional.empty();
-  }
-
-  /**
-   * Updates the telemetry from the camera on SmartDashboard.
-   */
-  private void putLatestTelemetryToSmartDashboard() {
-    SmartDashboard.putBoolean(getName() + "-HasPoseEstimate", latestPoseEstimate.isPresent());
-    SmartDashboard.putString(getName() + "-Algorithm", currentPEAlgorithm.toString());
-    SmartDashboard.putBoolean(getName() + "-Enabled", enableAprilTagUpdates);
-
-    if (latestPoseEstimate.isPresent()) {
-      SmartDashboard.putNumber(getName() + "NumAprilTags", latestPoseEstimate.get().tagCount);
-    }
   }
 }

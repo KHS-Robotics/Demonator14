@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -74,6 +75,26 @@ public class DemonPhotonCamera extends SubsystemBase {
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     setCloseRangeAprilTagMode();
+
+    SmartDashboard.putData(this);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates, (enable) -> enableAprilTagUpdates = enable);
+    builder.addBooleanProperty("HasAprilTagUpdate", aprilTagUpdate::isPresent, (v) -> {
+    });
+    builder.addBooleanProperty("HasAlgaeTargets", algaeTargets::isPresent, (v) -> {
+    });
+    builder.addBooleanProperty("HasBestAlgaeTarget", bestAlgaeTarget::isPresent, (v) -> {
+    });
+    builder.addDoubleProperty("NumAprilTags",
+        () -> aprilTagUpdate.isPresent() ? aprilTagUpdate.get().cameraResult.getTargets().size() : 0, (v) -> {
+        });
+    builder.addDoubleProperty("NumAlgae", () -> algaeTargets.isPresent() ? algaeTargets.get().size() : 0, (v) -> {
+    });
   }
 
   /** {@inheritDoc} */
@@ -81,7 +102,6 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void periodic() {
     // make sure to call once per loop to get consistent results
     updateLatestVisionResults();
-    putLatestTelemetryToSmartDashboard();
   }
 
   /**
@@ -297,23 +317,6 @@ public class DemonPhotonCamera extends SubsystemBase {
       exception.printStackTrace();
       DriverStation.reportError("Failed to calculate stddev for Photon.", false);
       return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-    }
-  }
-
-  /**
-   * Updates the telemetry from the camera on SmartDashboard.
-   */
-  private void putLatestTelemetryToSmartDashboard() {
-    SmartDashboard.putBoolean(getName() + "-Enabled", enableAprilTagUpdates);
-    SmartDashboard.putBoolean(getName() + "-HasAprilTagUpdate", aprilTagUpdate.isPresent());
-    SmartDashboard.putBoolean(getName() + "-HasAlgaeTargets", algaeTargets.isPresent());
-    SmartDashboard.putBoolean(getName() + "-HasBestAlgaeTarget", bestAlgaeTarget.isPresent());
-
-    if (aprilTagUpdate.isPresent()) {
-      SmartDashboard.putNumber(getName() + "NumAprilTags", aprilTagUpdate.get().cameraResult.getTargets().size());
-    }
-    if (algaeTargets.isPresent()) {
-      SmartDashboard.putNumber(getName() + "NumAlgae", algaeTargets.get().size());
     }
   }
 
