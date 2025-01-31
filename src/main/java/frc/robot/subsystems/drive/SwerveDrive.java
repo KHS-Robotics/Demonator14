@@ -178,7 +178,6 @@ public class SwerveDrive extends SubsystemBase {
     this.configurePathPlannerAutoBuilder();
 
     SmartDashboard.putData(this);
-
   }
 
   /** {@inheritDoc} */
