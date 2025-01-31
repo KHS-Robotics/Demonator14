@@ -59,7 +59,7 @@ class Elevator extends SubsystemBase {
     pid.setReference(setpoint, ControlType.kPosition);
   }
 
-  public boolean isElevatorAtBottom() {
+  public boolean isAtBottom() {
     return getHeightFromGround() == CorallerConfig.kRobotElevatorStowHeightInches;
   }
 
