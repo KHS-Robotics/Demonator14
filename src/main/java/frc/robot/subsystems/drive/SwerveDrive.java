@@ -278,6 +278,21 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
+   * Resets the robot heading to be 0 when blue alliance and 180 when red
+   * alliance.
+   * 
+   * @return the command to reset the robot heading
+   */
+  public Command resetHeading() {
+    return this.runOnce(() -> {
+      var currentPose = getPose();
+      var currentAlliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var awayAngle = currentAlliance == Alliance.Red ? 180 : 0;
+      resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
+    }).withName("ResetRobotHeading");
+  }
+
+  /**
    * Gets the robot's current speed.
    * 
    * @return the robot's current speed

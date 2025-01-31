@@ -174,12 +174,7 @@ public class RobotContainer {
 
   /** Binds commands to xbox controller buttons. */
   private void configureXboxControllerBindings() {
-    kDriverController.start().onTrue(kSwerveDrive.runOnce(() -> {
-      var currentPose = kSwerveDrive.getPose();
-      var currentAlliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var awayAngle = currentAlliance == Alliance.Red ? 180 : 0;
-      kSwerveDrive.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
-    }).withName("ResetRobotHeading"));
+    kDriverController.start().onTrue(kSwerveDrive.resetHeading());
 
     // servo testing
     kDriverController.a().onTrue(kCageTwist.latch());
