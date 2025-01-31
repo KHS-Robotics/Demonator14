@@ -174,7 +174,7 @@ public class RobotContainer {
 
   /** Binds commands to xbox controller buttons. */
   private void configureXboxControllerBindings() {
-    kDriverController.start().onTrue(kSwerveDrive.resetHeading());
+    kDriverController.start().debounce(0.5).onTrue(kSwerveDrive.resetHeading());
 
     // servo testing
     kDriverController.a().onTrue(kCageTwist.latch());
