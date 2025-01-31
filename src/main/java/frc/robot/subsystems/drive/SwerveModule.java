@@ -142,7 +142,7 @@ public class SwerveModule extends SubsystemBase {
         setDesiredState(new SwerveModuleState(getState().speedMetersPerSecond, Rotation2d.fromDegrees(angleDegrees)));
       }
     });
-    builder.addBooleanProperty("OptimizingAngle", () -> isCurrentlyFlippedForShorterPath, (v) -> {
+    builder.addBooleanProperty("IsOptimizingAngle", () -> isCurrentlyFlippedForShorterPath, (v) -> {
     });
     builder.addDoubleProperty("OffsetAngle", () -> offsetAngle, (angleOffsetDegrees) -> {
       if (RobotState.isTest()) {

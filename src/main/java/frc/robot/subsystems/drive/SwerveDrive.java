@@ -186,12 +186,12 @@ public class SwerveDrive extends SubsystemBase {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
-    builder.addDoubleProperty("Pose-X", () -> getPose().getX(), (xPoseMeters) -> {
+    builder.addDoubleProperty("Pose-X", getPose()::getX, (xPoseMeters) -> {
       var currentPose = getPose();
       var updatedPose = new Pose2d(xPoseMeters, currentPose.getY(), currentPose.getRotation());
       this.resetPose(updatedPose);
     });
-    builder.addDoubleProperty("Pose-Y", () -> getPose().getY(), (yPoseMeters) -> {
+    builder.addDoubleProperty("Pose-Y", getPose()::getY, (yPoseMeters) -> {
       var currentPose = getPose();
       var updatedPose = new Pose2d(currentPose.getX(), yPoseMeters, currentPose.getRotation());
       this.resetPose(updatedPose);
