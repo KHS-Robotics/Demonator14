@@ -283,7 +283,7 @@ public class SwerveModule extends SubsystemBase {
    *         drive motor if there is a shorter path
    */
   private double calculateShortestPath(double targetAngle) {
-    var currentAngle = this.getAngle();
+    var currentAngle = getAngle();
     var dAngle = Math.abs(targetAngle - currentAngle);
 
     isCurrentlyFlippedForShorterPath = dAngle > 90 && dAngle < 270;

@@ -101,7 +101,7 @@ public class DemonLimelightCamera extends SubsystemBase {
    * @return the pose estimate algorithm that is currently being used
    */
   public LimelightPoseEstimateAlgorithm getCurrentPoseEstimateAlgorithm() {
-    return this.currentPEAlgorithm;
+    return currentPEAlgorithm;
   }
 
   /**

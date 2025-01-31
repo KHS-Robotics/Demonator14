@@ -175,7 +175,7 @@ public class SwerveDrive extends SubsystemBase {
     thetaPid.enableContinuousInput(-180.0, 180.0);
     thetaPid.setTolerance(1);
 
-    this.configurePathPlannerAutoBuilder();
+    configurePathPlannerAutoBuilder();
 
     SmartDashboard.putData(this);
   }
@@ -189,17 +189,17 @@ public class SwerveDrive extends SubsystemBase {
     builder.addDoubleProperty("Pose-X", getPose()::getX, (xPoseMeters) -> {
       var currentPose = getPose();
       var updatedPose = new Pose2d(xPoseMeters, currentPose.getY(), currentPose.getRotation());
-      this.resetPose(updatedPose);
+      resetPose(updatedPose);
     });
     builder.addDoubleProperty("Pose-Y", getPose()::getY, (yPoseMeters) -> {
       var currentPose = getPose();
       var updatedPose = new Pose2d(currentPose.getX(), yPoseMeters, currentPose.getRotation());
-      this.resetPose(updatedPose);
+      resetPose(updatedPose);
     });
     builder.addDoubleProperty("Pose-Theta", () -> getPose().getRotation().getDegrees(), (thetaPoseDegrees) -> {
       var currentPose = getPose();
       var updatedPose = new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(thetaPoseDegrees));
-      this.resetPose(updatedPose);
+      resetPose(updatedPose);
     });
     builder.addDoubleProperty("MaxTranslationalSpeed", () -> maxSpeedMetersPerSecond,
         (maxSpeed) -> maxSpeedMetersPerSecond = maxSpeed);
@@ -245,7 +245,7 @@ public class SwerveDrive extends SubsystemBase {
           this::getPose, // Robot pose supplier
           this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
           this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-          (speeds, feedforwards) -> this.setModuleStates(speeds), // Method that will drive the robot given ROBOT
+          (speeds, feedforwards) -> setModuleStates(speeds), // Method that will drive the robot given ROBOT
                                                                   // RELATIVE
           // ChassisSpeeds. Also optionally outputs individual module
           // feedforwards
@@ -309,7 +309,7 @@ public class SwerveDrive extends SubsystemBase {
    * @return the command to reset the robot heading
    */
   public Command resetHeading() {
-    return this.runOnce(() -> {
+    return runOnce(() -> {
       var currentPose = getPose();
       var currentAlliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var awayAngle = currentAlliance == Alliance.Red ? 180 : 0;
@@ -332,7 +332,7 @@ public class SwerveDrive extends SubsystemBase {
    * @param chassisSpeeds the desired robot speed
    */
   private void setModuleStates(final ChassisSpeeds chassisSpeeds) {
-    var desiredStates = this.getOptimizedModuleStatesFromChassisSpeeds(chassisSpeeds);
+    var desiredStates = getOptimizedModuleStatesFromChassisSpeeds(chassisSpeeds);
     kFrontLeft.setDesiredState(desiredStates[0], true);
     kFrontRight.setDesiredState(desiredStates[1], true);
     kRearLeft.setDesiredState(desiredStates[2], true);
@@ -422,7 +422,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public Command driveWithXboxController(CommandXboxController hid, BooleanSupplier fieldRelative,
       double joystickDeadband, double joystickSensitivity) {
-    return this.runEnd(() -> {
+    return runEnd(() -> {
       // Get the x speed. We are inverting this because Xbox controllers return
       // negative values when we push forward.
       var xSpeed = 0.0;
@@ -455,7 +455,7 @@ public class SwerveDrive extends SubsystemBase {
       // relative to the blue alliance (AKA facing towards red alliance)
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var sign = fieldRelative.getAsBoolean() && alliance == Alliance.Red ? -1 : 1;
-      this.drive(sign * xSpeed, sign * ySpeed, rotationSpeed, fieldRelative.getAsBoolean());
+      drive(sign * xSpeed, sign * ySpeed, rotationSpeed, fieldRelative.getAsBoolean());
     }, this::stop).withName("DriveWithXboxController");
   }
 
@@ -487,7 +487,7 @@ public class SwerveDrive extends SubsystemBase {
           : new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
 
       // set desired chassis speeds
-      this.setModuleStates(desiredChassisSpeeds);
+      setModuleStates(desiredChassisSpeeds);
     }
   }
 
@@ -559,7 +559,7 @@ public class SwerveDrive extends SubsystemBase {
         .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())), -1,
             1)
         * maxAngularSpeedRadiansPerSecond;
-    this.drive(xSpeed, ySpeed, rotateOutput, fieldOriented);
+    drive(xSpeed, ySpeed, rotateOutput, fieldOriented);
   }
 
   /**
@@ -568,7 +568,7 @@ public class SwerveDrive extends SubsystemBase {
    * @param setpointAngle
    */
   public void rotateToAngleInPlace(Rotation2d setpointAngle) {
-    this.holdAngleWhileDriving(0, 0, setpointAngle, false);
+    holdAngleWhileDriving(0, 0, setpointAngle, false);
   }
 
   /**
@@ -585,7 +585,7 @@ public class SwerveDrive extends SubsystemBase {
     double ySpeed = MathUtil.clamp(yPid.calculate(pose.getY(), target.getY()), -1, 1) * maxSpeedMetersPerSecond;
     double vTheta = MathUtil.clamp(thetaPid.calculate(normalizeAngle(pose.getRotation().getDegrees()),
         normalizeAngle(target.getRotation().getDegrees())), -1, 1) * maxAngularSpeedRadiansPerSecond;
-    this.drive(xSpeed, ySpeed, vTheta, fieldOriented);
+    drive(xSpeed, ySpeed, vTheta, fieldOriented);
   }
 
   /**
