@@ -205,7 +205,7 @@ public class RobotContainer {
     this.configurePathPlannerLogging();
   }
 
-  // /** https://pathplanner.dev/pplib-named-commands.html */
+  /** https://pathplanner.dev/pplib-named-commands.html */
   private void configureNamedCommandsForAuto() {
     NamedCommands.registerCommand("StopSwerve", kSwerveDrive.runOnce(kSwerveDrive::stop));
   }
