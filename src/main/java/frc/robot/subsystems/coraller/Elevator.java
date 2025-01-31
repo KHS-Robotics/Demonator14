@@ -45,7 +45,7 @@ class Elevator extends SubsystemBase {
   }
 
   public Command setPosition(double position) {
-    return this.runOnce(() -> setPositionInternal(position));
+    return runOnce(() -> setPositionInternal(position));
   }
 
     // sets height relative to the floor
