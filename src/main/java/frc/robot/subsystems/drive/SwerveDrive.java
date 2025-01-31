@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.function.BooleanSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -28,11 +30,15 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.RobotMap;
+import frc.robot.hid.HIDUtils;
 import frc.robot.Constants.SwerveDriveConfig;
 import frc.robot.RobotContainer;
 
@@ -49,10 +55,10 @@ public class SwerveDrive extends SubsystemBase {
   /** Deadband for rotational input speed for joystick driving. */
   private static final double kDriveOmegaDeadband = 0.005;
 
-  /** Max translational speed of the robot in meters per second. */
+  /** Max allowable translational speed of the robot in meters per second. */
   public static double maxSpeedMetersPerSecond = 4.6;
-  /** Max angular speed of the robot in radians per second. */
-  public static double maxAngularSpeedRadiansPerSecond = 3 * Math.PI;
+  /** Max allowable angular speed of the robot in radians per second. */
+  public static double maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
 
   private final SwerveModule kFrontLeft = new SwerveModule(
       "FL",
@@ -119,9 +125,8 @@ public class SwerveDrive extends SubsystemBase {
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html
    */
   private final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(
-      SwerveDriveConfig.kFrontLeftModuleOffset,
-      SwerveDriveConfig.kFrontRightModuleOffset, SwerveDriveConfig.kRearLeftModuleOffset,
-      SwerveDriveConfig.kRearRightModuleOffset);
+      SwerveDriveConfig.kFrontLeftModuleOffset, SwerveDriveConfig.kFrontRightModuleOffset,
+      SwerveDriveConfig.kRearLeftModuleOffset, SwerveDriveConfig.kRearRightModuleOffset);
 
   /**
    * Standard deviations of the pose estimate (x position in meters, y position in
@@ -129,7 +134,7 @@ public class SwerveDrive extends SubsystemBase {
    * <p>
    * Increase these numbers to trust the state estimate less.
    */
-  private static final Matrix<N3, N1> kDefaultStateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
+  public static final Matrix<N3, N1> kDefaultStateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
 
   /**
    * Standard deviations of the vision pose measurement (x position in meters, y
@@ -137,7 +142,7 @@ public class SwerveDrive extends SubsystemBase {
    * <p>
    * Increase these numbers to trust the vision pose measurement less.
    */
-  private static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(0.7, 0.7, Double.MAX_VALUE);
+  public static final Matrix<N3, N1> kDefaultVisionMeasurementStdDevs = VecBuilder.fill(0.7, 0.7, Double.MAX_VALUE);
 
   /**
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html
@@ -155,8 +160,7 @@ public class SwerveDrive extends SubsystemBase {
   private final PIDController yPid = new PIDController(SwerveDriveConfig.DRIVE_Y_P, SwerveDriveConfig.DRIVE_Y_I,
       SwerveDriveConfig.DRIVE_Y_D);
   private final PIDController thetaPid = new PIDController(SwerveDriveConfig.DRIVE_ANGLE_P,
-      SwerveDriveConfig.DRIVE_ANGLE_I,
-      SwerveDriveConfig.DRIVE_ANGLE_D);
+      SwerveDriveConfig.DRIVE_ANGLE_I, SwerveDriveConfig.DRIVE_ANGLE_D);
 
   /**
    * Constructs the Swerve Drive.
@@ -176,7 +180,7 @@ public class SwerveDrive extends SubsystemBase {
   /** {@inheritDoc} */
   @Override
   public void periodic() {
-    updateOdometry();
+    updateOdometryWithModuleStates();
 
     var pose = getPose();
     SmartDashboard.putNumber("Pose-X", pose.getX());
@@ -185,48 +189,22 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Updates the field relative position of the robot.
-   * 
-   * <p>
-   * 
-   * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-pose-estimators.html
-   */
-  private void updateOdometry() {
-    updateOdometryUsingTraction();
-    updateOdometryUsingLowerFrontPhotonCamera();
-
-    // TODO(work in progress): Vision adjustments using Limelight for rear camera
-    updateOdometryUsingRearLimelight();
-  }
-
-  /**
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-odometry.html#updating-the-robot-pose
    */
-  private void updateOdometryUsingTraction() {
+  private void updateOdometryWithModuleStates() {
     kPoseEstimator.updateWithTime(Timer.getFPGATimestamp(), getAngleForOdometry(), getSwerveModulePositions());
   }
 
   /**
-   * Updates the odometry using the lower front Photon Vision camera.
+   * Adjusts the robot's current position on the field using the given
+   * measurements from vision.
    * 
-   * @see {@link frc.robot.subsystems.cameras.DemonPhotonCamera#getLatestAprilTagResults}
+   * @param pose      the estimated pose of the robot from the vision
+   * @param timestamp the timestamp from when the robot's position was captured
+   * @param stdDevs   the standard deviations to use for the vision adjustments
    */
-  private void updateOdometryUsingLowerFrontPhotonCamera() {
-    RobotContainer.kLowerFrontPhotonCamera.getLatestAprilTagResults().ifPresent((result) -> {
-      kPoseEstimator.addVisionMeasurement(result.estimatedRobotPose.estimatedPose.toPose2d(),
-          result.estimatedRobotPose.timestampSeconds, result.stdDevs);
-    });
-  }
-
-  /**
-   * Updates the odometry using the rear Limelight camera.
-   * 
-   * @see {@link frc.robot.subsystems.cameras.DemonLimelightCamera#getLatestPoseEstimate}
-   */
-  private void updateOdometryUsingRearLimelight() {
-    RobotContainer.kRearLimelightCamera.getLatestPoseEstimate().ifPresent((estimate) -> {
-      kPoseEstimator.addVisionMeasurement(estimate.pose, estimate.timestampSeconds, kDefaultVisionMeasurementStdDevs);
-    });
+  public void addVisionMeasurementForOdometry(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs) {
+    kPoseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
   }
 
   /** https://pathplanner.dev/pplib-getting-started.html#holonomic-swerve */
@@ -389,6 +367,56 @@ public class SwerveDrive extends SubsystemBase {
    */
   private Rotation2d getAngleForOdometry() {
     return RobotContainer.kNavx.getRotation2d();
+  }
+
+  /**
+   * Command to drive the robot with an Xbox Controller.
+   * 
+   * @param hid                 the xbox controller
+   * @param fieldRelative       whether or not to use field relative drive
+   * @param joystickDeadband    the deadband for the joysticks to consider as
+   *                            non-zero
+   * @param joystickSensitivity ranges from [0, 1] where 0 is full linear and 1 is
+   *                            full cubic for smoother inputs
+   * @return the command to drive the robot with an Xbox Controller
+   */
+  public Command driveWithXboxController(CommandXboxController hid, BooleanSupplier fieldRelative,
+      double joystickDeadband, double joystickSensitivity) {
+    return this.runEnd(() -> {
+      // Get the x speed. We are inverting this because Xbox controllers return
+      // negative values when we push forward.
+      var xSpeed = 0.0;
+      var leftYInput = -hid.getLeftY();
+      if (Math.abs(leftYInput) > joystickDeadband) {
+        xSpeed = HIDUtils.smoothInputWithCubic(leftYInput, joystickSensitivity) * maxSpeedMetersPerSecond;
+      }
+
+      // Get the y speed or sideways/strafe speed. We are inverting this because
+      // we want a positive value when we pull to the left. Xbox controllers
+      // return positive values when you pull to the right by default.
+      var ySpeed = 0.0;
+      var leftXInput = -hid.getLeftX();
+      if (Math.abs(leftXInput) > joystickDeadband) {
+        ySpeed = HIDUtils.smoothInputWithCubic(leftXInput, joystickSensitivity) * maxSpeedMetersPerSecond;
+      }
+
+      // Get the rate of angular rotation. We are inverting this because we want a
+      // positive value when we pull to the left (remember, CCW is positive in
+      // mathematics). Xbox controllers return positive values when you pull to
+      // the right by default.
+      var rotationSpeed = 0.0;
+      var rightXInput = -hid.getRightX();
+      if (Math.abs(rightXInput) > joystickDeadband) {
+        rotationSpeed = HIDUtils.smoothInputWithCubic(rightXInput, joystickSensitivity)
+            * maxAngularSpeedRadiansPerSecond;
+      }
+
+      // flip drive input based on alliance since robot's movement is always
+      // relative to the blue alliance (AKA facing towards red alliance)
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var sign = fieldRelative.getAsBoolean() && alliance == Alliance.Red ? -1 : 1;
+      this.drive(sign * xSpeed, sign * ySpeed, rotationSpeed, fieldRelative.getAsBoolean());
+    }, this::stop).withName("DriveWithXboxController");
   }
 
   /**
