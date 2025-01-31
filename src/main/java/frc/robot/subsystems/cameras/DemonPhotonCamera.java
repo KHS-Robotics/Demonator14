@@ -89,12 +89,12 @@ public class DemonPhotonCamera extends SubsystemBase {
    * FPS.
    */
   public void setCloseRangeAprilTagMode() {
-    if (currentPipelineMode == PhotonPipelineMode.kAprilTagsLowResolution)
+    if (currentPipelineMode == PhotonPipelineMode.kAprilTagsHighFPS)
       return;
 
     algaeTargets = Optional.empty();
     bestAlgaeTarget = Optional.empty();
-    currentPipelineMode = PhotonPipelineMode.kAprilTagsLowResolution;
+    currentPipelineMode = PhotonPipelineMode.kAprilTagsHighFPS;
     camera.setPipelineIndex(currentPipelineMode.index);
   }
 
@@ -194,7 +194,7 @@ public class DemonPhotonCamera extends SubsystemBase {
       // process based on selected pipeline mode
       switch (currentPipelineMode) {
         // same AprilTag process for both resolutions
-        case kAprilTagsLowResolution:
+        case kAprilTagsHighFPS:
         case kAprilTagsHighResolution:
           processAprilTagResult(cameraResult);
           break;
@@ -324,7 +324,7 @@ public class DemonPhotonCamera extends SubsystemBase {
     /**
      * AprilTag detection mode for close range (lower resolution but higher FPS).
      */
-    kAprilTagsLowResolution(0),
+    kAprilTagsHighFPS(0),
 
     /**
      * AprilTag detection mode for far range (higher resolution for but lower FPS).
