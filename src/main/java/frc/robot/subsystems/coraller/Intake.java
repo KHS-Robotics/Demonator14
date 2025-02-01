@@ -21,8 +21,8 @@ class Intake extends SubsystemBase{
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
       .inverted(false);
-    intake = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
-    intake.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
+    motor = new SparkMax(RobotMap.CORALLER_INTAKE_MOTOR_ID, MotorType.kBrushless);
+    motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
       SparkBase.PersistMode.kPersistParameters);
 
     intakeSensor = intake.getForwardLimitSwitch();
@@ -42,15 +42,15 @@ class Intake extends SubsystemBase{
 
   // TODO() find out volts and which are inversed
   public void start() {
-    intake.setVoltage(6);
+    motor.setVoltage(6);
   }
   
   public void reverse() {
-    intake.setVoltage(-6);
+    motor.setVoltage(-6);
   }
   
   public void stop() {
-    intake.setVoltage(0);
+    motor.setVoltage(0);
   }
 
   //false if motor is off
@@ -59,6 +59,6 @@ class Intake extends SubsystemBase{
   }
 
   public boolean hasCoral() {
-    return intakeSensor.isPressed();
+    return sensor.isPressed();
   }
 }
