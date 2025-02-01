@@ -79,6 +79,7 @@ public class DemonPhotonCamera extends SubsystemBase {
     SmartDashboard.putData(this);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
