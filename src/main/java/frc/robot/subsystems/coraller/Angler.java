@@ -51,6 +51,7 @@ public class Angler extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
     builder.setActuator(true);
     builder.addDoubleProperty("SetPoint", this::getSetPoint, this::setSetpoint);
     builder.addDoubleProperty("Angle", this::getAngle, null);
@@ -83,5 +84,9 @@ public class Angler extends SubsystemBase {
     // TODO: sysid characterization + feedforward terms
     var output = pid.calculate(getAngle(), setpointAngle);
     motor.setVoltage(output);
+  }
+
+  public void stop(){
+    motor.stopMotor();
   }
 }

@@ -11,6 +11,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -42,6 +44,21 @@ class Elevator extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters);
     pid = new PIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD);
     encoder = motor.getEncoder();
+
+    SmartDashboard.putData(this);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.setActuator(true);
+    builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGround, this::setSetpoint);
+    builder.addDoubleProperty("HeightFromGround", () -> getHeightFromGround(),null);
+    builder.addDoubleProperty("RelativePosition", () -> getRelativePosition(), null);
+    builder.addBooleanProperty("IsAtSetPoint", this::isAtSetpoint,null);
+    builder.addBooleanProperty("IsElevatorAtBottom", () -> isAtBottom(), null);
   }
 
   @Override
@@ -50,10 +67,10 @@ class Elevator extends SubsystemBase {
   }
 
   public Command setSetpointComnand(double heightFromGround) {
-    return this.run(() -> setSetoint(heightFromGround)).until(this::isAtSetpoint);
+    return this.run(() -> setSetpoint(heightFromGround)).until(this::isAtSetpoint);
   }
 
-  public void setSetoint(double heightFromGround) {
+  public void setSetpoint(double heightFromGround) {
     setpointHeightFromGround = heightFromGround;
     setpointHeightRelative = heightFromGround - CorallerConfig.kRobotElevatorStowHeightInches;
   }
@@ -80,5 +97,9 @@ class Elevator extends SubsystemBase {
     // TODO: sysid characterization + feedforward terms
     var output = pid.calculate(getRelativePosition(), setpointHeightRelative);
     motor.setVoltage(output);
+  }
+
+  public void stop(){
+    motor.stopMotor();
   }
 }
