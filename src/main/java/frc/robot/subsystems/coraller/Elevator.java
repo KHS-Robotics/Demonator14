@@ -47,24 +47,7 @@ class Elevator extends SubsystemBase {
     encoder = motor.getEncoder();
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    builder.setSmartDashboardType(getName());
-    builder.setActuator(true);
-    builder.addDoubleProperty("SetPoint", () -> getSetPoint(),null);
-    builder.addDoubleProperty("HeightFromGround", () -> getHeightFromGround(),null);
-    builder.addDoubleProperty("RelativePosition", () -> getRelativePosition(), null);
-    builder.addBooleanProperty("SetPoint", () -> isAtSetPoint(),null);
-    builder.addBooleanProperty("IsElevatorAtBottom", () -> isElevatorAtBottom(), null);
-  }
-
-     /** {@inheritDoc} */
-  @Override
-  public void periodic() {
-  }
- 
+  
 
 
   public Command setPosition(double position) {
