@@ -38,6 +38,7 @@ import frc.robot.Constants.SwerveDriveConfig;
  */
 public class SwerveModule extends SubsystemBase {
   public final String name;
+  public final double offsetAngle;
 
   private final SparkMax driveMotor;
   private final RelativeEncoder driveEncoder;
@@ -48,7 +49,6 @@ public class SwerveModule extends SubsystemBase {
   private final SparkMax pivotMotor;
   private final PIDController pivotPID;
 
-  public double offsetAngle;
   private boolean isCurrentlyFlippedForShorterPath;
 
   /**
