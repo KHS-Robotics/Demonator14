@@ -76,6 +76,8 @@ public final class Constants {
      * robot ➔ camera) in the <a href=
      * "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/geometry/coordinate-systems.html#robot-coordinate-system">Robot
      * Coordinate System</a>.
+     * <p>
+     * <b>This must be configured in the Limelight UI too under 3-D.</b>
      */
     public static final Transform3d kRobotToRearCamera = new Transform3d(Units.inchesToMeters(0),
         Units.inchesToMeters(0), Units.inchesToMeters(0), new Rotation3d(0, 0, 0));
