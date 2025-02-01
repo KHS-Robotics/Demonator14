@@ -57,7 +57,7 @@ public class SwerveDrive extends SubsystemBase {
   private static final double kDriveOmegaDeadband = 0.005;
 
   /** Max allowable translational speed of the robot in meters per second. */
-  public static double maxSpeedMetersPerSecond = 4.6;
+  public static double maxTranslationalSpeedMetersPerSecond = 4.6;
   /** Max allowable angular speed of the robot in radians per second. */
   public static double maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
 
@@ -201,10 +201,10 @@ public class SwerveDrive extends SubsystemBase {
       var updatedPose = new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(thetaPoseDegrees));
       resetPose(updatedPose);
     });
-    builder.addDoubleProperty("MaxTranslationalSpeed", () -> maxSpeedMetersPerSecond,
-        (maxSpeed) -> maxSpeedMetersPerSecond = maxSpeed);
-    builder.addDoubleProperty("MaxAngularSpeed", () -> maxAngularSpeedRadiansPerSecond,
-        (maxSpeed) -> maxAngularSpeedRadiansPerSecond = maxSpeed);
+    builder.addDoubleProperty("MaxTranslationalSpeed", () -> maxTranslationalSpeedMetersPerSecond,
+        (maxSpeedMetersPerSecond) -> maxTranslationalSpeedMetersPerSecond = maxSpeedMetersPerSecond);
+    builder.addDoubleProperty("MaxAngularSpeed", () -> Math.toDegrees(maxAngularSpeedRadiansPerSecond),
+        (maxSpeedDegreesPerSecond) -> maxAngularSpeedRadiansPerSecond = Math.toRadians(maxSpeedDegreesPerSecond));
   }
 
   /** {@inheritDoc} */
@@ -349,7 +349,7 @@ public class SwerveDrive extends SubsystemBase {
     // corrections + desaturating
     var optimizedChassisSpeeds = correctForDynamics(originalSpeeds);
     var optimizedModuleStates = kSwerveKinematics.toSwerveModuleStates(optimizedChassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(optimizedModuleStates, maxSpeedMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(optimizedModuleStates, maxTranslationalSpeedMetersPerSecond);
     return optimizedModuleStates;
   }
 
@@ -428,7 +428,7 @@ public class SwerveDrive extends SubsystemBase {
       var xSpeed = 0.0;
       var leftYInput = -hid.getLeftY();
       if (Math.abs(leftYInput) > joystickDeadband) {
-        xSpeed = HIDUtils.smoothInputWithCubic(leftYInput, joystickSensitivity) * maxSpeedMetersPerSecond;
+        xSpeed = HIDUtils.smoothInputWithCubic(leftYInput, joystickSensitivity) * maxTranslationalSpeedMetersPerSecond;
       }
 
       // Get the y speed or sideways/strafe speed. We are inverting this because
@@ -437,7 +437,7 @@ public class SwerveDrive extends SubsystemBase {
       var ySpeed = 0.0;
       var leftXInput = -hid.getLeftX();
       if (Math.abs(leftXInput) > joystickDeadband) {
-        ySpeed = HIDUtils.smoothInputWithCubic(leftXInput, joystickSensitivity) * maxSpeedMetersPerSecond;
+        ySpeed = HIDUtils.smoothInputWithCubic(leftXInput, joystickSensitivity) * maxTranslationalSpeedMetersPerSecond;
       }
 
       // Get the rate of angular rotation. We are inverting this because we want a
@@ -590,8 +590,8 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void goToPose(Pose2d target, boolean fieldOriented) {
     Pose2d pose = getPose();
-    double xSpeed = MathUtil.clamp(xPid.calculate(pose.getX(), target.getX()), -1, 1) * maxSpeedMetersPerSecond;
-    double ySpeed = MathUtil.clamp(yPid.calculate(pose.getY(), target.getY()), -1, 1) * maxSpeedMetersPerSecond;
+    double xSpeed = MathUtil.clamp(xPid.calculate(pose.getX(), target.getX()), -1, 1) * maxTranslationalSpeedMetersPerSecond;
+    double ySpeed = MathUtil.clamp(yPid.calculate(pose.getY(), target.getY()), -1, 1) * maxTranslationalSpeedMetersPerSecond;
     double vTheta = MathUtil.clamp(thetaPid.calculate(normalizeAngle(pose.getRotation().getDegrees()),
         normalizeAngle(target.getRotation().getDegrees())), -1, 1) * maxAngularSpeedRadiansPerSecond;
     drive(xSpeed, ySpeed, vTheta, fieldOriented);
