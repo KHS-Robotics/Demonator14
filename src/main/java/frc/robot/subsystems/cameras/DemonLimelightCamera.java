@@ -69,14 +69,12 @@ public class DemonLimelightCamera extends SubsystemBase {
     super.initSendable(builder);
 
     builder.setSmartDashboardType(getName());
-    builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates, (enable) -> enableAprilTagUpdates = enable);
-    builder.addBooleanProperty("HasPoseEstimate", latestPoseEstimate::isPresent, (v) -> {
-    });
-    builder.addStringProperty("Algorithm", () -> currentPEAlgorithm.toString(), (v) -> {
-    });
+    builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates,
+        (enable) -> enableAprilTagUpdates = enable);
+    builder.addBooleanProperty("HasPoseEstimate", latestPoseEstimate::isPresent, null);
+    builder.addStringProperty("Algorithm", () -> currentPEAlgorithm.toString(), null);
     builder.addDoubleProperty("NumAprilTags",
-        () -> latestPoseEstimate.isPresent() ? latestPoseEstimate.get().tagCount : 0, (v) -> {
-        });
+        () -> latestPoseEstimate.isPresent() ? latestPoseEstimate.get().tagCount : 0, null);
   }
 
   /** {@inheritDoc} */

@@ -83,18 +83,14 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
-    builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates, (enable) -> enableAprilTagUpdates = enable);
-    builder.addBooleanProperty("HasAprilTagUpdate", aprilTagUpdate::isPresent, (v) -> {
-    });
-    builder.addBooleanProperty("HasAlgaeTargets", algaeTargets::isPresent, (v) -> {
-    });
-    builder.addBooleanProperty("HasBestAlgaeTarget", bestAlgaeTarget::isPresent, (v) -> {
-    });
+    builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates,
+        (enable) -> enableAprilTagUpdates = enable);
+    builder.addBooleanProperty("HasAprilTagUpdate", aprilTagUpdate::isPresent, null);
+    builder.addBooleanProperty("HasAlgaeTargets", algaeTargets::isPresent, null);
+    builder.addBooleanProperty("HasBestAlgaeTarget", bestAlgaeTarget::isPresent, null);
     builder.addDoubleProperty("NumAprilTags",
-        () -> aprilTagUpdate.isPresent() ? aprilTagUpdate.get().cameraResult.getTargets().size() : 0, (v) -> {
-        });
-    builder.addDoubleProperty("NumAlgae", () -> algaeTargets.isPresent() ? algaeTargets.get().size() : 0, (v) -> {
-    });
+        () -> aprilTagUpdate.isPresent() ? aprilTagUpdate.get().cameraResult.getTargets().size() : 0, null);
+    builder.addDoubleProperty("NumAlgae", () -> algaeTargets.isPresent() ? algaeTargets.get().size() : 0, null);
   }
 
   /** {@inheritDoc} */

@@ -22,7 +22,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -132,23 +131,10 @@ public class SwerveModule extends SubsystemBase {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
-    builder.addDoubleProperty("Speed", () -> getState().speedMetersPerSecond, (speedMetersPerSecond) -> {
-      if (RobotState.isTest()) {
-        setDesiredState(new SwerveModuleState(speedMetersPerSecond, getState().angle));
-      }
-    });
-    builder.addDoubleProperty("Angle", () -> getState().angle.getDegrees(), (angleDegrees) -> {
-      if (RobotState.isTest()) {
-        setDesiredState(new SwerveModuleState(getState().speedMetersPerSecond, Rotation2d.fromDegrees(angleDegrees)));
-      }
-    });
-    builder.addBooleanProperty("IsOptimizingAngle", () -> isCurrentlyFlippedForShorterPath, (v) -> {
-    });
-    builder.addDoubleProperty("OffsetAngle", () -> offsetAngle, (angleOffsetDegrees) -> {
-      if (RobotState.isTest()) {
-        offsetAngle = angleOffsetDegrees;
-      }
-    });
+    builder.addDoubleProperty("Speed", () -> getState().speedMetersPerSecond, null);
+    builder.addDoubleProperty("Angle", () -> getState().angle.getDegrees(), null);
+    builder.addBooleanProperty("IsOptimizingAngle", () -> isCurrentlyFlippedForShorterPath, null);
+    builder.addDoubleProperty("OffsetAngle", () -> offsetAngle, null);
   }
 
   /** {@inheritDoc} */
