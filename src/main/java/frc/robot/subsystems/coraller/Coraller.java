@@ -10,12 +10,12 @@ public class Coraller extends SubsystemBase {
   private final Angler angler = new Angler();
   private final Intake intake = new Intake();
 
-  public Command reconfigure(Configuration cfg) {
+  public Command prepareToScore(Configuration cfg) {
     return runOnce(() -> Commands.parallel(
-      elevator.setPosition(cfg.elevatorPosition),
-      angler.setPosition(cfg.anglerPosition)
-    ));
-  }
+      elevator.setSetpointComnand(cfg.elevatorPosition),
+      angler.setSetpointComnand(cfg.anglerPosition)
+    )); 
+} 
 
   public Command intakeCoral() {
     return startEnd(
