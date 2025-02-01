@@ -73,7 +73,7 @@ public class DemonLimelightCamera extends SubsystemBase {
         (enable) -> enableAprilTagUpdates = enable);
     builder.addBooleanProperty("HasPoseEstimate", latestPoseEstimate::isPresent, null);
     builder.addStringProperty("Algorithm", () -> currentPEAlgorithm.toString(), null);
-    builder.addDoubleProperty("NumAprilTags",
+    builder.addIntegerProperty("NumAprilTags",
         () -> latestPoseEstimate.isPresent() ? latestPoseEstimate.get().tagCount : 0, null);
   }
 
