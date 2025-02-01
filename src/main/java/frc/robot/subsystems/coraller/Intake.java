@@ -36,7 +36,7 @@ class Intake extends SubsystemBase{
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addBooleanProperty("hasCoral", () -> hasCoral(), null);
+    builder.addBooleanProperty("hasCoral", this::hasCoral, null);
   }
 
   // TODO() find out volts and which are inversed
