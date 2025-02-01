@@ -10,35 +10,35 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.RobotMap;
 
 class Intake {
-  private final SparkMax intake;
-  private final SparkLimitSwitch intakeSensor;
+  private final SparkMax motor;
+  private final SparkLimitSwitch sensor;
 
   public Intake() {
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
       .inverted(false);
-    intake = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
-    intake.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
+    motor = new SparkMax(RobotMap.CORALLER_INTAKE_MOTOR_ID, MotorType.kBrushless);
+    motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
       SparkBase.PersistMode.kPersistParameters);
 
-    intakeSensor = intake.getForwardLimitSwitch();
+    sensor = motor.getForwardLimitSwitch();
   }
 
   // TODO() find out volts and which are inversed
   public void start() {
-    intake.setVoltage(6);
+    motor.setVoltage(6);
   }
   
   public void reverse() {
-    intake.setVoltage(-6);
+    motor.setVoltage(-6);
   }
   
   public void stop() {
-    intake.setVoltage(0);
+    motor.setVoltage(0);
   }
 
   public boolean hasCoral() {
-    return intakeSensor.isPressed();
+    return sensor.isPressed();
   }
 }

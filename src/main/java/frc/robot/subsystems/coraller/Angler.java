@@ -45,7 +45,7 @@ class Angler extends SubsystemBase {
   }
 
   public Command setPosition(double pos) {
-    return this.runOnce(() -> changeSetPoint(pos));
+    return runOnce(() -> changeSetPoint(pos));
   }
 
   private void changeSetPoint(double setpoint) {
