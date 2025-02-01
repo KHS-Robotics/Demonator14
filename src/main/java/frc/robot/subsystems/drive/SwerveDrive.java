@@ -346,10 +346,19 @@ public class SwerveDrive extends SubsystemBase {
    * @return the optimized swerve module states
    */
   private SwerveModuleState[] getOptimizedModuleStatesFromChassisSpeeds(final ChassisSpeeds originalSpeeds) {
-    // corrections + desaturating
+    // optimize chassis speeds
     var optimizedChassisSpeeds = correctForDynamics(originalSpeeds);
+
+    // TODO: add second parameter to change center of rotation with
+    // toSwerveModuleStates AKA ability to switch between Translation2d.kZero and at
+    // another point on our robot. Perhaps make a command to change the point of rotation
+    // for the below method call
+    // https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#using-custom-centers-of-rotation
     var optimizedModuleStates = kSwerveKinematics.toSwerveModuleStates(optimizedChassisSpeeds);
+
+    // normalize wheel speeds  
     SwerveDriveKinematics.desaturateWheelSpeeds(optimizedModuleStates, maxTranslationalSpeedMetersPerSecond);
+
     return optimizedModuleStates;
   }
 
@@ -590,8 +599,10 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void goToPose(Pose2d target, boolean fieldOriented) {
     Pose2d pose = getPose();
-    double xSpeed = MathUtil.clamp(xPid.calculate(pose.getX(), target.getX()), -1, 1) * maxTranslationalSpeedMetersPerSecond;
-    double ySpeed = MathUtil.clamp(yPid.calculate(pose.getY(), target.getY()), -1, 1) * maxTranslationalSpeedMetersPerSecond;
+    double xSpeed = MathUtil.clamp(xPid.calculate(pose.getX(), target.getX()), -1, 1)
+        * maxTranslationalSpeedMetersPerSecond;
+    double ySpeed = MathUtil.clamp(yPid.calculate(pose.getY(), target.getY()), -1, 1)
+        * maxTranslationalSpeedMetersPerSecond;
     double vTheta = MathUtil.clamp(thetaPid.calculate(normalizeAngle(pose.getRotation().getDegrees()),
         normalizeAngle(target.getRotation().getDegrees())), -1, 1) * maxAngularSpeedRadiansPerSecond;
     drive(xSpeed, ySpeed, vTheta, fieldOriented);
