@@ -351,7 +351,8 @@ public class SwerveDrive extends SubsystemBase {
 
     // TODO: add class variable for second parameter to change center of rotation
     // with toSwerveModuleStates AKA ability to switch between Translation2d.kZero
-    // and at another point on our robot.
+    // and at another point on our robot using a Command that will be eventually bound
+    // to a buton for the driver.
     // https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#using-custom-centers-of-rotation
     var optimizedModuleStates = kSwerveKinematics.toSwerveModuleStates(optimizedChassisSpeeds, Translation2d.kZero);
 
