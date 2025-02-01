@@ -37,6 +37,7 @@ class Intake extends SubsystemBase{
     builder.setSafeState(this::stop);
     builder.setActuator(true);
     builder.addBooleanProperty("hasCoral", this::hasCoral, null);
+    builder.addBooleanProperty("MotorIsOn", this::isMotorOn, null);
   }
 
   // TODO() find out volts and which are inversed
@@ -50,6 +51,11 @@ class Intake extends SubsystemBase{
   
   public void stop() {
     intake.setVoltage(0);
+  }
+
+  //false if motor is off
+  public boolean isMotorOn(){
+    return !(intake.get() == 0);
   }
 
   public boolean hasCoral() {
