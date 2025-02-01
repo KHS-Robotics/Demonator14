@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -43,7 +44,24 @@ class Elevator extends SubsystemBase {
     pid = motor.getClosedLoopController();
     encoder = motor.getEncoder();
   }
+/** {@inheritDoc} */
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setActuator(true);
+    builder.addDoubleProperty("SetPoint", () -> getSetPoint(),null);
+    builder.addDoubleProperty("HeightFromGround", () -> getHeightFromGround(),null);
+    builder.addDoubleProperty("RelativePosition", () -> getRelativePosition(), null);
+    builder.addBooleanProperty("SetPoint", () -> isAtSetPoint(),null);
+    builder.addBooleanProperty("IsElevatorAtBottom", () -> isElevatorAtBottom(), null);
+  }
 
+     /** {@inheritDoc} */
+  @Override
+  public void periodic() {
+  }
+ 
   public Command setPosition(double position) {
     return this.runOnce(() -> setPositionInternal(position));
   }
