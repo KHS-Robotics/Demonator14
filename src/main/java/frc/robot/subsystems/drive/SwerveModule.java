@@ -131,6 +131,7 @@ public class SwerveModule extends SubsystemBase {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
+    builder.setActuator(true);
     builder.addDoubleProperty("Speed", () -> getState().speedMetersPerSecond, null);
     builder.addDoubleProperty("Angle", () -> getState().angle.getDegrees(), null);
     builder.addBooleanProperty("IsOptimizingAngle", () -> isCurrentlyFlippedForShorterPath, null);
