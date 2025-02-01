@@ -177,6 +177,8 @@ public class SwerveDrive extends SubsystemBase {
 
     configurePathPlannerAutoBuilder();
 
+    resetPose(new Pose2d(8.5, 4.0, Rotation2d.fromDegrees(0)));
+
     SmartDashboard.putData(this);
   }
 
@@ -202,7 +204,7 @@ public class SwerveDrive extends SubsystemBase {
       resetPose(updatedPose);
     });
     builder.addDoubleProperty("MaxTranslationalSpeed", () -> maxTranslationalSpeedMetersPerSecond,
-        (maxSpeedMetersPerSecond) -> maxTranslationalSpeedMetersPerSecond = maxSpeedMetersPerSecond);
+        (maxSpeedMetersPerSecond) -> maxTranslationalSpeedMetersPerSecond = Math.abs(maxSpeedMetersPerSecond));
     builder.addDoubleProperty("MaxAngularSpeed", () -> Math.toDegrees(maxAngularSpeedRadiansPerSecond),
         (maxSpeedDegreesPerSecond) -> maxAngularSpeedRadiansPerSecond = Math.toRadians(maxSpeedDegreesPerSecond));
   }
@@ -299,7 +301,6 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void resetPose(Pose2d pose) {
     kPoseEstimator.resetPosition(getAngleForOdometry(), getSwerveModulePositions(), pose);
-    RobotContainer.kLowerFrontPhotonCamera.setInitialPose(pose);
   }
 
   /**
@@ -351,8 +352,8 @@ public class SwerveDrive extends SubsystemBase {
 
     // TODO: add class variable for second parameter to change center of rotation
     // with toSwerveModuleStates AKA ability to switch between Translation2d.kZero
-    // and at another point on our robot using a Command that will be eventually bound
-    // to a buton for the driver.
+    // and at another point on our robot using a Command that will be eventually
+    // bound to a buton for the driver.
     // https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#using-custom-centers-of-rotation
     var optimizedModuleStates = kSwerveKinematics.toSwerveModuleStates(optimizedChassisSpeeds, Translation2d.kZero);
 

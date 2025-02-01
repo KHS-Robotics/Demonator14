@@ -6,6 +6,7 @@ package frc.robot.subsystems.cameras;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -23,6 +24,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.PhotonVisionConfig;
@@ -92,7 +94,7 @@ public class DemonPhotonCamera extends SubsystemBase {
     builder.addIntegerProperty("NumAprilTags",
         () -> aprilTagUpdate.isPresent() ? aprilTagUpdate.get().cameraResult.getTargets().size() : 0, null);
     builder.addIntegerProperty("NumAlgae", () -> algaeTargets.isPresent() ? algaeTargets.get().size() : 0, null);
-    builder.addStringProperty("PipelineMode", () -> currentPipelineMode.toString(), null);
+    builder.addStringProperty("PipelineMode", currentPipelineMode::toString, null);
   }
 
   /** {@inheritDoc} */
@@ -100,6 +102,54 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void periodic() {
     // make sure to call once per loop to get consistent results
     updateLatestVisionResults();
+  }
+
+  /**
+   * Command to apply an action to Photon pose updates.
+   * 
+   * @param action the action for the Photon pose update
+   * @return a command to apply an action to Photon pose updates
+   */
+  public Command pollForPoseUpdates(Consumer<PhotonPoseUpdate> action) {
+    // instantiate command so we can override runsWhenDisabled to true
+    var pollForPoseUpdatesCmd = new Command() {
+      @Override
+      public void execute() {
+        getLatestAprilTagResults().ifPresent((estimate) -> action.accept(estimate));
+      }
+
+      @Override
+      public boolean runsWhenDisabled() {
+        return true;
+      }
+    };
+    pollForPoseUpdatesCmd.addRequirements(this);
+    pollForPoseUpdatesCmd.setName(getName() + "_PollForPoseUpdates");
+    return pollForPoseUpdatesCmd;
+  }
+
+  /**
+   * Command to update the pipeline mode for the camera.
+   * 
+   * @param mode the mode to switch to
+   * @return the command to update the pipeline mode for the camera
+   */
+  public Command setPipelineMode(PhotonPipelineMode mode) {
+    return runOnce(() -> {
+      switch (mode) {
+        case kAprilTagsHighFPS:
+          setCloseRangeAprilTagMode();
+          break;
+        case kAprilTagsHighResolution:
+          setFarRangeAprilTagMode();
+          break;
+        case kAlgae:
+          setAlgaeMode();
+          break;
+        default:
+          DriverStation.reportWarning("Unsupported Photon pipeline mode: " + mode, false);
+      }
+    });
   }
 
   /**
@@ -140,18 +190,6 @@ public class DemonPhotonCamera extends SubsystemBase {
     aprilTagUpdate = Optional.empty();
     currentPipelineMode = PhotonPipelineMode.kAlgae;
     camera.setPipelineIndex(currentPipelineMode.index);
-  }
-
-  /**
-   * Sets the initial pose for
-   * {@link org.photonvision.PhotonPoseEstimator#setReferencePose(Pose2d)} and
-   * {@link org.photonvision.PhotonPoseEstimator#setLastPose(Pose2d)}
-   * 
-   * @param pose the initial pose for the photon pose estimator
-   */
-  public void setInitialPose(Pose2d pose) {
-    poseEstimator.setReferencePose(pose);
-    poseEstimator.setLastPose(pose);
   }
 
   /**
@@ -220,7 +258,7 @@ public class DemonPhotonCamera extends SubsystemBase {
           processAlgaeResult(cameraResult);
           break;
         default:
-          DriverStation.reportWarning("Invalid pipeline mode.", false);
+          DriverStation.reportWarning("Unsupported Photon pipeline mode: " + currentPipelineMode, false);
       }
     }
   }

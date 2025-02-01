@@ -97,11 +97,9 @@ public class RobotContainer {
    * and commands.
    */
   public RobotContainer() {
-    this.configureSubsystemDefaultCommands();
-    this.configureBindings();
-    this.configureAutonomous();
-
-    kSwerveDrive.resetPose(new Pose2d(8.5, 4.0, Rotation2d.fromDegrees(0)));
+    configureSubsystemDefaultCommands();
+    configureBindings();
+    configureAutonomous();
 
     SmartDashboard.putData(kField);
     SmartDashboard.putData(CommandScheduler.getInstance());
@@ -115,63 +113,36 @@ public class RobotContainer {
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
         HIDConfig.kJoystickDeadband, HIDConfig.kJoystickSensitivity));
 
-    // periodic vision updates
-    // instantiate the command in-line so we can set runsWhenDisabled to true
-    var defaultLowerFrontPhotonCameraCmd = new Command() {
-      @Override
-      public void execute() {
-        kLowerFrontPhotonCamera.getLatestAprilTagResults().ifPresent((result) -> {
-          kSwerveDrive.addVisionMeasurementForOdometry(result.estimatedRobotPose.estimatedPose.toPose2d(),
-              result.estimatedRobotPose.timestampSeconds, result.stdDevs);
-        });
-      }
+    // LowerFrontPhotonCamera - AprilTag updates for odometry
+    kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
+        (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
+            update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
 
-      @Override
-      public boolean runsWhenDisabled() {
-        return true;
-      }
-    };
-    defaultLowerFrontPhotonCameraCmd.addRequirements(kLowerFrontPhotonCamera);
-    defaultLowerFrontPhotonCameraCmd.setName("UpdateOdometryWithLowerFrontPhotonCamera");
-    kLowerFrontPhotonCamera.setDefaultCommand(defaultLowerFrontPhotonCameraCmd);
-
-    // periodic vision updates
-    // instantiate the command in-line so we can set runsWhenDisabled to true
-    var defaultRearLimelightCameraCmd = new Command() {
-      @Override
-      public void execute() {
-        kRearLimelightCamera.getLatestPoseEstimate().ifPresent((estimate) -> {
-          kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose, estimate.timestampSeconds,
-              SwerveDrive.kDefaultVisionMeasurementStdDevs);
-        });
-      }
-
-      @Override
-      public boolean runsWhenDisabled() {
-        return true;
-      }
-    };
-    defaultRearLimelightCameraCmd.addRequirements(kRearLimelightCamera);
-    defaultRearLimelightCameraCmd.setName("UpdateOdometryWithRearLimelightCamera");
-    kRearLimelightCamera.setDefaultCommand(defaultRearLimelightCameraCmd);
+    // RearLimelightCamera - AprilTag updates for odometry
+    kRearLimelightCamera.setDefaultCommand(
+        kRearLimelightCamera
+            .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**
    * https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
    */
   private void configureBindings() {
-    this.configureAutomatedBindings();
-    this.configureXboxControllerBindings();
-    this.configureOpertatorStickBindings();
+    configureAutomatedBindings();
+    configureXboxControllerBindings();
+    configureOpertatorStickBindings();
   }
 
   /** Automated bindings that happen without pressing any buttons. */
   private void configureAutomatedBindings() {
-
   }
 
   /** Binds commands to xbox controller buttons. */
   private void configureXboxControllerBindings() {
+    // reset robot heading to face away from the driver - this is useful during
+    // driver practice to reset for field oriented driving direction or a rare odd
+    // scenario on the field during a match
     kDriverController.start().debounce(0.5).onTrue(kSwerveDrive.resetHeading());
 
     // servo testing
@@ -185,25 +156,33 @@ public class RobotContainer {
 
   /** https://pathplanner.dev/home.html */
   private void configureAutonomous() {
+    // named commands for PathPlanner created auton routines
     configureNamedCommandsForAuto();
 
     // Build an auto chooser. This will use Commands.none() as the default option.
     // https://pathplanner.dev/pplib-build-an-auto.html#create-a-sendablechooser-with-all-autos-in-project
     m_autoChooser = AutoBuilder.buildAutoChooser();
 
-    // Another option that allows you to specify the default auto by its name
+    // Another option that allows you to specify the default auto by its name from
+    // PathPlanner
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
+    // add auton chooser to the Dashboard GUI for the drivers
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
-    this.configurePathPlannerLogging();
+
+    // PathPlanner logging for the current robot pose, trajectory and target pose
+    // when running PathPlanner paths
+    configurePathPlannerLogging();
   }
 
   /** https://pathplanner.dev/pplib-named-commands.html */
   private void configureNamedCommandsForAuto() {
+    // String names here must match what is used in the PathPlanner GUI in order to
+    // work properly
     NamedCommands.registerCommand("StopSwerve", kSwerveDrive.stopCommand());
   }
 
-  // /** https://pathplanner.dev/pplib-custom-logging.html */
+  /** https://pathplanner.dev/pplib-custom-logging.html */
   private void configurePathPlannerLogging() {
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {

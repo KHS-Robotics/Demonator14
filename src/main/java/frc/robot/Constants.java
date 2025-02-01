@@ -69,7 +69,7 @@ public final class Constants {
     public static final String kRearCameraName = "limelight";
 
     /** The pose estimation algorithm to use, */
-    public static final LimelightPoseEstimateAlgorithm kPoseAlgorithm = LimelightPoseEstimateAlgorithm.kMegatag2;
+    public static final LimelightPoseEstimateAlgorithm kPoseAlgorithm = LimelightPoseEstimateAlgorithm.Megatag2;
 
     /**
      * Transform3d from the center of the robot to the camera mount position (ie,
