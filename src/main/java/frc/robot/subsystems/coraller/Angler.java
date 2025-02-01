@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -43,19 +44,34 @@ public class Angler extends SubsystemBase {
     setMotorOutputForSetpoint();
   }
 
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setActuator(true);
+    builder.addDoubleProperty("SetPoint", this::getSetPoint, this::setSetpoint);
+    builder.addDoubleProperty("Angle", this::getAngle, null);
+    builder.addBooleanProperty("IsAtSetpoint", this::isAtAnglerSetpoint, null);
+  }
+
+
   public double getAngle() {
     return encoder.getPosition();
   }
 
   public Command setSetpointComnand(double angleDegrees) {
-    return this.run(() -> setSetpoint(angleDegrees)).until(this::isAtSetpoint);
+    return this.run(() -> setSetpoint(angleDegrees)).until(this::isAtAnglerSetpoint);
   }
 
   public void setSetpoint(double setpoint) {
     setpointAngle = setpoint;
   }
 
-  public boolean isAtSetpoint() {
+  public double getSetPoint() {
+    return setpointAngle;
+  }
+
+  public boolean isAtAnglerSetpoint() {
     var error = Math.abs(setpointAngle - getAngle());
     return (error < 1);
   }
