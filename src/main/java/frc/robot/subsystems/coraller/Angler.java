@@ -49,7 +49,7 @@ class Angler extends SubsystemBase {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setActuator(true);
-    builder.addDoubleProperty("SetPoint", this::getSetPoint, null);
+    builder.addDoubleProperty("SetPoint", this::getSetPoint, this::changeSetPoint);
     builder.addDoubleProperty("Angle", this::getAngle, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtAnglerSetPoint, null);
   }
