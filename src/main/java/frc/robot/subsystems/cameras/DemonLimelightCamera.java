@@ -5,11 +5,14 @@
 package frc.robot.subsystems.cameras;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.vision.LimelightHelpers;
 import frc.robot.vision.LimelightHelpers.PoseEstimate;
@@ -27,18 +30,18 @@ public class DemonLimelightCamera extends SubsystemBase {
     /**
      * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization
      */
-    kMegatag1,
+    Megatag1,
     /**
      * https://docs.limelightvision.io/docs/docs-limelight/pipeline-apriltag/apriltag-robot-localization-megatag2
      */
-    kMegatag2;
+    Megatag2;
   }
 
   private Optional<PoseEstimate> latestPoseEstimate = Optional.empty();
-  private LimelightPoseEstimateAlgorithm currentPEAlgorithm = LimelightPoseEstimateAlgorithm.kMegatag2;
   private boolean enableAprilTagUpdates = true;
 
   private final String limelightName;
+  private final LimelightPoseEstimateAlgorithm peAlgorithm;
   private final Supplier<Pose2d> currentPose;
   private final Supplier<Double> currentGyroRate;
 
@@ -53,37 +56,58 @@ public class DemonLimelightCamera extends SubsystemBase {
   public DemonLimelightCamera(String limelightName, LimelightPoseEstimateAlgorithm peAlgorithm,
       Supplier<Pose2d> currentPose, Supplier<Double> currentGyroRate) {
     this.limelightName = limelightName;
+    this.peAlgorithm = peAlgorithm;
     this.currentPose = currentPose;
     this.currentGyroRate = currentGyroRate;
 
     setName(limelightName);
-    setPoseEstimateAlgorithm(peAlgorithm);
+
+    SmartDashboard.putData(this);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+
+    builder.setSmartDashboardType(getName());
+    builder.addStringProperty("Algorithm", peAlgorithm::toString, null);
+    builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates,
+        (enable) -> enableAprilTagUpdates = enable);
+    builder.addBooleanProperty("HasPoseEstimate", latestPoseEstimate::isPresent, null);
+    builder.addIntegerProperty("NumAprilTags",
+        () -> latestPoseEstimate.isPresent() ? latestPoseEstimate.get().tagCount : 0, null);
   }
 
   /** {@inheritDoc} */
   @Override
   public void periodic() {
+    // update current pose estimate every loop
     updateLatestPoseEstimate();
-    putLatestTelemetryToSmartDashboard();
   }
 
   /**
-   * Set the pose estimate algorithm to use.
+   * Command to apply an action to Limelight pose updates.
    * 
-   * @param peAlgorithm the pose estimate algorithm to use
-   * @see {@link LimelightPoseEstimateAlgorithm}
+   * @param action the action for the Limelight pose update
+   * @return a command to apply an action to Limelight pose updates
    */
-  public void setPoseEstimateAlgorithm(LimelightPoseEstimateAlgorithm peAlgorithm) {
-    this.currentPEAlgorithm = peAlgorithm;
-  }
+  public Command pollForPoseUpdates(Consumer<PoseEstimate> action) {
+    // instantiate command so we can override runsWhenDisabled to true
+    var pollForPoseUpdatesCmd = new Command() {
+      @Override
+      public void execute() {
+        getLatestPoseEstimate().ifPresent((estimate) -> action.accept(estimate));
+      }
 
-  /**
-   * Gets the pose estimate algorithm that is currently being used
-   * 
-   * @return the pose estimate algorithm that is currently being used
-   */
-  public LimelightPoseEstimateAlgorithm getCurrentPoseEstimateAlgorithm() {
-    return this.currentPEAlgorithm;
+      @Override
+      public boolean runsWhenDisabled() {
+        return true;
+      }
+    };
+    pollForPoseUpdatesCmd.addRequirements(this);
+    pollForPoseUpdatesCmd.setName(getName() + "_PollForPoseUpdates");
+    return pollForPoseUpdatesCmd;
   }
 
   /**
@@ -98,7 +122,8 @@ public class DemonLimelightCamera extends SubsystemBase {
   /**
    * Sets the camera to receive AprilTag updates or not for the odometry.
    * 
-   * @param enableAprilTagUpdates true to enable AprilTag updates, false to disable AprilTag updates
+   * @param enableAprilTagUpdates true to enable AprilTag updates, false to
+   *                              disable AprilTag updates
    */
   public void setEnableAprilTagUpdates(boolean enableAprilTagUpdates) {
     this.enableAprilTagUpdates = enableAprilTagUpdates;
@@ -115,15 +140,15 @@ public class DemonLimelightCamera extends SubsystemBase {
     }
 
     // process based on selected algorithm
-    switch (currentPEAlgorithm) {
-      case kMegatag1:
+    switch (peAlgorithm) {
+      case Megatag1:
         updateLatestMegatag1PoseEstimate();
         break;
-      case kMegatag2:
+      case Megatag2:
         updateLatestMegatag2PoseEstimate();
         break;
       default:
-        DriverStation.reportWarning("Invalid limelight algorithm.", false);
+        DriverStation.reportWarning("Unsupported Limelight algorithm: " + peAlgorithm, false);
         break;
     }
   }
@@ -176,18 +201,5 @@ public class DemonLimelightCamera extends SubsystemBase {
 
     // set latest update
     latestPoseEstimate = !doRejectUpdate ? Optional.of(mt2) : Optional.empty();
-  }
-
-  /**
-   * Updates the telemetry from the camera on SmartDashboard.
-   */
-  private void putLatestTelemetryToSmartDashboard() {
-    SmartDashboard.putBoolean(getName() + "-HasPoseEstimate", latestPoseEstimate.isPresent());
-    SmartDashboard.putString(getName() + "-Algorithm", currentPEAlgorithm.toString());
-    SmartDashboard.putBoolean(getName() + "-Enabled", enableAprilTagUpdates);
-
-    if (latestPoseEstimate.isPresent()) {
-      SmartDashboard.putNumber(getName() + "NumAprilTags", latestPoseEstimate.get().tagCount);
-    }
   }
 }

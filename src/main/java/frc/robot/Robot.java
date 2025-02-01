@@ -26,6 +26,10 @@ public class Robot extends TimedRobot {
 
   /**
    * Creates and initializes Demonator14.
+   * 
+   * <p>
+   * 
+   * https://www.thebluealliance.com/team/4342/2025
    */
   public Robot() {
     // silence disconnected joystick warnings when not FMS attached
@@ -68,7 +72,7 @@ public class Robot extends TimedRobot {
   /** This method is called periodically during disabled mode. */
   @Override
   public void disabledPeriodic() {
-    // RobotContainer.kElevator.setSetpoint(RobotContainer.kElevator.getRelativePosition());
+    // TODO: set elevator and angler to their current positions in disabled
     // RobotContainer.kCoraller.setSetpoint(RobotContainer.kCoraller.getAngle());
   }
 

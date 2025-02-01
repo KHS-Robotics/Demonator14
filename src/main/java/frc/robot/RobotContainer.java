@@ -11,25 +11,22 @@ import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+import frc.robot.Constants.HIDConfig;
 import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
-import frc.robot.commands.drive.DriveSwerveWithXbox;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.TwistServo;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -84,9 +81,9 @@ public class RobotContainer {
 
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
-  public static final Coraller kCoraller = new Coraller();
+  // public static final Coraller kCoraller = new Coraller();
 
-  // temporary
+  // temporary - this will live in the Climber subsystem
   public static final TwistServo kCageTwist = new TwistServo();
 
   // Subsystems - Cameras
@@ -100,51 +97,57 @@ public class RobotContainer {
    * and commands.
    */
   public RobotContainer() {
-    this.configureSubsystemDefaultCommands();
-    this.configureBindings();
-    this.configureAutonomous();
+    configureSubsystemDefaultCommands();
+    configureBindings();
+    configureAutonomous();
 
-    kSwerveDrive.resetPose(new Pose2d(8.5, 4.0, Rotation2d.fromDegrees(0)));
     SmartDashboard.putData(kField);
+    SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
   /**
    * https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html#default-commands
    */
   private void configureSubsystemDefaultCommands() {
-    kSwerveDrive.setDefaultCommand(new DriveSwerveWithXbox(true, Constants.kJoystickSensitivity));
+    // control swerve drive with the xbox controller by default
+    kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
+        HIDConfig.kJoystickDeadband, HIDConfig.kJoystickSensitivity));
+
+    // LowerFrontPhotonCamera - AprilTag updates for odometry
+    kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
+        (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
+            update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
+
+    // RearLimelightCamera - AprilTag updates for odometry
+    kRearLimelightCamera.setDefaultCommand(
+        kRearLimelightCamera
+            .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**
    * https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
    */
   private void configureBindings() {
-    this.configureAutomatedBindings();
-    this.configureXboxControllerBindings();
-    this.configureOpertatorStickBindings();
+    configureAutomatedBindings();
+    configureXboxControllerBindings();
+    configureOpertatorStickBindings();
   }
 
   /** Automated bindings that happen without pressing any buttons. */
   private void configureAutomatedBindings() {
-
   }
 
   /** Binds commands to xbox controller buttons. */
   private void configureXboxControllerBindings() {
-    kDriverController.start().onTrue(new InstantCommand(() -> {
-      var currentPose = kSwerveDrive.getPose();
-      var currentAlliance = DriverStation.getAlliance();
-      var awayAngle = currentAlliance.isPresent() && currentAlliance.get().equals(Alliance.Red)
-          ? 180
-          : 0;
-      kSwerveDrive.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
-    }, kSwerveDrive));
+    // reset robot heading to face away from the driver - this is useful during
+    // driver practice to reset for field oriented driving direction or a rare odd
+    // scenario on the field during a match
+    kDriverController.start().debounce(0.5).onTrue(kSwerveDrive.resetHeading());
 
     // servo testing
     kDriverController.a().onTrue(kCageTwist.latch());
     kDriverController.b().onTrue(kCageTwist.unlatch());
-    System.out.println("Xbox Controller Bound");
-
   }
 
   /** Binds commands to operator stick buttons. */
@@ -153,25 +156,33 @@ public class RobotContainer {
 
   /** https://pathplanner.dev/home.html */
   private void configureAutonomous() {
+    // named commands for PathPlanner created auton routines
     configureNamedCommandsForAuto();
 
     // Build an auto chooser. This will use Commands.none() as the default option.
     // https://pathplanner.dev/pplib-build-an-auto.html#create-a-sendablechooser-with-all-autos-in-project
     m_autoChooser = AutoBuilder.buildAutoChooser();
 
-    // Another option that allows you to specify the default auto by its name
+    // Another option that allows you to specify the default auto by its name from
+    // PathPlanner
     // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
+    // add auton chooser to the Dashboard GUI for the drivers
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
-    this.configurePathPlannerLogging();
+
+    // PathPlanner logging for the current robot pose, trajectory and target pose
+    // when running PathPlanner paths
+    configurePathPlannerLogging();
   }
 
-  // /** https://pathplanner.dev/pplib-named-commands.html */
+  /** https://pathplanner.dev/pplib-named-commands.html */
   private void configureNamedCommandsForAuto() {
-    NamedCommands.registerCommand("StopSwerve", new InstantCommand(() -> kSwerveDrive.stop(), kSwerveDrive));
+    // String names here must match what is used in the PathPlanner GUI in order to
+    // work properly
+    NamedCommands.registerCommand("StopSwerve", kSwerveDrive.stopCommand());
   }
 
-  // /** https://pathplanner.dev/pplib-custom-logging.html */
+  /** https://pathplanner.dev/pplib-custom-logging.html */
   private void configurePathPlannerLogging() {
     // Logging callback for current robot pose
     PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
