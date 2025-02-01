@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 class Intake extends SubsystemBase{
-  private final SparkMax intake;
-  private final SparkLimitSwitch intakeSensor;
+  private final SparkMax motor;
+  private final SparkLimitSwitch sensor;
 
   public Intake() {
     var intakeConfig = new SparkMaxConfig()
@@ -25,7 +25,7 @@ class Intake extends SubsystemBase{
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
       SparkBase.PersistMode.kPersistParameters);
 
-    intakeSensor = intake.getForwardLimitSwitch();
+    sensor = motor.getForwardLimitSwitch();
 
     SmartDashboard.putData(this);
   }
@@ -55,7 +55,7 @@ class Intake extends SubsystemBase{
 
   //false if motor is off
   public boolean isMotorOn(){
-    return !(intake.get() == 0);
+    return !(motor.get() == 0);
   }
 
   public boolean hasCoral() {
