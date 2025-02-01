@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -42,8 +43,9 @@ public class Climber extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters);
 
     anchor = new Servo(RobotMap.CLIMBER_ANCHOR_ID);
+    SmartDashboard.putData(this);
   }
-
+  
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Climber-Engaged", isEngaged());
