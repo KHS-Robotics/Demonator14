@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 class Intake extends SubsystemBase{
+  private boolean intaking, outaking;
+
   private final SparkMax motor;
   private final SparkLimitSwitch sensor;
 
@@ -37,25 +39,26 @@ class Intake extends SubsystemBase{
     builder.setSafeState(this::stop);
     builder.setActuator(true);
     builder.addBooleanProperty("hasCoral", this::hasCoral, null);
-    builder.addBooleanProperty("MotorIsOn", this::isMotorOn, null);
+    builder.addBooleanProperty("Intaking", () -> intaking, null);
+    builder.addBooleanProperty("Outaking", () -> outaking, null);
   }
 
   // TODO() find out volts and which are inversed
   public void start() {
+    outaking = false;
+    intaking = true;
     motor.setVoltage(6);
   }
   
   public void reverse() {
+    outaking = true;
+    intaking = false;
     motor.setVoltage(-6);
   }
   
   public void stop() {
-    motor.setVoltage(0);
-  }
-
-  //false if motor is off
-  public boolean isMotorOn(){
-    return !(motor.get() == 0);
+    outaking = intaking = false;
+    motor.stopMotor();
   }
 
   public boolean hasCoral() {
