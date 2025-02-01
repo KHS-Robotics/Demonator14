@@ -18,7 +18,7 @@ class Intake {
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
       .inverted(false);
-    motor = new SparkMax(RobotMap.CORALLER_INTAKE_ID, MotorType.kBrushless);
+    motor = new SparkMax(RobotMap.CORALLER_INTAKE_MOTOR_ID, MotorType.kBrushless);
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
       SparkBase.PersistMode.kPersistParameters);
 
