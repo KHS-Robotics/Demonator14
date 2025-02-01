@@ -246,7 +246,7 @@ public class SwerveDrive extends SubsystemBase {
           this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
           this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
           (speeds, feedforwards) -> setModuleStates(speeds), // Method that will drive the robot given ROBOT
-                                                                  // RELATIVE
+                                                             // RELATIVE
           // ChassisSpeeds. Also optionally outputs individual module
           // feedforwards
           new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
@@ -521,6 +521,15 @@ public class SwerveDrive extends SubsystemBase {
         kRearLeft.getPosition(),
         kRearRight.getPosition()
     };
+  }
+
+  /**
+   * Command to stop all modules.
+   * 
+   * @return a command to stop all modules
+   */
+  public Command stopCommand() {
+    return runOnce(this::stop).withName("StopSwerve");
   }
 
   /**
