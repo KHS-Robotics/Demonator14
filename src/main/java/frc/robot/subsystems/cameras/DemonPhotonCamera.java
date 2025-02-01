@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -74,6 +75,24 @@ public class DemonPhotonCamera extends SubsystemBase {
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     setCloseRangeAprilTagMode();
+
+    SmartDashboard.putData(this);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates,
+        (enable) -> enableAprilTagUpdates = enable);
+    builder.addBooleanProperty("HasAprilTagUpdate", aprilTagUpdate::isPresent, null);
+    builder.addBooleanProperty("HasAlgaeTargets", algaeTargets::isPresent, null);
+    builder.addBooleanProperty("HasBestAlgaeTarget", bestAlgaeTarget::isPresent, null);
+    builder.addIntegerProperty("NumAprilTags",
+        () -> aprilTagUpdate.isPresent() ? aprilTagUpdate.get().cameraResult.getTargets().size() : 0, null);
+    builder.addIntegerProperty("NumAlgae", () -> algaeTargets.isPresent() ? algaeTargets.get().size() : 0, null);
+    builder.addStringProperty("PipelineMode", () -> currentPipelineMode.toString(), null);
   }
 
   /** {@inheritDoc} */
@@ -81,7 +100,6 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void periodic() {
     // make sure to call once per loop to get consistent results
     updateLatestVisionResults();
-    putLatestTelemetryToSmartDashboard();
   }
 
   /**
@@ -89,12 +107,12 @@ public class DemonPhotonCamera extends SubsystemBase {
    * FPS.
    */
   public void setCloseRangeAprilTagMode() {
-    if (currentPipelineMode == PhotonPipelineMode.kAprilTagsLowResolution)
+    if (currentPipelineMode == PhotonPipelineMode.kAprilTagsHighFPS)
       return;
 
     algaeTargets = Optional.empty();
     bestAlgaeTarget = Optional.empty();
-    currentPipelineMode = PhotonPipelineMode.kAprilTagsLowResolution;
+    currentPipelineMode = PhotonPipelineMode.kAprilTagsHighFPS;
     camera.setPipelineIndex(currentPipelineMode.index);
   }
 
@@ -194,7 +212,7 @@ public class DemonPhotonCamera extends SubsystemBase {
       // process based on selected pipeline mode
       switch (currentPipelineMode) {
         // same AprilTag process for both resolutions
-        case kAprilTagsLowResolution:
+        case kAprilTagsHighFPS:
         case kAprilTagsHighResolution:
           processAprilTagResult(cameraResult);
           break;
@@ -301,30 +319,13 @@ public class DemonPhotonCamera extends SubsystemBase {
   }
 
   /**
-   * Updates the telemetry from the camera on SmartDashboard.
-   */
-  private void putLatestTelemetryToSmartDashboard() {
-    SmartDashboard.putBoolean(getName() + "-Enabled", enableAprilTagUpdates);
-    SmartDashboard.putBoolean(getName() + "-HasAprilTagUpdate", aprilTagUpdate.isPresent());
-    SmartDashboard.putBoolean(getName() + "-HasAlgaeTargets", algaeTargets.isPresent());
-    SmartDashboard.putBoolean(getName() + "-HasBestAlgaeTarget", bestAlgaeTarget.isPresent());
-
-    if (aprilTagUpdate.isPresent()) {
-      SmartDashboard.putNumber(getName() + "NumAprilTags", aprilTagUpdate.get().cameraResult.getTargets().size());
-    }
-    if (algaeTargets.isPresent()) {
-      SmartDashboard.putNumber(getName() + "NumAlgae", algaeTargets.get().size());
-    }
-  }
-
-  /**
    * Enumeration for Photon pipeline modes for the camera.
    */
   private static enum PhotonPipelineMode {
     /**
      * AprilTag detection mode for close range (lower resolution but higher FPS).
      */
-    kAprilTagsLowResolution(0),
+    kAprilTagsHighFPS(0),
 
     /**
      * AprilTag detection mode for far range (higher resolution for but lower FPS).

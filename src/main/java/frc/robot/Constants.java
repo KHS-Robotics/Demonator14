@@ -22,8 +22,16 @@ import frc.robot.subsystems.cameras.DemonLimelightCamera.LimelightPoseEstimateAl
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */
-  public static final double kJoystickSensitivity = 0.5;
+  /**
+   * Joystick (HID) configurations.
+   */
+  public static final class HIDConfig {
+    /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */
+    public static final double kJoystickSensitivity = 0.5;
+
+    /** Deadband since joysticks vary in how well they snap back to zero. */
+    public static final double kJoystickDeadband = 0.035;
+  }
 
   /**
    * Configurations for PhotonVision.
@@ -94,14 +102,18 @@ public final class Constants {
 
     // for 2025 robot, 23.5 wide by 22 inches drivebase
 
-    //     public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(11.75),
-    //     Units.inchesToMeters(11));
-    // public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(10.7),
-    //     Units.inchesToMeters(-11));
-    // public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
-    //     Units.inchesToMeters(11));
-    // public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
-    //     Units.inchesToMeters(-11));
+    // public static final Translation2d kFrontLeftModuleOffset = new
+    // Translation2d(Units.inchesToMeters(11.75),
+    // Units.inchesToMeters(11));
+    // public static final Translation2d kFrontRightModuleOffset = new
+    // Translation2d(Units.inchesToMeters(10.7),
+    // Units.inchesToMeters(-11));
+    // public static final Translation2d kRearLeftModuleOffset = new
+    // Translation2d(Units.inchesToMeters(-10.7),
+    // Units.inchesToMeters(11));
+    // public static final Translation2d kRearRightModuleOffset = new
+    // Translation2d(Units.inchesToMeters(-10.7),
+    // Units.inchesToMeters(-11));
 
     // individual offsets after calibrating each module
     public static final double kFrontLeftPivotOffsetDegrees = 225;
@@ -157,7 +169,8 @@ public final class Constants {
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
     public static final double kElevatorEncoderPositionConversionFactor = 1;
-    public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor / 60.0;
+    public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
+        / 60.0;
     public static final double kRobotElevatorStowHeightInches = 48;
 
     // Coraller Configuration

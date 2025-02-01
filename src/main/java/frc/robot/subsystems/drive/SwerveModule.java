@@ -21,6 +21,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -79,7 +80,7 @@ public class SwerveModule extends SubsystemBase {
         .pid(driveP, driveI, driveD, ClosedLoopSlot.kSlot0);
     var driveMotorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(40)
+        .smartCurrentLimit(45)
         .inverted(reversed)
         .apply(driveEncoderConfig)
         .apply(driveClosedLoopConfig);
@@ -103,6 +104,8 @@ public class SwerveModule extends SubsystemBase {
     pivotPID.setTolerance(1);
 
     this.offsetAngle = offsetAngle;
+
+    SmartDashboard.putData(this);
   }
 
   /**
@@ -124,10 +127,19 @@ public class SwerveModule extends SubsystemBase {
 
   /** {@inheritDoc} */
   @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.addDoubleProperty("Speed", () -> getState().speedMetersPerSecond, null);
+    builder.addDoubleProperty("Angle", () -> getState().angle.getDegrees(), null);
+    builder.addBooleanProperty("IsOptimizingAngle", () -> isCurrentlyFlippedForShorterPath, null);
+    builder.addDoubleProperty("OffsetAngle", () -> offsetAngle, null);
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public void periodic() {
-    var state = getState();
-    SmartDashboard.putNumber(this.name + "-Speed", state.speedMetersPerSecond);
-    SmartDashboard.putNumber(this.name + "-Angle", state.angle.getDegrees());
   }
 
   /**
@@ -257,7 +269,7 @@ public class SwerveModule extends SubsystemBase {
    *         drive motor if there is a shorter path
    */
   private double calculateShortestPath(double targetAngle) {
-    var currentAngle = this.getAngle();
+    var currentAngle = getAngle();
     var dAngle = Math.abs(targetAngle - currentAngle);
 
     isCurrentlyFlippedForShorterPath = dAngle > 90 && dAngle < 270;
