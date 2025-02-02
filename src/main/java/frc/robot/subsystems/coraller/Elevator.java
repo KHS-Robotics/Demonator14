@@ -10,7 +10,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,11 +22,11 @@ class Elevator extends SubsystemBase {
   private final RelativeEncoder encoder;
   private final PIDController pid;
 
-  private double setpointHeightFromGround = CorallerConfig.kRobotElevatorStowHeightInches;
-  private double setpointHeightFromElevatorBottom;
+  private double setpointHeightFromGroundInches = CorallerConfig.kRobotElevatorStowHeightInches;
+  private double setpointHeightFromElevatorBottomInches;
 
   public Elevator() {
-    super("Coraller/Elevator");
+    super(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName());
 
     var elevatorEncoderConfig = new EncoderConfig()
       .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
@@ -36,7 +35,8 @@ class Elevator extends SubsystemBase {
     var leaderConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(45)
-      // TODO: set inverted based on our desired sign of direction (positive up / negative down)
+      // TODO: set inverted based on our desired sign of direction (positive up /
+      // negative down)
       .inverted(false)
       .apply(elevatorEncoderConfig);
     leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);
@@ -58,9 +58,10 @@ class Elevator extends SubsystemBase {
     pid.setIZone(3);
 
     SmartDashboard.putData(getName(), this);
-    SmartDashboard.putData(getName()+"/PID Controller", pid);
+    SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void periodic() {
     setMotorOutputForSetpoint();
@@ -77,23 +78,24 @@ class Elevator extends SubsystemBase {
       .withName("SetElevatorSetpoint");
   }
 
-  /** 
-   * This method sets the configured setpoint for the elevator. The periodic function
-   * is contantly polling this value to make adjustments when it changes
+  /**
+   * This method sets the configured setpoint for the elevator. The periodic
+   * function is contantly polling this value to make adjustments when it changes
+   * 
+   * @see {@link #periodic()}
    */
-  public void setSetpoint(double heightFromGround) {
+  public void setSetpoint(double heightFromGroundInches) {
     // extra precaution to prevent negative setpoints
-    if (heightFromGround < CorallerConfig.kRobotElevatorStowHeightInches) {
-      heightFromGround = CorallerConfig.kRobotElevatorStowHeightInches;
-      DriverStation.reportWarning("Attempting to set an Elevator height lower than the stow height!", false);
+    if (heightFromGroundInches < CorallerConfig.kRobotElevatorStowHeightInches) {
+      heightFromGroundInches = CorallerConfig.kRobotElevatorStowHeightInches;
     }
 
     // only reset for new setpoints
-    if (setpointHeightFromGround != heightFromGround) {
+    if (setpointHeightFromGroundInches != heightFromGroundInches) {
       pid.reset();
     }
-    setpointHeightFromGround = heightFromGround;
-    setpointHeightFromElevatorBottom = heightFromGround - CorallerConfig.kRobotElevatorStowHeightInches;
+    setpointHeightFromGroundInches = heightFromGroundInches;
+    setpointHeightFromElevatorBottomInches = heightFromGroundInches - CorallerConfig.kRobotElevatorStowHeightInches;
   }
 
   public boolean isAtBottom() {
@@ -102,7 +104,7 @@ class Elevator extends SubsystemBase {
   }
 
   public boolean isAtSetpoint() {
-    var error = Math.abs(setpointHeightFromGround - getHeightFromGroundInches());
+    var error = Math.abs(setpointHeightFromGroundInches - getHeightFromGroundInches());
     return (error < 1);
   }
 
@@ -110,17 +112,18 @@ class Elevator extends SubsystemBase {
     return encoder.getPosition();
   }
 
-  private double getHeightFromGroundInches() {
+  public double getHeightFromGroundInches() {
     return encoder.getPosition() + CorallerConfig.kRobotElevatorStowHeightInches;
   }
 
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
-    var pidOutput = pid.calculate(getHeightFromElevatorBottomInches(), setpointHeightFromElevatorBottom);
+    var pidOutput = pid.calculate(getHeightFromElevatorBottomInches(), setpointHeightFromElevatorBottomInches);
     var output = pidOutput + CorallerConfig.kElevatorKG;
 
-    // prevent trying to move past the bottom
-    if (output < 0 && isAtBottom()) {
+    // prevent trying to move past the bottom or setting motor outputs while limit
+    // switch is pressed when the setpoint is the stow height
+    if ((output < 0 || setpointHeightFromGroundInches == CorallerConfig.STOW_HEIGHT) && isAtBottom()) {
       output = 0;
     }
 
@@ -132,14 +135,15 @@ class Elevator extends SubsystemBase {
     pid.reset();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGround, this::setSetpoint);
-    builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches,null);
+    builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGroundInches, this::setSetpoint);
+    builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches, null);
     builder.addDoubleProperty("HeightFromBottom", this::getHeightFromElevatorBottomInches, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
     builder.addBooleanProperty("IsAtBottom", this::isAtBottom, null);

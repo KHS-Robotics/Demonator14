@@ -21,12 +21,13 @@ class Intake extends SubsystemBase {
   private final SparkLimitSwitch sensor;
 
   public Intake() {
-    super("Coraller/Intake");
+    super(Coraller.class.getSimpleName() + "/" + Intake.class.getSimpleName());
+    
     var intakeConfig = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(30)
-        // TODO: set inverted based on our desired sign of direction (positive intake / negative outake)
-        .inverted(false);
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(30)
+      // TODO: set inverted based on our desired sign of direction (positive intake / negative outake)
+      .inverted(false);
     motor = new SparkMax(RobotMap.CORALLER_INTAKE_MOTOR_ID, MotorType.kBrushless);
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -49,6 +50,7 @@ class Intake extends SubsystemBase {
   public void start() {
     outaking = false;
     intaking = true;
+    // TODO: test for a good intake voltage
     motor.setVoltage(6);
   }
 
@@ -60,6 +62,7 @@ class Intake extends SubsystemBase {
   public void reverse() {
     outaking = true;
     intaking = false;
+    // TODO: test for a good reverse voltage
     motor.setVoltage(-6);
   }
 
@@ -72,13 +75,14 @@ class Intake extends SubsystemBase {
     return sensor.isPressed();
   }
   
+  /** {@inheritDoc} */
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addBooleanProperty("hasCoral", this::hasCoral, null);
+    builder.addBooleanProperty("HasCoral", this::hasCoral, null);
     builder.addBooleanProperty("Intaking", () -> intaking, null);
     builder.addBooleanProperty("Outaking", () -> outaking, null);
   }

@@ -72,8 +72,6 @@ public class Robot extends TimedRobot {
   /** This method is called periodically during disabled mode. */
   @Override
   public void disabledPeriodic() {
-    // TODO: set elevator and angler to their current positions in disabled
-    // RobotContainer.kCoraller.setSetpoint(RobotContainer.kCoraller.getAngle());
   }
 
   /** This method is called once each time the robot exits disabled mode. */

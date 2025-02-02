@@ -163,7 +163,7 @@ public final class Constants {
     public static final double kAnglerP = 0.0;
     public static final double kAnglerI = 0.0;
     public static final double kAnglerD = 0.0;
-    /** Gravity term in volts */
+    /** Gravity term in volts. */
     public static final double kAnglerKG = 0.0;
     public static final double kAnglerEncoderPositionConversionFactor = 1;
     public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
@@ -172,16 +172,17 @@ public final class Constants {
     public static final double kElevatorP = 0.0;
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
-    /** Gravity term in volts */
+    /** Gravity term in volts. */
     public static final double kElevatorKG = 0.0;
     public static final double kElevatorEncoderPositionConversionFactor = 1;
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
-    public static final double kRobotElevatorStowHeightInches = 48;
+    /** Height from the ground to the bottom of the elevator in inches. */
+    public static final double kRobotElevatorStowHeightInches = 36;
 
     // Coraller Configuration
     public static final double STOW_ANGLE = 0;
-    public static final double STOW_HEIGHT = 0;
+    public static final double STOW_HEIGHT = kRobotElevatorStowHeightInches;
     public static final double L1_ANGLE = 0;
     public static final double L1_HEIGHT = 0;
     public static final double L2_ANGLE = 0;
