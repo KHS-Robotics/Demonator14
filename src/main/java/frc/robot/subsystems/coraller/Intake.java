@@ -21,6 +21,7 @@ class Intake extends SubsystemBase {
   private final SparkLimitSwitch sensor;
 
   public Intake() {
+    super("Coraller/Intake");
     var intakeConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
@@ -31,7 +32,7 @@ class Intake extends SubsystemBase {
 
     sensor = motor.getForwardLimitSwitch();
 
-    SmartDashboard.putData("Coraller/"+getName(), this);
+    SmartDashboard.putData(getName(), this);
   }
 
   public void stop() {

@@ -26,6 +26,7 @@ class Angler extends SubsystemBase {
   private final PIDController pid;
 
   public Angler() {
+    super("Coraller/Angler");
     var anglerClosedLoopConfig = new ClosedLoopConfig()
         .pid(CorallerConfig.kAnglerP, CorallerConfig.kAnglerI, CorallerConfig.kAnglerD,
             ClosedLoopSlot.kSlot0);
@@ -40,9 +41,8 @@ class Angler extends SubsystemBase {
     pid = new PIDController(CorallerConfig.kAnglerP, CorallerConfig.kAnglerI, CorallerConfig.kAnglerD);
     encoder = motor.getAbsoluteEncoder();
   
-    String namePrefix = "Coraller/"+getName();
-    SmartDashboard.putData(namePrefix, this);
-    SmartDashboard.putData(namePrefix+"/PID Controller", pid);  
+    SmartDashboard.putData(getName(), this);
+    SmartDashboard.putData(getName()+"/PID Controller", pid);  
   }
 
   public void periodic() {

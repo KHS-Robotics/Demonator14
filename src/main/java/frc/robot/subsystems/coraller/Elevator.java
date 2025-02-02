@@ -29,6 +29,7 @@ class Elevator extends SubsystemBase {
   private double setpointHeightFromElevatorBottom;
 
   public Elevator() {
+    super("Coraller/Elevator");
     var elevatorEncoderConfig = new EncoderConfig()
         .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
         .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
@@ -46,9 +47,8 @@ class Elevator extends SubsystemBase {
     pid = new PIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD);
     encoder = motor.getEncoder();
 
-    String namePrefix = "Coraller/"+getName();
-    SmartDashboard.putData(namePrefix, this);
-    SmartDashboard.putData(namePrefix+"/PID Controller", pid);
+    SmartDashboard.putData(getName(), this);
+    SmartDashboard.putData(getName()+"/PID Controller", pid);
   }
 
   @Override
