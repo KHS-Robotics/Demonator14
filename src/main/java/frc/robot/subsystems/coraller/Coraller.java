@@ -51,11 +51,14 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command stopCommand() {
-    return Commands.parallel(
+    var stopCmd = Commands.parallel(
       elevator.stopCommand(),
       angler.stopCommand(),
       intake.stopCommand()
-    ).withName("StopCoraller");
+    );
+    stopCmd.addRequirements(this);
+    stopCmd.setName("StopCoraller");
+    return stopCmd;
   }
 
   public void stop() {
