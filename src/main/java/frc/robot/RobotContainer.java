@@ -170,6 +170,7 @@ public class RobotContainer {
     // String names here must match what is used in the PathPlanner GUI in order to
     // work properly
     NamedCommands.registerCommand("StopSwerve", kSwerveDrive.stopCommand());
+    // TODO: Register all auto commands with PathPlanner...
   }
 
   /** https://pathplanner.dev/pplib-custom-logging.html */
