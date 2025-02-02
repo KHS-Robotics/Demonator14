@@ -26,14 +26,33 @@ public class Climber extends SubsystemBase {
     AnchorPosition(double percent) {
       this.percent = percent;
     }
+
+    public double getPosition() {
+      return percent;
+    }
+  }
+
+  public enum ReelState {
+    OFF("Off"),
+    REELING_IN("Reeling In"),
+    REELING_OUT("Reeling Out");
+
+    private final String state;
+
+    private ReelState(String s) {
+      state = s;
+    }
+
+    public String toString() {
+      return this.state;
+    }
   }
 
   private AnchorPosition currentPosition = AnchorPosition.kUnengaged;
 
   private final SparkMax reel;
   private final Servo anchor;
-  private boolean reelingIn;
-  private boolean reelingOut;
+  private ReelState reelState;
 
   public Climber() {
     var reelConfig = new SparkMaxConfig()
@@ -56,20 +75,17 @@ public class Climber extends SubsystemBase {
   // TODO() full speed once we know direction
   public void reelIn() {
     reel.setVoltage(6);
-    reelingIn = true;
-    reelingOut = false;
+    reelState = ReelState.REELING_IN;
   }
 
   public void reelOut() {
     reel.setVoltage(-6);
-    reelingIn = false;
-    reelingOut = true;
+    reelState = ReelState.REELING_OUT;
   }
 
   public void reelStop(){
     reel.stopMotor();
-    reelingIn = false;
-    reelingOut = false;
+    reelState = ReelState.OFF;
   }
 
   public void setAnchorPosition(AnchorPosition position) {
@@ -85,18 +101,6 @@ public class Climber extends SubsystemBase {
     return currentPosition;
   }
 
-  private String reelingStatus(){
-    if (!reelingIn && !reelingOut){
-      return "Not reeling";
-    }else if (reelingIn){
-      return "reeling in";
-    }else if (reelingOut){
-      return "reeling out";
-    }else{
-      return "I don't know what is happening";
-    }
-  }
-
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
@@ -104,6 +108,7 @@ public class Climber extends SubsystemBase {
     builder.setSafeState(this::reelStop);
     builder.setActuator(true);
     builder.addBooleanProperty("IsAnchorEngaged", this::isEngaged, null);
-    builder.addStringProperty("ReelingStatus", this::reelingStatus, null);
+    builder.addDoubleProperty("AnchorPosition", () -> getAnchorPosition().getPosition(), null);
+    builder.addStringProperty("ReelingStatus", reelState::toString, null);
   }
 }
