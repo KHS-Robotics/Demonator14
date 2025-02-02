@@ -6,6 +6,9 @@ package frc.robot.hid;
 
 import edu.wpi.first.wpilibj.Joystick;
 
+/**
+ * Thrustmaster T16000M
+ */
 public class OperatorStick extends Joystick {
   public OperatorStick(int port) {
     super(port);
@@ -15,39 +18,47 @@ public class OperatorStick extends Joystick {
     return this.getRawButton(ButtonMap.STOW_BUTTON);
   }
 
-  public boolean isPressingRecive(){
+  public boolean isPressingRecive() {
     return this.getRawButton(ButtonMap.RECEIVE_BUTTON);
   }
-  public boolean isPressingL1(){
+
+  public boolean isPressingL1() {
     return this.getRawButton(ButtonMap.L1_BUTTON);
   }
 
-  public boolean isPressingL2(){
+  public boolean isPressingL2() {
     return this.getRawButton(ButtonMap.L2_BUTTON);
   }
 
-  public boolean isPressingL3(){
+  public boolean isPressingL3() {
     return this.getRawButton(ButtonMap.L3_BUTTON);
   }
 
-  public boolean isPressingL4(){
+  public boolean isPressingL4() {
     return this.getRawButton(ButtonMap.L4_BUTTON);
   }
 
-  public boolean isPressingOuttake(){
+  public boolean isPressingOuttake() {
     return this.getRawButton(ButtonMap.OUTTAKE_BUTTON);
   }
 
-  public boolean isPressingIntake(){
+  public boolean isPressingIntake() {
     return this.getRawButton(ButtonMap.INTAKE_BUTTON);
   }
 
-  public boolean isPressingClimb(){
-    return this.getRawButton(ButtonMap.CLIMB_BUTTON);
+  public boolean isPressingReelinClimb() {
+    return this.getRawButton(ButtonMap.REEL_IN_BUTTON);
   }
-  
-  public boolean isPressingEngageAnchor(){
+
+  public boolean isPressingReelOutClimber() {
+    return this.getRawButton(ButtonMap.REEL_OUT_BUTTON);
+  }
+
+  public boolean isPressingEngageAnchor() {
     return this.getRawButton(ButtonMap.ENGAGEANCHOR_BUTTON);
   }
-  
+
+  public boolean isPressingUnengageAnchor() {
+    return this.getRawButton(ButtonMap.UNENGAGEANCHOR_BUTTON);
+  }
 }
