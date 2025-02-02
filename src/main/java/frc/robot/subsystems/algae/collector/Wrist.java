@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.algae.collector;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
@@ -20,7 +20,7 @@ import frc.robot.RobotMap;
 import frc.robot.Constants.AlgaeWristConfig;
 import frc.robot.Constants.CorallerConfig;
 
-public class AlgaeWrist extends SubsystemBase {
+class Wrist extends SubsystemBase {
   /** Creates a new AlgaeWrist. */
   private double setpointAngleDegrees;
 
@@ -28,8 +28,7 @@ public class AlgaeWrist extends SubsystemBase {
   private final AbsoluteEncoder encoder;
   private final PIDController pid;
 
-  public AlgaeWrist() {
-
+  public Wrist() {
     var algaeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(40)
