@@ -93,14 +93,14 @@ public final class Constants {
         / SDS_L2_DRIVE_GEARING;
     public static final double kDriveEncoderVelocityConversionFactor = kDriveEncoderPositionConversionFactor / 60.0;
 
-    public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(14.25),
-        Units.inchesToMeters(15));
-    public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(14.25),
-        Units.inchesToMeters(-15));
-    public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-14.5),
-        Units.inchesToMeters(15));
-    public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-14.5),
-        Units.inchesToMeters(-15));
+    public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(11.25),
+        Units.inchesToMeters(11.75));
+    public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(11.25),
+        Units.inchesToMeters(-11.75));
+    public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-11.25),
+        Units.inchesToMeters(11.75));
+    public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-11.25),
+        Units.inchesToMeters(-11.75));
 
     // individual offsets after calibrating each module
     public static final double kFrontLeftPivotOffsetDegrees = 225;
