@@ -21,8 +21,7 @@ public class Climber extends SubsystemBase {
 
   private final SparkMax reel;
   private final Servo anchor;
-  private boolean reelingIn;
-  private boolean reelingOut;
+  private ReelState reelState;
 
   public Climber() {
     var reelConfig = new SparkMaxConfig()
@@ -43,21 +42,18 @@ public class Climber extends SubsystemBase {
   public void reelIn() {
     // TODO: full speed once we know direction
     reel.setVoltage(6);
-    reelingIn = true;
-    reelingOut = false;
+    reelState = ReelState.REELING_IN;
   }
 
   public void reelOut() {
     // TODO: full speed??? once we know direction
     reel.setVoltage(-6);
-    reelingIn = false;
-    reelingOut = true;
+    reelState = ReelState.REELING_OUT;
   }
 
   public void reelStop(){
     reel.stopMotor();
-    reelingIn = false;
-    reelingOut = false;
+    reelState = ReelState.OFF;
   }
 
   public void setAnchorPosition(AnchorPosition position) {
@@ -90,6 +86,26 @@ public class Climber extends SubsystemBase {
     private AnchorPosition(double percent) {
       this.percent = percent;
     }
+
+    public double getPercent() {
+      return percent;
+    }
+  }
+  
+  public enum ReelState {
+    OFF("Off"),
+    REELING_IN("Reeling In"),
+    REELING_OUT("Reeling Out");
+
+    private final String state;
+
+    private ReelState(String s) {
+      state = s;
+    }
+
+    public String toString() {
+      return this.state;
+    }
   }
   
   @Override
@@ -99,7 +115,7 @@ public class Climber extends SubsystemBase {
     builder.setSafeState(this::reelStop);
     builder.setActuator(true);
     builder.addBooleanProperty("IsAnchorEngaged", this::isEngaged, null);
-    builder.addBooleanProperty("ReelingIn", () -> reelingIn, null);
-    builder.addBooleanProperty("ReelingOut", () -> reelingOut, null);
+    builder.addDoubleProperty("AnchorPosition", () -> getAnchorPosition().getPercent(), null);
+    builder.addStringProperty("ReelingStatus", reelState::toString, null);
   }
 }
