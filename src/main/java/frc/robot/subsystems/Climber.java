@@ -10,7 +10,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,6 +21,8 @@ public class Climber extends SubsystemBase {
 
   private final SparkMax reel;
   private final Servo anchor;
+  private boolean reelingIn;
+  private boolean reelingOut;
 
   public Climber() {
     var reelConfig = new SparkMaxConfig()
@@ -41,11 +43,21 @@ public class Climber extends SubsystemBase {
   public void reelIn() {
     // TODO: full speed once we know direction
     reel.setVoltage(6);
+    reelingIn = true;
+    reelingOut = false;
   }
 
   public void reelOut() {
     // TODO: full speed??? once we know direction
     reel.setVoltage(-6);
+    reelingIn = false;
+    reelingOut = true;
+  }
+
+  public void reelStop(){
+    reel.stopMotor();
+    reelingIn = false;
+    reelingOut = false;
   }
 
   public void setAnchorPosition(AnchorPosition position) {
@@ -78,5 +90,16 @@ public class Climber extends SubsystemBase {
     private AnchorPosition(double percent) {
       this.percent = percent;
     }
+  }
+  
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::reelStop);
+    builder.setActuator(true);
+    builder.addBooleanProperty("IsAnchorEngaged", this::isEngaged, null);
+    builder.addBooleanProperty("ReelingIn", () -> reelingIn, null);
+    builder.addBooleanProperty("ReelingOut", () -> reelingOut, null);
   }
 }
