@@ -177,12 +177,10 @@ public final class Constants {
     public static final double kElevatorEncoderPositionConversionFactor = 1;
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
-    /** Height from the ground to the bottom of the elevator in inches. */
-    public static final double kRobotElevatorStowHeightInches = 36;
 
     // Coraller Configuration
     public static final double STOW_ANGLE = 0;
-    public static final double STOW_HEIGHT = kRobotElevatorStowHeightInches;
+    public static final double STOW_HEIGHT = 0;
     public static final double L1_ANGLE = 0;
     public static final double L1_HEIGHT = 0;
     public static final double L2_ANGLE = 0;

@@ -22,7 +22,7 @@ class Elevator extends SubsystemBase {
   private final RelativeEncoder encoder;
   private final PIDController pid;
 
-  private double setpointHeightFromGroundInches = CorallerConfig.kRobotElevatorStowHeightInches;
+  private double setpointHeightFromGroundInches = CorallerConfig.STOW_HEIGHT;
   private double setpointHeightFromElevatorBottomInches;
 
   public Elevator() {
@@ -86,8 +86,8 @@ class Elevator extends SubsystemBase {
    */
   public void setSetpoint(double heightFromGroundInches) {
     // extra precaution to prevent negative setpoints
-    if (heightFromGroundInches < CorallerConfig.kRobotElevatorStowHeightInches) {
-      heightFromGroundInches = CorallerConfig.kRobotElevatorStowHeightInches;
+    if (heightFromGroundInches < CorallerConfig.STOW_HEIGHT) {
+      heightFromGroundInches = CorallerConfig.STOW_HEIGHT;
     }
 
     // only reset for new setpoints
@@ -95,7 +95,7 @@ class Elevator extends SubsystemBase {
       pid.reset();
     }
     setpointHeightFromGroundInches = heightFromGroundInches;
-    setpointHeightFromElevatorBottomInches = heightFromGroundInches - CorallerConfig.kRobotElevatorStowHeightInches;
+    setpointHeightFromElevatorBottomInches = heightFromGroundInches - CorallerConfig.STOW_HEIGHT;
   }
 
   public boolean isAtBottom() {
@@ -113,7 +113,7 @@ class Elevator extends SubsystemBase {
   }
 
   public double getHeightFromGroundInches() {
-    return encoder.getPosition() + CorallerConfig.kRobotElevatorStowHeightInches;
+    return encoder.getPosition() + CorallerConfig.STOW_HEIGHT;
   }
 
   private void setMotorOutputForSetpoint() {
