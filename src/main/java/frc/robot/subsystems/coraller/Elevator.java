@@ -1,11 +1,9 @@
 package frc.robot.subsystems.coraller;
 
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -21,7 +19,7 @@ import frc.robot.RobotMap;
 import frc.robot.Constants.CorallerConfig;
 
 class Elevator extends SubsystemBase {
-  private final SparkMax motor;
+  private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
   private final PIDController pid;
 
@@ -30,22 +28,32 @@ class Elevator extends SubsystemBase {
 
   public Elevator() {
     super("Coraller/Elevator");
+
     var elevatorEncoderConfig = new EncoderConfig()
-        .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
-        .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
-    var elevatorClosedLoopConfig = new ClosedLoopConfig()
-        .pid(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD, ClosedLoopSlot.kSlot0);
-    var elevatorConfig = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(45)
-        .inverted(false)
-        .apply(elevatorEncoderConfig)
-        .apply(elevatorClosedLoopConfig);
-    motor = new SparkMax(RobotMap.ELEVATOR_DRIVE_ID, MotorType.kBrushless);
-    motor.configure(elevatorConfig, SparkBase.ResetMode.kResetSafeParameters,
+      .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
+      .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
+
+    var leaderConfig = new SparkMaxConfig()
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(45)
+      .inverted(false)
+      .apply(elevatorEncoderConfig);
+    leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);
+    leader.configure(leaderConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
+
+    var followerConfig = new SparkMaxConfig()
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(45)
+      .follow(RobotMap.ELEVATOR_DRIVE_LEADER_ID, true)
+      .apply(elevatorEncoderConfig);
+    follower = new SparkMax(RobotMap.ELEVATOR_DRIVE_FOLLOWER_ID, MotorType.kBrushless);
+    follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters);
+
+    encoder = leader.getEncoder();
+
     pid = new PIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD);
-    encoder = motor.getEncoder();
 
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName()+"/PID Controller", pid);
@@ -78,6 +86,10 @@ class Elevator extends SubsystemBase {
       DriverStation.reportWarning("Attempting to set an Elevator height lower than the stow height!", false);
     }
 
+    // only reset for new setpoints
+    if (setpointHeightFromGround != heightFromGround) {
+      pid.reset();
+    }
     setpointHeightFromGround = heightFromGround;
     setpointHeightFromElevatorBottom = heightFromGround - CorallerConfig.kRobotElevatorStowHeightInches;
   }
@@ -103,11 +115,18 @@ class Elevator extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var output = pid.calculate(getHeightFromElevatorBottomInches(), setpointHeightFromElevatorBottom);
-    motor.setVoltage(output);
+
+    // prevent trying to move past the bottom
+    if (output < 0 && isAtBottom()) {
+      output = 0;
+    }
+
+    leader.setVoltage(output);
   }
 
-  public void stop(){
-    motor.stopMotor();
+  public void stop() {
+    leader.stopMotor();
+    pid.reset();
   }
 
   @Override

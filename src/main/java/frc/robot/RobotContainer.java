@@ -24,7 +24,6 @@ import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.drive.SwerveDrive;
-import frc.robot.subsystems.TwistServo;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -80,9 +79,6 @@ public class RobotContainer {
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
-
-  // temporary - this will live in the Climber subsystem
-  public static final TwistServo kCageTwist = new TwistServo();
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
@@ -142,10 +138,6 @@ public class RobotContainer {
     // driver practice to reset for field oriented driving direction or a rare odd
     // scenario on the field during a match
     kDriverController.start().debounce(0.5).onTrue(kSwerveDrive.resetHeading());
-
-    // servo testing
-    kDriverController.a().onTrue(kCageTwist.latch());
-    kDriverController.b().onTrue(kCageTwist.unlatch());
   }
 
   /** Binds commands to operator stick buttons. */

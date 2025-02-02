@@ -1,11 +1,9 @@
 package frc.robot.subsystems.coraller;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -27,14 +25,10 @@ class Angler extends SubsystemBase {
 
   public Angler() {
     super("Coraller/Angler");
-    var anglerClosedLoopConfig = new ClosedLoopConfig()
-        .pid(CorallerConfig.kAnglerP, CorallerConfig.kAnglerI, CorallerConfig.kAnglerD,
-            ClosedLoopSlot.kSlot0);
     var anglerConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)
-        .inverted(false)
-        .apply(anglerClosedLoopConfig);
+        .inverted(false);
     motor = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
     motor.configure(anglerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -65,6 +59,10 @@ class Angler extends SubsystemBase {
    * is contantly polling this value to make adjustments when it changes
    */
   public void setSetpoint(double setpoint) {
+    // only reset for new setpoints
+    if (setpoint != setpointAngle) {
+      pid.reset();
+    }
     setpointAngle = setpoint;
   }
 
@@ -83,8 +81,9 @@ class Angler extends SubsystemBase {
     motor.setVoltage(output);
   }
 
-  public void stop(){
+  public void stop() {
     motor.stopMotor();
+    pid.reset();
   }
 
   @Override
