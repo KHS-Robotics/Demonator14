@@ -163,6 +163,8 @@ public final class Constants {
     public static final double kAnglerP = 0.0;
     public static final double kAnglerI = 0.0;
     public static final double kAnglerD = 0.0;
+    /** Gravity term in volts */
+    public static final double kAnglerKG = 0.0;
     public static final double kAnglerEncoderPositionConversionFactor = 1;
     public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
 
@@ -170,6 +172,8 @@ public final class Constants {
     public static final double kElevatorP = 0.0;
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
+    /** Gravity term in volts */
+    public static final double kElevatorKG = 0.0;
     public static final double kElevatorEncoderPositionConversionFactor = 1;
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;

@@ -26,15 +26,18 @@ class Angler extends SubsystemBase {
   public Angler() {
     super("Coraller/Angler");
     var anglerConfig = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(40)
-        // TODO: set inverted based on our desired sign of direction (positive up / negative down)
-        .inverted(false);
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(40)
+      // TODO: set inverted based on our desired sign of direction (positive up / negative down)
+      .inverted(false);
     motor = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
     motor.configure(anglerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
-    pid = new PIDController(CorallerConfig.kAnglerP, CorallerConfig.kAnglerI, CorallerConfig.kAnglerD);
+    
     encoder = motor.getAbsoluteEncoder();
+
+    pid = new PIDController(CorallerConfig.kAnglerP, CorallerConfig.kAnglerI, CorallerConfig.kAnglerD);
+    pid.setIZone(5);
   
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName()+"/PID Controller", pid);  
@@ -78,7 +81,9 @@ class Angler extends SubsystemBase {
 
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
-    var output = pid.calculate(getAngle(), setpointAngle);
+    var pidOutput = pid.calculate(getAngle(), setpointAngle);
+    var ffGravity = CorallerConfig.kAnglerKG * Math.cos(getAngle());
+    var output = pidOutput + ffGravity;
     motor.setVoltage(output);
   }
 

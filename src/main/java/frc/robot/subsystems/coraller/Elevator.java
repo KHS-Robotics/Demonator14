@@ -55,6 +55,7 @@ class Elevator extends SubsystemBase {
     encoder = leader.getEncoder();
 
     pid = new PIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD);
+    pid.setIZone(3);
 
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName()+"/PID Controller", pid);
@@ -115,7 +116,8 @@ class Elevator extends SubsystemBase {
 
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
-    var output = pid.calculate(getHeightFromElevatorBottomInches(), setpointHeightFromElevatorBottom);
+    var pidOutput = pid.calculate(getHeightFromElevatorBottomInches(), setpointHeightFromElevatorBottom);
+    var output = pidOutput + CorallerConfig.kElevatorKG;
 
     // prevent trying to move past the bottom
     if (output < 0 && isAtBottom()) {
