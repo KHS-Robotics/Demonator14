@@ -23,6 +23,7 @@ import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
+import frc.robot.subsystems.coraller.Coraller.ReefScoringConfiguration;
 import frc.robot.subsystems.drive.SwerveDrive;
 
 /**
@@ -170,7 +171,14 @@ public class RobotContainer {
     // String names here must match what is used in the PathPlanner GUI in order to
     // work properly
     NamedCommands.registerCommand("StopSwerve", kSwerveDrive.stopCommand());
-    // TODO: Register all auto commands with PathPlanner...
+    NamedCommands.registerCommand("PrepareStow", kCoraller.prepareToScoreReef(ReefScoringConfiguration.STOW));
+    NamedCommands.registerCommand("PrepareScoreL1", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L1));
+    NamedCommands.registerCommand("PrepareScoreL2", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L2));
+    NamedCommands.registerCommand("PrepareScoreL3", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L3));
+    NamedCommands.registerCommand("PrepareScoreL4", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L4));
+    NamedCommands.registerCommand("PreapareReceive", kCoraller.prepareToScoreReef(ReefScoringConfiguration.RECEIVE));
+    NamedCommands.registerCommand("IntakeCoral", kCoraller.intakeCoral());
+    NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral());
   }
 
   /** https://pathplanner.dev/pplib-custom-logging.html */
