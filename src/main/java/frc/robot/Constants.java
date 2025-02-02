@@ -177,4 +177,10 @@ public final class Constants {
     public static final double RECEIVE_ANGLE = 0;
     public static final double RECEIVE_HEIGHT = 0;
   }
+  public static final class AlgaeWristConfig {
+    // Angler
+    public static final double kAlgaeP = 0.0;
+    public static final double kAlgaeI = 0.0;
+    public static final double kAlgaeD = 0.0;
+  }
 }
