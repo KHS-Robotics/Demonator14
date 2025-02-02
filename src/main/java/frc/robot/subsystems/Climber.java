@@ -17,37 +17,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class Climber extends SubsystemBase {
-  public enum AnchorPosition {
-    kEngaged(0.5),
-    kUnengaged(0.0);
-
-    public final double percent;
-
-    AnchorPosition(double percent) {
-      this.percent = percent;
-    }
-
-    public double getPercent() {
-      return percent;
-    }
-  }
-
-  public enum ReelState {
-    OFF("Off"),
-    REELING_IN("Reeling In"),
-    REELING_OUT("Reeling Out");
-
-    private final String state;
-
-    private ReelState(String s) {
-      state = s;
-    }
-
-    public String toString() {
-      return this.state;
-    }
-  }
-
   private AnchorPosition currentPosition = AnchorPosition.kUnengaged;
 
   private final SparkMax reel;
@@ -116,6 +85,26 @@ public class Climber extends SubsystemBase {
 
     private AnchorPosition(double percent) {
       this.percent = percent;
+    }
+
+    public double getPercent() {
+      return percent;
+    }
+  }
+  
+  public enum ReelState {
+    OFF("Off"),
+    REELING_IN("Reeling In"),
+    REELING_OUT("Reeling Out");
+
+    private final String state;
+
+    private ReelState(String s) {
+      state = s;
+    }
+
+    public String toString() {
+      return this.state;
     }
   }
   
