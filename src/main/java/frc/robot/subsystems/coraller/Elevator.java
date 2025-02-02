@@ -3,6 +3,7 @@ package frc.robot.subsystems.coraller;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -20,6 +21,7 @@ import frc.robot.Constants.CorallerConfig;
 class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
+  private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
 
   private double setpointHeightFromGroundInches = CorallerConfig.STOW_HEIGHT;
@@ -53,6 +55,8 @@ class Elevator extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters);
 
     encoder = leader.getEncoder();
+    // TODO: should be reverse? something to check...
+    bottomLimitSwitch = leader.getReverseLimitSwitch();
 
     pid = new PIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD);
     pid.setIZone(3);
@@ -72,8 +76,8 @@ class Elevator extends SubsystemBase {
       .withName("StopElevator");
   }
 
-  public Command setSetpointCommand(double heightFromGround) {
-    return this.run(() -> setSetpoint(heightFromGround))
+  public Command setHeightCommand(double heightFromGround) {
+    return this.run(() -> setSetpointHeight(heightFromGround))
       .until(this::isAtSetpoint)
       .withName("SetElevatorSetpoint");
   }
@@ -84,7 +88,7 @@ class Elevator extends SubsystemBase {
    * 
    * @see {@link #periodic()}
    */
-  public void setSetpoint(double heightFromGroundInches) {
+  public void setSetpointHeight(double heightFromGroundInches) {
     // extra precaution to prevent negative setpoints
     if (heightFromGroundInches < CorallerConfig.STOW_HEIGHT) {
       heightFromGroundInches = CorallerConfig.STOW_HEIGHT;
@@ -99,8 +103,7 @@ class Elevator extends SubsystemBase {
   }
 
   public boolean isAtBottom() {
-    // TODO: use limit switch / talon tach!
-    return true;
+    return bottomLimitSwitch.isPressed();
   }
 
   public boolean isAtSetpoint() {
@@ -142,7 +145,7 @@ class Elevator extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGroundInches, this::setSetpoint);
+    builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGroundInches, this::setSetpointHeight);
     builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches, null);
     builder.addDoubleProperty("HeightFromBottom", this::getHeightFromBottomInches, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);

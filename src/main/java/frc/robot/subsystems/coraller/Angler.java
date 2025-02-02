@@ -50,8 +50,8 @@ class Angler extends SubsystemBase {
     setMotorOutputForSetpoint();
   }
 
-  public Command setSetpointCommand(double angleDegrees) {
-    return this.run(() -> setSetpoint(angleDegrees))
+  public Command setAngleCommand(double angleDegrees) {
+    return this.run(() -> setSetpointAngle(angleDegrees))
       .until(this::isAtSetpoint)
       .withName("SetAnglerSetpoint");
   }
@@ -67,7 +67,7 @@ class Angler extends SubsystemBase {
    * 
    * @see {@link #periodic()}
    */
-  public void setSetpoint(double setpointDegrees) {
+  public void setSetpointAngle(double setpointDegrees) {
     // only reset for new setpoints
     if (setpointDegrees != setpointAngleDegrees) {
       pid.reset();
@@ -104,7 +104,7 @@ class Angler extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addDoubleProperty("Setpoint", () -> setpointAngleDegrees, this::setSetpoint);
+    builder.addDoubleProperty("Setpoint", () -> setpointAngleDegrees, this::setSetpointAngle);
     builder.addDoubleProperty("Angle", this::getAngle, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
   }

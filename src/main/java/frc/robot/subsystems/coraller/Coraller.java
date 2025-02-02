@@ -19,8 +19,8 @@ public class Coraller extends SubsystemBase {
 
   public Command prepareToScoreReef(ReefScoringConfiguration cfg) {
     return Commands.parallel(
-      elevator.setSetpointCommand(cfg.elevatorPosition),
-      angler.setSetpointCommand(cfg.anglerPosition)
+      elevator.setHeightCommand(cfg.elevatorPosition),
+      angler.setAngleCommand(cfg.anglerPosition)
     ).withName("PrepareToScoreReef");
   }
 
@@ -55,10 +55,10 @@ public class Coraller extends SubsystemBase {
     if (RobotState.isDisabled()) {
       // elevator - ensure non-negative
       var isElevatorEncoderNonNegative = elevator.getHeightFromBottomInches() >= 0;
-      elevator.setSetpoint(isElevatorEncoderNonNegative ? elevator.getHeightFromGroundInches() : CorallerConfig.STOW_HEIGHT);
+      elevator.setSetpointHeight(isElevatorEncoderNonNegative ? elevator.getHeightFromGroundInches() : CorallerConfig.STOW_HEIGHT);
 
       // angler
-      angler.setSetpoint(angler.getAngle());
+      angler.setSetpointAngle(angler.getAngle());
     }
   }
 
