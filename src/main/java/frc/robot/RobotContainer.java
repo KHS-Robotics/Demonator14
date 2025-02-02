@@ -170,7 +170,9 @@ public class RobotContainer {
   private void configureNamedCommandsForAuto() {
     // String names here must match what is used in the PathPlanner GUI in order to
     // work properly
-    NamedCommands.registerCommand("StopSwerve", kSwerveDrive.stopCommand());
+    NamedCommands.registerCommand("STOPSwerve", kSwerveDrive.stopCommand());
+    NamedCommands.registerCommand("STOPCoraller", kCoraller.stopCommand());
+    NamedCommands.registerCommand("STOP", kSwerveDrive.stopCommand().alongWith(kCoraller.stopCommand()));
     NamedCommands.registerCommand("PrepareStow", kCoraller.prepareToScoreReef(ReefScoringConfiguration.STOW));
     NamedCommands.registerCommand("PrepareScoreL1", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L1));
     NamedCommands.registerCommand("PrepareScoreL2", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L2));
