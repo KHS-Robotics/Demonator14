@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.schedule();
     }
 
-    // disable AprilTag updates: potentially temporary and may remove this later
+    // disable AprilTag updates for auton: potentially temporary and may remove this later
     RobotContainer.kLowerFrontPhotonCamera.setEnableAprilTagUpdates(false);
     RobotContainer.kRearLimelightCamera.setEnableAprilTagUpdates(false);
   }

@@ -62,7 +62,7 @@ public class SwerveDrive extends SubsystemBase {
   public static double maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
 
   private final SwerveModule kFrontLeft = new SwerveModule(
-      "FL",
+      "FrontLeft",
       RobotMap.FRONT_LEFT_DRIVE,
       RobotMap.FRONT_LEFT_PIVOT,
       SwerveDriveConfig.DRIVE_MODULE_PIVOT_P,
@@ -77,7 +77,7 @@ public class SwerveDrive extends SubsystemBase {
       RobotMap.FRONT_LEFT_PIVOT_ENCODER,
       SwerveDriveConfig.kFrontLeftPivotOffsetDegrees);
   private final SwerveModule kFrontRight = new SwerveModule(
-      "FR",
+      "FrontRight",
       RobotMap.FRONT_RIGHT_DRIVE,
       RobotMap.FRONT_RIGHT_PIVOT,
       SwerveDriveConfig.DRIVE_MODULE_PIVOT_P,
@@ -92,7 +92,7 @@ public class SwerveDrive extends SubsystemBase {
       RobotMap.FRONT_RIGHT_PIVOT_ENCODER,
       SwerveDriveConfig.kFrontRightPivotOffsetDegrees);
   private final SwerveModule kRearLeft = new SwerveModule(
-      "RL",
+      "RearLeft",
       RobotMap.REAR_LEFT_DRIVE,
       RobotMap.REAR_LEFT_PIVOT,
       SwerveDriveConfig.DRIVE_MODULE_PIVOT_P,
@@ -107,7 +107,7 @@ public class SwerveDrive extends SubsystemBase {
       RobotMap.REAR_LEFT_PIVOT_ENCODER,
       SwerveDriveConfig.kRearLeftPivotOffsetDegrees);
   private final SwerveModule kRearRight = new SwerveModule(
-      "RR",
+      "RearRight",
       RobotMap.REAR_RIGHT_DRIVE,
       RobotMap.REAR_RIGHT_PIVOT,
       SwerveDriveConfig.DRIVE_MODULE_PIVOT_P,

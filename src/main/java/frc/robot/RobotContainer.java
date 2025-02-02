@@ -14,11 +14,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.Constants.HIDConfig;
 import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
+import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
@@ -70,7 +70,7 @@ public class RobotContainer {
 
   // Operator / Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
-  public static final CommandXboxController kDriverController = new CommandXboxController(RobotMap.XBOX_PORT);
+  public static final DemonCommandXboxController kDriverController = new DemonCommandXboxController(RobotMap.XBOX_PORT);
   public static final OperatorStick kOperatorStick = new OperatorStick(RobotMap.JOYSTICK_PORT);
 
   // Subsystems
@@ -137,7 +137,7 @@ public class RobotContainer {
     // reset robot heading to face away from the driver - this is useful during
     // driver practice to reset for field oriented driving direction or a rare odd
     // scenario on the field during a match
-    kDriverController.start().debounce(0.5).onTrue(kSwerveDrive.resetHeading());
+    kDriverController.isPressingResetRobotHeading().onTrue(kSwerveDrive.resetHeading());
   }
 
   /** Binds commands to operator stick buttons. */
