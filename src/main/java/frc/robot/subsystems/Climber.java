@@ -85,6 +85,18 @@ public class Climber extends SubsystemBase {
     return currentPosition;
   }
 
+  private String reelingStatus(){
+    if (!reelingIn && !reelingOut){
+      return "Not reeling";
+    }else if (reelingIn){
+      return "reeling in";
+    }else if (reelingOut){
+      return "reeling out";
+    }else{
+      return "I don't know what is happening";
+    }
+  }
+
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
@@ -92,7 +104,6 @@ public class Climber extends SubsystemBase {
     builder.setSafeState(this::reelStop);
     builder.setActuator(true);
     builder.addBooleanProperty("IsAnchorEngaged", this::isEngaged, null);
-    builder.addBooleanProperty("ReelingIn", () -> reelingIn, null);
-    builder.addBooleanProperty("ReelingOut", () -> reelingOut, null);
+    builder.addStringProperty("ReelingStatus", this::reelingStatus, null);
   }
 }
