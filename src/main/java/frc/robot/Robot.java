@@ -72,8 +72,6 @@ public class Robot extends TimedRobot {
   /** This method is called periodically during disabled mode. */
   @Override
   public void disabledPeriodic() {
-    // TODO: set elevator and angler to their current positions in disabled
-    // RobotContainer.kCoraller.setSetpoint(RobotContainer.kCoraller.getAngle());
   }
 
   /** This method is called once each time the robot exits disabled mode. */
@@ -93,7 +91,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.schedule();
     }
 
-    // disable AprilTag updates: potentially temporary and may remove this later
+    // disable AprilTag updates for auton: potentially temporary and may remove this later
     RobotContainer.kLowerFrontPhotonCamera.setEnableAprilTagUpdates(false);
     RobotContainer.kRearLimelightCamera.setEnableAprilTagUpdates(false);
   }

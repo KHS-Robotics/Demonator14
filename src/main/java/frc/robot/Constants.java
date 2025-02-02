@@ -93,29 +93,14 @@ public final class Constants {
         / SDS_L2_DRIVE_GEARING;
     public static final double kDriveEncoderVelocityConversionFactor = kDriveEncoderPositionConversionFactor / 60.0;
 
-    public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(10.7),
-        Units.inchesToMeters(11.7));
-    public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(10.7),
-        Units.inchesToMeters(-11.7));
-    public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
-        Units.inchesToMeters(11.7));
-    public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-10.7),
-        Units.inchesToMeters(-11.7));
-
-    // for 2025 robot, 23.5 wide by 22 inches drivebase
-
-    // public static final Translation2d kFrontLeftModuleOffset = new
-    // Translation2d(Units.inchesToMeters(11.75),
-    // Units.inchesToMeters(11));
-    // public static final Translation2d kFrontRightModuleOffset = new
-    // Translation2d(Units.inchesToMeters(10.7),
-    // Units.inchesToMeters(-11));
-    // public static final Translation2d kRearLeftModuleOffset = new
-    // Translation2d(Units.inchesToMeters(-10.7),
-    // Units.inchesToMeters(11));
-    // public static final Translation2d kRearRightModuleOffset = new
-    // Translation2d(Units.inchesToMeters(-10.7),
-    // Units.inchesToMeters(-11));
+    public static final Translation2d kFrontLeftModuleOffset = new Translation2d(Units.inchesToMeters(14.25),
+        Units.inchesToMeters(15));
+    public static final Translation2d kFrontRightModuleOffset = new Translation2d(Units.inchesToMeters(14.25),
+        Units.inchesToMeters(-15));
+    public static final Translation2d kRearLeftModuleOffset = new Translation2d(Units.inchesToMeters(-14.5),
+        Units.inchesToMeters(15));
+    public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-14.5),
+        Units.inchesToMeters(-15));
 
     // individual offsets after calibrating each module
     public static final double kFrontLeftPivotOffsetDegrees = 225;
@@ -163,6 +148,8 @@ public final class Constants {
     public static final double kAnglerP = 0.0;
     public static final double kAnglerI = 0.0;
     public static final double kAnglerD = 0.0;
+    /** Gravity term in volts. */
+    public static final double kAnglerKG = 0.0;
     public static final double kAnglerEncoderPositionConversionFactor = 1;
     public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
 
@@ -170,10 +157,11 @@ public final class Constants {
     public static final double kElevatorP = 0.0;
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
+    /** Gravity term in volts. */
+    public static final double kElevatorKG = 0.0;
     public static final double kElevatorEncoderPositionConversionFactor = 1;
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
-    public static final double kRobotElevatorStowHeightInches = 48;
 
     // Coraller Configuration
     public static final double STOW_ANGLE = 0;

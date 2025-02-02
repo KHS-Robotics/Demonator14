@@ -69,9 +69,8 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModule(String name, int driveMotorChannel, int pivotMotorChannel, double pivotP, double pivotI,
       double pivotD, double driveP, double driveI, double driveD,
       double drivekS, double drivekV, double drivekA, int pivotEncoderId, boolean reversed, double offsetAngle) {
-
+    super(SwerveDrive.class.getSimpleName() + "/Module-" + name);
     this.name = name;
-    setName("Module-" + name);
 
     var driveEncoderConfig = new EncoderConfig()
         .positionConversionFactor(SwerveDriveConfig.kDriveEncoderPositionConversionFactor)
