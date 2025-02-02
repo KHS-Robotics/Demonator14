@@ -166,10 +166,12 @@ public final class Constants {
     // Coraller Configuration
     public static final double STOW_ANGLE = 0;
     public static final double STOW_HEIGHT = 0;
-    public static final double L1_ANGLE = 0;
-    public static final double L1_HEIGHT = 0;
-    public static final double L2_ANGLE = 0;
-    public static final double L2_HEIGHT = 0;
+    // Testing for PR #24
+    public static final double L1_ANGLE = 35;
+    public static final double L1_HEIGHT = 30;
+    // Testing for PR #24
+    public static final double L2_ANGLE = -35;
+    public static final double L2_HEIGHT = 40;
     public static final double L3_ANGLE = 0;
     public static final double L3_HEIGHT = 0;
     public static final double L4_ANGLE = 0;

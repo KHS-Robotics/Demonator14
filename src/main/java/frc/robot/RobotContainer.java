@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.HIDConfig;
 import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
@@ -139,6 +139,14 @@ public class RobotContainer {
     // driver practice to reset for field oriented driving direction or a rare odd
     // scenario on the field during a match
     kDriverController.isPressingResetRobotHeading().onTrue(kSwerveDrive.resetHeading());
+
+    // Testing for PR #24
+    var prepScoreL1 = new Trigger(() -> kOperatorStick.getRawButton(1));
+    prepScoreL1.onTrue(kCoraller.prepareToScoreReef(ReefScoringConfiguration.L1));
+    var prepScoreL2 = new Trigger(() -> kOperatorStick.getRawButton(2));
+    prepScoreL2.onTrue(kCoraller.prepareToScoreReef(ReefScoringConfiguration.L2));
+    var stopCoraller = new Trigger(() -> kOperatorStick.getRawButton(3));
+    stopCoraller.onTrue(kCoraller.stopCommand());
   }
 
   /** Binds commands to operator stick buttons. */

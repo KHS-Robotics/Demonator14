@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
@@ -77,7 +78,8 @@ class Elevator extends SubsystemBase {
   }
 
   public Command setHeightCommand(double heightFromGround) {
-    return this.run(() -> setSetpointHeight(heightFromGround))
+    // Testing for PR #24
+    return this.run(() -> setSetpointHeight(heightFromGround)).alongWith(Commands.print("setHeightCommand :: " + heightFromGround).repeatedly())
       .until(this::isAtSetpoint)
       .withName("SetElevatorSetpoint");
   }
