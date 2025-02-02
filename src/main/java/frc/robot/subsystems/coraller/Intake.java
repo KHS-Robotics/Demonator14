@@ -41,7 +41,8 @@ class Intake extends SubsystemBase {
   }
 
   public Command stopCommand() {
-    return runOnce(this::stop).withName("StopIntake");
+    return runOnce(this::stop)
+      .withName("StopIntake");
   }
 
   // TODO() find out volts and which are inversed
@@ -52,7 +53,8 @@ class Intake extends SubsystemBase {
   }
 
   public Command intakeCommand() {
-    return runOnce(this::start).withName("StartIntake");
+    return runOnce(this::start)
+      .withName("StartIntake");
   }
 
   public void reverse() {
@@ -62,7 +64,8 @@ class Intake extends SubsystemBase {
   }
 
   public Command reverseCommand() {
-    return runOnce(this::reverse).withName("ReverseIntake");
+    return runOnce(this::reverse)
+      .withName("ReverseIntake");
   }
 
   public boolean hasCoral() {

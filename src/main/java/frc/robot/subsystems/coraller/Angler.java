@@ -52,12 +52,12 @@ class Angler extends SubsystemBase {
   public Command setSetpointCommand(double angleDegrees) {
     return this.run(() -> setSetpoint(angleDegrees))
       .until(this::isAtSetpoint)
-      .withName("Set"+getName()+"Setpoint");
+      .withName("SetAnglerSetpoint");
   }
 
   public Command stopCommand() {
     return runOnce(this::stop)
-      .withName("Stop"+getName());
+      .withName("StopAngler");
   }
 
   /** 
@@ -66,10 +66,6 @@ class Angler extends SubsystemBase {
    */
   public void setSetpoint(double setpoint) {
     setpointAngle = setpoint;
-  }
-
-  public Command setSetpointComnand(double angleDegrees) {
-    return this.run(() -> setSetpoint(angleDegrees)).until(this::isAtSetpoint).withName("SetAnglerSetpoint");
   }
 
   public double getAngle() {
