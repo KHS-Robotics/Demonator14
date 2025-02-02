@@ -12,22 +12,20 @@ public class Coraller extends SubsystemBase {
 
   public Command prepareToScore(Configuration cfg) {
     return runOnce(() -> Commands.parallel(
-      elevator.setSetpointComnand(cfg.elevatorPosition),
-      angler.setSetpointComnand(cfg.anglerPosition)
-    ));
-  }
+      elevator.setSetpointCommand(cfg.elevatorPosition),
+      angler.setSetpointCommand(cfg.anglerPosition)
+    )); 
+  } 
 
   public Command intakeCoral() {
-    return startEnd(intake::start, intake::stop).until(intake::hasCoral).withTimeout(3);
+    return startEnd(intake::start, intake::stop)
+      .until(intake::hasCoral)
+      .withTimeout(3);
   }
 
   public Command releaseCoral() {
-    return startEnd(intake::reverse, intake::stop).withTimeout(.5);
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+    return startEnd(intake::reverse, intake::stop)
+      .withTimeout(.5);
   }
 
   public enum Configuration {

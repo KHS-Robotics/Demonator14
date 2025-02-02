@@ -39,39 +39,37 @@ class Angler extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters);
     pid = new PIDController(CorallerConfig.kAnglerP, CorallerConfig.kAnglerI, CorallerConfig.kAnglerD);
     encoder = motor.getAbsoluteEncoder();
-
-    SmartDashboard.putData(this);
+  
+    String namePrefix = "Coraller/"+getName();
+    SmartDashboard.putData(namePrefix, this);
+    SmartDashboard.putData(namePrefix+"/PID Controller", pid);  
   }
 
   public void periodic() {
     setMotorOutputForSetpoint();
   }
 
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    builder.setSmartDashboardType(getName());
-    builder.setSafeState(this::stop);
-    builder.setActuator(true);
-    builder.addDoubleProperty("Setpoint", () -> this.setpointAngle, this::setSetpoint);
-    builder.addDoubleProperty("Angle", this::getAngle, null);
-    builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
-  }
-
-  public void stop() {
-    motor.stopMotor();
+  public Command setSetpointCommand(double angleDegrees) {
+    return this.run(() -> setSetpoint(angleDegrees))
+      .until(this::isAtSetpoint)
+      .withName("Set"+getName()+"Setpoint");
   }
 
   public Command stopCommand() {
-    return runOnce(this::stop).withName("StopAngler");
+    return runOnce(this::stop)
+      .withName("Stop"+getName());
+  }
+
+  /** 
+   * This method sets the configured setpoint for the elevator. The periodic function
+   * is contantly polling this value to make adjustments when it changes
+   */
+  public void setSetpoint(double setpoint) {
+    setpointAngle = setpoint;
   }
 
   public Command setSetpointComnand(double angleDegrees) {
     return this.run(() -> setSetpoint(angleDegrees)).until(this::isAtSetpoint).withName("SetAnglerSetpoint");
-  }
-
-  public void setSetpoint(double setpoint) {
-    setpointAngle = setpoint;
   }
 
   public double getAngle() {
@@ -87,5 +85,20 @@ class Angler extends SubsystemBase {
     // TODO: sysid characterization + feedforward terms
     var output = pid.calculate(getAngle(), setpointAngle);
     motor.setVoltage(output);
+  }
+
+  public void stop(){
+    motor.stopMotor();
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.setActuator(true);
+    builder.addDoubleProperty("Setpoint", () -> setpointAngle, this::setSetpoint);
+    builder.addDoubleProperty("Angle", this::getAngle, null);
+    builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
   }
 }

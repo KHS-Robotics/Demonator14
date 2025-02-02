@@ -11,6 +11,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.RobotMap;
 
 class Intake extends SubsystemBase {
@@ -30,18 +31,7 @@ class Intake extends SubsystemBase {
 
     sensor = motor.getForwardLimitSwitch();
 
-    SmartDashboard.putData(this);
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    builder.setSmartDashboardType(getName());
-    builder.setSafeState(this::stop);
-    builder.setActuator(true);
-    builder.addBooleanProperty("hasCoral", this::hasCoral, null);
-    builder.addBooleanProperty("Intaking", () -> intaking, null);
-    builder.addBooleanProperty("Outaking", () -> outaking, null);
+    SmartDashboard.putData("Coraller/"+getName(), this);
   }
 
   public void stop() {
@@ -76,5 +66,16 @@ class Intake extends SubsystemBase {
 
   public boolean hasCoral() {
     return sensor.isPressed();
+  }
+  
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.setActuator(true);
+    builder.addBooleanProperty("hasCoral", this::hasCoral, null);
+    builder.addBooleanProperty("Intaking", () -> intaking, null);
+    builder.addBooleanProperty("Outaking", () -> outaking, null);
   }
 }

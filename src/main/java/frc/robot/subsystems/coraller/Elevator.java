@@ -46,20 +46,9 @@ class Elevator extends SubsystemBase {
     pid = new PIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD);
     encoder = motor.getEncoder();
 
-    SmartDashboard.putData(this);
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    builder.setSmartDashboardType(getName());
-    builder.setSafeState(this::stop);
-    builder.setActuator(true);
-    builder.addDoubleProperty("SetpointFromGround", () -> setpointHeightFromGround, this::setSetpoint);
-    builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches, null);
-    builder.addDoubleProperty("HeightFromBottom", this::getHeightFromElevatorBottomInches, null);
-    builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
-    builder.addBooleanProperty("IsAtBottom", this::isAtBottom, null);
+    String namePrefix = "Coraller/"+getName();
+    SmartDashboard.putData(namePrefix, this);
+    SmartDashboard.putData(namePrefix+"/PID Controller", pid);
   }
 
   @Override
@@ -67,18 +56,18 @@ class Elevator extends SubsystemBase {
     setMotorOutputForSetpoint();
   }
 
-  public void stop() {
-    motor.stopMotor();
-  }
-
   public Command stopCommand() {
     return runOnce(this::stop).withName("StopElevator");
   }
 
-  public Command setSetpointComnand(double heightFromGround) {
+  public Command setSetpointCommand(double heightFromGround) {
     return this.run(() -> setSetpoint(heightFromGround)).until(this::isAtSetpoint).withName("SetElevatorSetpoint");
   }
 
+  /** 
+   * This method sets the configured setpoint for the elevator. The periodic function
+   * is contantly polling this value to make adjustments when it changes
+   */
   public void setSetpoint(double heightFromGround) {
     // extra precaution to prevent negative setpoints
     if (heightFromGround < CorallerConfig.kRobotElevatorStowHeightInches) {
@@ -112,5 +101,22 @@ class Elevator extends SubsystemBase {
     // TODO: sysid characterization + feedforward terms
     var output = pid.calculate(getHeightFromElevatorBottomInches(), setpointHeightFromElevatorBottom);
     motor.setVoltage(output);
+  }
+
+  public void stop(){
+    motor.stopMotor();
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.setActuator(true);
+    builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGround, this::setSetpoint);
+    builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches,null);
+    builder.addDoubleProperty("HeightFromBottom", this::getHeightFromElevatorBottomInches, null);
+    builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
+    builder.addBooleanProperty("IsAtBottom", this::isAtBottom, null);
   }
 }
