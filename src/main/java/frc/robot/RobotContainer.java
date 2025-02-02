@@ -14,17 +14,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.Constants.HIDConfig;
 import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
+import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.drive.SwerveDrive;
-import frc.robot.subsystems.TwistServo;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -71,7 +70,7 @@ public class RobotContainer {
 
   // Operator / Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
-  public static final CommandXboxController kDriverController = new CommandXboxController(RobotMap.XBOX_PORT);
+  public static final DemonCommandXboxController kDriverController = new DemonCommandXboxController(RobotMap.XBOX_PORT);
   public static final OperatorStick kOperatorStick = new OperatorStick(RobotMap.JOYSTICK_PORT);
 
   // Subsystems
@@ -80,9 +79,6 @@ public class RobotContainer {
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
-
-  // temporary - this will live in the Climber subsystem
-  public static final TwistServo kCageTwist = new TwistServo();
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
@@ -141,11 +137,7 @@ public class RobotContainer {
     // reset robot heading to face away from the driver - this is useful during
     // driver practice to reset for field oriented driving direction or a rare odd
     // scenario on the field during a match
-    kDriverController.start().debounce(0.5).onTrue(kSwerveDrive.resetHeading());
-
-    // servo testing
-    kDriverController.a().onTrue(kCageTwist.latch());
-    kDriverController.b().onTrue(kCageTwist.unlatch());
+    kDriverController.isPressingResetRobotHeading().onTrue(kSwerveDrive.resetHeading());
   }
 
   /** Binds commands to operator stick buttons. */
@@ -178,6 +170,7 @@ public class RobotContainer {
     // String names here must match what is used in the PathPlanner GUI in order to
     // work properly
     NamedCommands.registerCommand("StopSwerve", kSwerveDrive.stopCommand());
+    // TODO: Register all auto commands with PathPlanner...
   }
 
   /** https://pathplanner.dev/pplib-custom-logging.html */
