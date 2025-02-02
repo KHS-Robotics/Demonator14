@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CorallerConfig;
 import frc.robot.RobotMap;
 
-public class Angler extends SubsystemBase {
+class Angler extends SubsystemBase {
   private double setpointAngle;
 
   private final SparkMax motor;
@@ -53,29 +53,32 @@ public class Angler extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addDoubleProperty("SetPoint", this::getSetPoint, this::setSetpoint);
+    builder.addDoubleProperty("Setpoint", () -> this.setpointAngle, this::setSetpoint);
     builder.addDoubleProperty("Angle", this::getAngle, null);
-    builder.addBooleanProperty("IsAtSetpoint", this::isAtAnglerSetpoint, null);
+    builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
   }
 
+  public void stop() {
+    motor.stopMotor();
+  }
 
-  public double getAngle() {
-    return encoder.getPosition();
+  public Command stopCommand() {
+    return runOnce(this::stop).withName("StopAngler");
   }
 
   public Command setSetpointComnand(double angleDegrees) {
-    return this.run(() -> setSetpoint(angleDegrees)).until(this::isAtAnglerSetpoint);
+    return this.run(() -> setSetpoint(angleDegrees)).until(this::isAtSetpoint).withName("SetElevatorSetpoint");
   }
 
   public void setSetpoint(double setpoint) {
     setpointAngle = setpoint;
   }
 
-  public double getSetPoint() {
-    return setpointAngle;
+  public double getAngle() {
+    return encoder.getPosition();
   }
 
-  public boolean isAtAnglerSetpoint() {
+  public boolean isAtSetpoint() {
     var error = Math.abs(setpointAngle - getAngle());
     return (error < 1);
   }
@@ -84,9 +87,5 @@ public class Angler extends SubsystemBase {
     // TODO: sysid characterization + feedforward terms
     var output = pid.calculate(getAngle(), setpointAngle);
     motor.setVoltage(output);
-  }
-
-  public void stop(){
-    motor.stopMotor();
   }
 }

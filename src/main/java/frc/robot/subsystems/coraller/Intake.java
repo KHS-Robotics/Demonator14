@@ -9,10 +9,11 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
-class Intake extends SubsystemBase{
+class Intake extends SubsystemBase {
   private boolean intaking, outaking;
 
   private final SparkMax motor;
@@ -20,12 +21,12 @@ class Intake extends SubsystemBase{
 
   public Intake() {
     var intakeConfig = new SparkMaxConfig()
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(30)
-      .inverted(false);
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .inverted(false);
     motor = new SparkMax(RobotMap.CORALLER_INTAKE_MOTOR_ID, MotorType.kBrushless);
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
-      SparkBase.PersistMode.kPersistParameters);
+        SparkBase.PersistMode.kPersistParameters);
 
     sensor = motor.getForwardLimitSwitch();
 
@@ -43,22 +44,34 @@ class Intake extends SubsystemBase{
     builder.addBooleanProperty("Outaking", () -> outaking, null);
   }
 
+  public void stop() {
+    outaking = intaking = false;
+    motor.stopMotor();
+  }
+
+  public Command stopCommand() {
+    return runOnce(this::stop).withName("StopIntake");
+  }
+
   // TODO() find out volts and which are inversed
   public void start() {
     outaking = false;
     intaking = true;
     motor.setVoltage(6);
   }
-  
+
+  public Command intakeCommand() {
+    return runOnce(this::start).withName("StartIntake");
+  }
+
   public void reverse() {
     outaking = true;
     intaking = false;
     motor.setVoltage(-6);
   }
-  
-  public void stop() {
-    outaking = intaking = false;
-    motor.stopMotor();
+
+  public Command reverseCommand() {
+    return runOnce(this::reverse).withName("ReverseIntake");
   }
 
   public boolean hasCoral() {

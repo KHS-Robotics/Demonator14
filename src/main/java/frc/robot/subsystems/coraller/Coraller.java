@@ -14,24 +14,15 @@ public class Coraller extends SubsystemBase {
     return runOnce(() -> Commands.parallel(
       elevator.setSetpointComnand(cfg.elevatorPosition),
       angler.setSetpointComnand(cfg.anglerPosition)
-    )); 
-} 
+    ));
+  }
 
   public Command intakeCoral() {
-    return startEnd(
-      intake::start,
-      intake::stop
-    )
-    .until(intake::hasCoral) 
-    .withTimeout(3);
+    return startEnd(intake::start, intake::stop).until(intake::hasCoral).withTimeout(3);
   }
 
   public Command releaseCoral() {
-    return startEnd(
-      intake::reverse,
-      intake::stop
-    )
-    .withTimeout(.5);
+    return startEnd(intake::reverse, intake::stop).withTimeout(.5);
   }
 
   @Override

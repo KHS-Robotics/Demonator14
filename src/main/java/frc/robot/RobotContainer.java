@@ -9,8 +9,6 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -81,7 +79,7 @@ public class RobotContainer {
 
   // Subsystems - Mechanisms
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
-  // public static final Coraller kCoraller = new Coraller();
+  public static final Coraller kCoraller = new Coraller();
 
   // temporary - this will live in the Climber subsystem
   public static final TwistServo kCageTwist = new TwistServo();
