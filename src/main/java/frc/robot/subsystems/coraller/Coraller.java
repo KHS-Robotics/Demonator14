@@ -51,8 +51,13 @@ public class Coraller extends SubsystemBase {
 
   /** Updates the setpoints to the current positions. */
   private void updateSetpointsForDisabledMode() {
+    // only in disabled
     if (RobotState.isDisabled()) {
-      elevator.setSetpoint(elevator.getHeightFromGroundInches());
+      // elevator - ensure non-negative
+      var isElevatorEncoderNonNegative = elevator.getHeightFromBottomInches() >= 0;
+      elevator.setSetpoint(isElevatorEncoderNonNegative ? elevator.getHeightFromGroundInches() : CorallerConfig.STOW_HEIGHT);
+
+      // angler
       angler.setSetpoint(angler.getAngle());
     }
   }

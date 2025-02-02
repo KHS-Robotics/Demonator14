@@ -23,7 +23,7 @@ class Elevator extends SubsystemBase {
   private final PIDController pid;
 
   private double setpointHeightFromGroundInches = CorallerConfig.STOW_HEIGHT;
-  private double setpointHeightFromElevatorBottomInches;
+  private double setpointHeightFromBottomInches;
 
   public Elevator() {
     super(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName());
@@ -95,7 +95,7 @@ class Elevator extends SubsystemBase {
       pid.reset();
     }
     setpointHeightFromGroundInches = heightFromGroundInches;
-    setpointHeightFromElevatorBottomInches = heightFromGroundInches - CorallerConfig.STOW_HEIGHT;
+    setpointHeightFromBottomInches = heightFromGroundInches - CorallerConfig.STOW_HEIGHT;
   }
 
   public boolean isAtBottom() {
@@ -108,7 +108,7 @@ class Elevator extends SubsystemBase {
     return (error < 1);
   }
 
-  public double getHeightFromElevatorBottomInches() {
+  public double getHeightFromBottomInches() {
     return encoder.getPosition();
   }
 
@@ -118,7 +118,7 @@ class Elevator extends SubsystemBase {
 
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
-    var pidOutput = pid.calculate(getHeightFromElevatorBottomInches(), setpointHeightFromElevatorBottomInches);
+    var pidOutput = pid.calculate(getHeightFromBottomInches(), setpointHeightFromBottomInches);
     var output = pidOutput + CorallerConfig.kElevatorKG;
 
     // prevent trying to move past the bottom or setting motor outputs while limit
@@ -144,7 +144,7 @@ class Elevator extends SubsystemBase {
     builder.setActuator(true);
     builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGroundInches, this::setSetpoint);
     builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches, null);
-    builder.addDoubleProperty("HeightFromBottom", this::getHeightFromElevatorBottomInches, null);
+    builder.addDoubleProperty("HeightFromBottom", this::getHeightFromBottomInches, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
     builder.addBooleanProperty("IsAtBottom", this::isAtBottom, null);
   }
