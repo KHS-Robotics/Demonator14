@@ -41,4 +41,5 @@ public final class RobotMap {
   public static final int CLIMBER_ANCHOR_ID = -5;
 
   public static final int ALGAE_INTAKE_MOTOR_ID = -6;
+  public static final int ALGAE_WRIST_MOTOR_ID = -7;
 }

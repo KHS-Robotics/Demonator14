@@ -16,13 +16,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
-public class AlgaeCollecter extends SubsystemBase {
+public class AlgaeIntake extends SubsystemBase {
   private IntakeState intakeState;
   /** Creates a new AlgaeCollecter. */
   private final SparkMax motor;
   private final SparkLimitSwitch sensor;
 
-  public AlgaeCollecter() {
+  public AlgaeIntake() {
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
