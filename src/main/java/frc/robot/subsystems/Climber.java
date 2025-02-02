@@ -27,7 +27,7 @@ public class Climber extends SubsystemBase {
       this.percent = percent;
     }
 
-    public double getPosition() {
+    public double getPercent() {
       return percent;
     }
   }
@@ -126,7 +126,7 @@ public class Climber extends SubsystemBase {
     builder.setSafeState(this::reelStop);
     builder.setActuator(true);
     builder.addBooleanProperty("IsAnchorEngaged", this::isEngaged, null);
-    builder.addDoubleProperty("AnchorPosition", () -> getAnchorPosition().getPosition(), null);
+    builder.addDoubleProperty("AnchorPosition", () -> getAnchorPosition().getPercent(), null);
     builder.addStringProperty("ReelingStatus", reelState::toString, null);
   }
 }
