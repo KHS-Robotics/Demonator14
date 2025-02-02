@@ -67,7 +67,7 @@ class Angler extends SubsystemBase {
   }
 
   public Command setSetpointComnand(double angleDegrees) {
-    return this.run(() -> setSetpoint(angleDegrees)).until(this::isAtSetpoint).withName("SetElevatorSetpoint");
+    return this.run(() -> setSetpoint(angleDegrees)).until(this::isAtSetpoint).withName("SetAnglerSetpoint");
   }
 
   public void setSetpoint(double setpoint) {
