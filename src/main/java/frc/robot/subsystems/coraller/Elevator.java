@@ -36,6 +36,7 @@ class Elevator extends SubsystemBase {
     var leaderConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(45)
+      // TODO: set inverted based on our desired sign of direction (positive up / negative down)
       .inverted(false)
       .apply(elevatorEncoderConfig);
     leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);

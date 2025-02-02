@@ -28,6 +28,7 @@ class Angler extends SubsystemBase {
     var anglerConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)
+        // TODO: set inverted based on our desired sign of direction (positive up / negative down)
         .inverted(false);
     motor = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
     motor.configure(anglerConfig, SparkBase.ResetMode.kResetSafeParameters,
