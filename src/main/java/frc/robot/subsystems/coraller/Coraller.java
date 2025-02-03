@@ -24,7 +24,7 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command prepareToScoreReef(ReefScoringConfiguration cfg) {
-    return runEnd(() -> Commands.parallel(
+    return startEnd(() -> Commands.parallel(
       elevator.setHeightCommand(cfg.elevatorPosition),
       angler.setAngleCommand(cfg.anglerPosition)
     ), this::stopCommand)
