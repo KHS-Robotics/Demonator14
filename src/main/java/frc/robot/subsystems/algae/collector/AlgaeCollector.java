@@ -9,14 +9,15 @@ public class AlgaeCollector extends SubsystemBase {
   private final Wrist wrist = new Wrist();
 
   public Command position(double pos) {
-    return runOnce(() -> wrist.setAngleCommand(pos))
+    return startEnd(
+        () -> wrist.setAngleCommand(pos),
+        wrist::stop
+      )
       .withName("PositionWrist");
   }
 
   public Command intakeAlgae() {
-    var cmd = startEnd(intake::start, intake::stop);
-    cmd.addRequirements(intake);
-    return cmd
+    return startEnd(intake::start, intake::stop)
       .until(intake::hasAlgae)
       .withTimeout(3)
       .withName("IntakeAlgae");
