@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.algae.collector;
 
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -16,13 +16,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
-public class AlgaeIntake extends SubsystemBase {
+class Intake extends SubsystemBase {
   private IntakeState intakeState;
   /** Creates a new AlgaeCollecter. */
   private final SparkMax motor;
   private final SparkLimitSwitch sensor;
 
-  public AlgaeIntake() {
+  public Intake() {
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
