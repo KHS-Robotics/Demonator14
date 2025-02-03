@@ -55,12 +55,12 @@ public class DemonLimelightCamera extends SubsystemBase {
    */
   public DemonLimelightCamera(String limelightName, LimelightPoseEstimateAlgorithm peAlgorithm,
       Supplier<Pose2d> currentPose, Supplier<Double> currentGyroRate) {
+    super("Cameras/" + limelightName);
+
     this.limelightName = limelightName;
     this.peAlgorithm = peAlgorithm;
     this.currentPose = currentPose;
     this.currentGyroRate = currentGyroRate;
-
-    setName(limelightName);
 
     SmartDashboard.putData(this);
   }

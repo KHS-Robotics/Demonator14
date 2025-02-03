@@ -68,7 +68,7 @@ public class DemonPhotonCamera extends SubsystemBase {
    *                     Coordinate System</a>
    */
   public DemonPhotonCamera(String cameraName, Transform3d cameraOffset) {
-    setName(cameraName);
+    super("Cameras/" + cameraName);
 
     camera = new PhotonCamera(cameraName);
 
