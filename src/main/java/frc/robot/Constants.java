@@ -157,6 +157,9 @@ public final class Constants {
     public static final double kElevatorP = 0.0;
     public static final double kElevatorI = 0.0;
     public static final double kElevatorD = 0.0;
+    public static final double kElevatorMaxVelocity = 0.0;
+    public static final double kElevatorMaxAcceleration = 0.0;
+
     /** Gravity term in volts. */
     public static final double kElevatorKG = 0.0;
     public static final double kElevatorEncoderPositionConversionFactor = 1;

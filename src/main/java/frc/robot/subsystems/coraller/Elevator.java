@@ -10,6 +10,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,7 +24,7 @@ class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
   private final SparkLimitSwitch bottomLimitSwitch;
-  private final PIDController pid;
+  private final ProfiledPIDController pid;
 
   private double setpointHeightFromGroundInches = CorallerConfig.STOW_HEIGHT;
   private double setpointHeightFromBottomInches;
@@ -33,6 +35,8 @@ class Elevator extends SubsystemBase {
     var elevatorEncoderConfig = new EncoderConfig()
       .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
       .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
+    var constraints = new TrapezoidProfile.Constraints(
+      CorallerConfig.kElevatorMaxVelocity, CorallerConfig.kElevatorMaxAcceleration);
 
     var leaderConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
@@ -58,7 +62,8 @@ class Elevator extends SubsystemBase {
     // TODO: should be reverse? something to check...
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
-    pid = new PIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD);
+    pid = new ProfiledPIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, 
+      CorallerConfig.kElevatorD, constraints);
     pid.setIZone(3);
 
     SmartDashboard.putData(getName(), this);
@@ -135,7 +140,7 @@ class Elevator extends SubsystemBase {
 
   public void stop() {
     leader.stopMotor();
-    pid.reset();
+    pid.reset(getHeightFromBottomInches());
   }
 
   /** {@inheritDoc} */
