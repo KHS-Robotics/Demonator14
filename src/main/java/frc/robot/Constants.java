@@ -189,5 +189,9 @@ public final class Constants {
     public static final double kFlickerP = 0.0;
     public static final double kFlickerI = 0.0;
     public static final double kFlickerD = 0.0;
+    
+    public static final double kFlickerKG = 0.0;
+    public static final double kFlickerEncoderPositionConversionFactor = 1;
+    public static final double kFlickerEncoderVelocityConversionFactor = kFlickerEncoderPositionConversionFactor / 60.0;
   }
 }
