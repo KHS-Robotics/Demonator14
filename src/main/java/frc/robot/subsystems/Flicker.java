@@ -16,17 +16,21 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FlickerConfig;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.coraller.Coraller.ReefScoringConfiguration;
+import frc.robot.Constants.CorallerConfig;
 import frc.robot.Constants.ElevatorConfig;
 
 public class Flicker extends SubsystemBase {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
   private final PIDController pid;
+
   private final Elevator elevator = RobotContainer.kElevator;
   private double setpointAngleDegrees;
 
@@ -58,6 +62,13 @@ public class Flicker extends SubsystemBase {
   @Override
   public void periodic() {
     setMotorOutputForSetpoint();
+  }
+
+  public Command prepareToFlickCommand(ReefScoringConfiguration cfg) {
+    return Commands.parallel(
+      elevator.setHeightCommand(cfg.elevatorPosition),
+      setAngleCommand(cfg.flickerPosition)
+    ).withName("PrepareToFlick");
   }
 
   public Command setAngleCommand(double angleDegrees) {
@@ -110,5 +121,26 @@ public class Flicker extends SubsystemBase {
     builder.addDoubleProperty("Setpoint", () -> setpointAngleDegrees, this::setSetpointAngle);
     builder.addDoubleProperty("Angle", this::getAngle, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
+  }
+
+   /** Heights and angles to score on the reef. */
+  public enum ReefScoringConfiguration {
+    STOW(FlickerConfig.STOW_HEIGHT, FlickerConfig.STOW_ANGLE),
+    L2(FlickerConfig.L2_HEIGHT, FlickerConfig.L2_ANGLE),
+    L3(FlickerConfig.L3_HEIGHT, FlickerConfig.L3_ANGLE);
+  
+    /** Inches */
+    private final double elevatorPosition;
+    /** Degrees */
+    private final double flickerPosition;
+
+    private ReefScoringConfiguration(double elevatorPosition, double anglerPosition) {
+      this.elevatorPosition = elevatorPosition;
+      this.flickerPosition = anglerPosition;
+
+
+
+    }
+
   }
 }
