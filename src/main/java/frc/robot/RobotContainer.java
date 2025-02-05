@@ -26,6 +26,7 @@ import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.coraller.Coraller.ReefScoringConfiguration;
 import frc.robot.subsystems.drive.SwerveDrive;
+import frc.robot.subsystems.Elevator;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -82,6 +83,7 @@ public class RobotContainer {
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
   public static final AlgaeCollector kAlgaeCollector = new AlgaeCollector();
+  public static final Elevator kElevator  = new Elevator();
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(

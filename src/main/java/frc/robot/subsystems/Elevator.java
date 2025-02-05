@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coraller;
+package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -16,23 +16,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
-import frc.robot.Constants.CorallerConfig;
+import frc.robot.Constants.ElevatorConfig;
+import frc.robot.subsystems.coraller.Coraller;
 
-class Elevator extends SubsystemBase {
+public class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
   private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
 
-  private double setpointHeightFromGroundInches = CorallerConfig.STOW_HEIGHT;
+  private double setpointHeightFromGroundInches = ElevatorConfig.STOW_HEIGHT;
   private double setpointHeightFromBottomInches;
 
   public Elevator() {
     super(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName());
 
     var elevatorEncoderConfig = new EncoderConfig()
-      .positionConversionFactor(CorallerConfig.kElevatorEncoderPositionConversionFactor)
-      .velocityConversionFactor(CorallerConfig.kElevatorEncoderVelocityConversionFactor);
+      .positionConversionFactor(ElevatorConfig.kElevatorEncoderPositionConversionFactor)
+      .velocityConversionFactor(ElevatorConfig.kElevatorEncoderVelocityConversionFactor);
 
     var leaderConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
@@ -58,7 +59,7 @@ class Elevator extends SubsystemBase {
     // TODO: should be reverse? something to check...
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
-    pid = new PIDController(CorallerConfig.kElevatorP, CorallerConfig.kElevatorI, CorallerConfig.kElevatorD);
+    pid = new PIDController(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD);
     pid.setIZone(3);
 
     SmartDashboard.putData(getName(), this);
@@ -90,8 +91,8 @@ class Elevator extends SubsystemBase {
    */
   public void setSetpointHeight(double heightFromGroundInches) {
     // extra precaution to prevent negative setpoints
-    if (heightFromGroundInches < CorallerConfig.STOW_HEIGHT) {
-      heightFromGroundInches = CorallerConfig.STOW_HEIGHT;
+    if (heightFromGroundInches < ElevatorConfig.STOW_HEIGHT) {
+      heightFromGroundInches = ElevatorConfig.STOW_HEIGHT;
     }
 
     // only reset for new setpoints
@@ -99,7 +100,7 @@ class Elevator extends SubsystemBase {
       pid.reset();
     }
     setpointHeightFromGroundInches = heightFromGroundInches;
-    setpointHeightFromBottomInches = heightFromGroundInches - CorallerConfig.STOW_HEIGHT;
+    setpointHeightFromBottomInches = heightFromGroundInches - ElevatorConfig.STOW_HEIGHT;
   }
 
   public boolean isAtBottom() {
@@ -116,17 +117,17 @@ class Elevator extends SubsystemBase {
   }
 
   public double getHeightFromGroundInches() {
-    return encoder.getPosition() + CorallerConfig.STOW_HEIGHT;
+    return encoder.getPosition() + ElevatorConfig.STOW_HEIGHT;
   }
 
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getHeightFromBottomInches(), setpointHeightFromBottomInches);
-    var output = pidOutput + CorallerConfig.kElevatorKG;
+    var output = pidOutput + ElevatorConfig.kElevatorKG;
 
     // prevent trying to move past the bottom or setting motor outputs while limit
     // switch is pressed when the setpoint is the stow height
-    if ((output < 0 || setpointHeightFromGroundInches == CorallerConfig.STOW_HEIGHT) && isAtBottom()) {
+    if ((output < 0 || setpointHeightFromGroundInches == ElevatorConfig.STOW_HEIGHT) && isAtBottom()) {
       output = 0;
     }
 
