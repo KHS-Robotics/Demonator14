@@ -18,12 +18,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FlickerConfig;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.Elevator;
+import frc.robot.Constants.ElevatorConfig;
 
 public class Flicker extends SubsystemBase {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
   private final PIDController pid;
+  private final Elevator elevator = RobotContainer.kElevator;
   private double setpointAngleDegrees;
 
   /** Creates a new Flicker. */
