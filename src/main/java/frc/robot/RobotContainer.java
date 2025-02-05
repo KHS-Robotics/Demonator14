@@ -177,7 +177,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("STOPSwerve", kSwerveDrive.stopCommand());
     NamedCommands.registerCommand("STOPCoraller", kCoraller.stopCommand());
     NamedCommands.registerCommand("STOP", kSwerveDrive.stopCommand().alongWith(kCoraller.stopCommand()));
-    NamedCommands.registerCommand("PrepareStow", kCoraller.prepareToScoreReef(ReefScoringConfiguration.STOW));
+    NamedCommands.registerCommand("PrepareStow", kCoraller.stow());
     NamedCommands.registerCommand("PrepareScoreL1", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L1));
     NamedCommands.registerCommand("PrepareScoreL2", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L2));
     NamedCommands.registerCommand("PrepareScoreL3", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L3));

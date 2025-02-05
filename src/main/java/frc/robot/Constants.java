@@ -160,6 +160,13 @@ public final class Constants {
     public static final double L3_ANGLE = 0;
     public static final double L4_ANGLE = 0;
     public static final double RECEIVE_ANGLE = 0;
+
+    // Elevator heights for scoring coral
+    public static final double L1_HEIGHT = 0;
+    public static final double L2_HEIGHT = 0;
+    public static final double L3_HEIGHT = 0;
+    public static final double L4_HEIGHT = 0;
+    public static final double RECEIVE_HEIGHT = 0;
   }
 
   public static final class AlgaeWristConfig {
@@ -189,12 +196,6 @@ public final class Constants {
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
 
-    // Coraller Configuration
     public static final double STOW_HEIGHT = 0;
-    public static final double L1_HEIGHT = 0;
-    public static final double L2_HEIGHT = 0;
-    public static final double L3_HEIGHT = 0;
-    public static final double L4_HEIGHT = 0;
-    public static final double RECEIVE_HEIGHT = 0;
   }
 }
