@@ -73,14 +73,13 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command stopCommand() {
-    return runOnce(this::stop)
-      .withName("StopElevator");
+    var cmd = runOnce(this::stop);
+    return cmd.withName("StopElevator");
   }
 
   public Command setHeightCommand(double heightFromGround) {
-    return this.run(() -> setSetpointHeight(heightFromGround))
-      .until(this::isAtSetpoint)
-      .withName("SetElevatorSetpoint");
+    var cmd = this.run(() -> setSetpointHeight(heightFromGround)).until(this::isAtSetpoint);
+    return cmd.withName("SetElevatorSetpoint");
   }
 
   /**

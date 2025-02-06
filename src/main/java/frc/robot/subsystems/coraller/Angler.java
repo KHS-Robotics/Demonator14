@@ -51,14 +51,13 @@ class Angler extends SubsystemBase {
   }
 
   public Command setAngleCommand(double angleDegrees) {
-    return this.run(() -> setSetpointAngle(angleDegrees))
-      .until(this::isAtSetpoint)
-      .withName("SetAnglerSetpoint");
+    var cmd = this.run(() -> setSetpointAngle(angleDegrees)).until(this::isAtSetpoint);
+    return cmd.withName("SetAnglerSetpoint");
   }
 
   public Command stopCommand() {
-    return runOnce(this::stop)
-      .withName("StopAngler");
+    var cmd = runOnce(this::stop);
+    return cmd.withName("StopAngler");
   }
 
   /**

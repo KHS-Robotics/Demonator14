@@ -43,8 +43,8 @@ class Intake extends SubsystemBase {
   }
 
   public Command stopCommand() {
-    return runOnce(this::stop)
-      .withName("StopIntake");
+    var cmd = runOnce(this::stop);
+    return cmd.withName("StopIntake");
   }
 
   public void start() {
@@ -55,8 +55,8 @@ class Intake extends SubsystemBase {
   }
 
   public Command intakeCommand() {
-    return runOnce(this::start)
-      .withName("StartIntake");
+    var cmd = runOnce(this::start);
+    return cmd.withName("StartIntake");
   }
 
   public void reverse() {
@@ -67,8 +67,8 @@ class Intake extends SubsystemBase {
   }
 
   public Command reverseCommand() {
-    return runOnce(this::reverse)
-      .withName("ReverseIntake");
+    var cmd = runOnce(this::reverse);
+    return cmd.withName("ReverseIntake");
   }
 
   public boolean hasCoral() {
