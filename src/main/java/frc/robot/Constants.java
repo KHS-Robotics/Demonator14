@@ -177,7 +177,17 @@ public final class Constants {
     public static final double kFlickerKG = 0.0;
     public static final double kFlickerEncoderPositionConversionFactor = 1;
     public static final double kFlickerEncoderVelocityConversionFactor = kFlickerEncoderPositionConversionFactor / 60.0;
+
+    public static final double STOW_ANGLE = 0;
+    public static final double L2_ANGLE = 0;
+    public static final double L3_ANGLE = 0;
+    public static final double RECEIVE_ANGLE = 0;
+
+    public static final double STOW_HEIGHT = 0;
+    public static final double L2_HEIGHT = 0;
+    public static final double L3_HEIGHT = 0;
   }
+  
 
   public static final class ElevatorConfig{
     public static final double kElevatorP = 0.0;
