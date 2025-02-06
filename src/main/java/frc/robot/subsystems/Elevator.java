@@ -95,7 +95,7 @@ public class Elevator extends SubsystemBase {
    * 
    * @see {@link #periodic()}
    */
-  private void setSetpointHeight(double heightFromGroundInches) {
+  public void setSetpointHeight(double heightFromGroundInches) {
     // extra precaution to prevent negative setpoints
     if (heightFromGroundInches < setpointHeightFromGroundInches) {
       heightFromGroundInches = setpointHeightFromGroundInches;
@@ -110,7 +110,7 @@ public class Elevator extends SubsystemBase {
   }
 
   /** Updates the setpoints to the current positions. */
-  private void updateSetpointsForDisabledMode() {
+  public void updateSetpointsForDisabledMode() {
     // only in disabled
     if (RobotState.isDisabled()) {
       // angler
@@ -119,24 +119,24 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  private boolean isAtBottom() {
+  public boolean isAtBottom() {
     return bottomLimitSwitch.isPressed();
   }
 
-  private boolean isAtSetpoint() {
+  public boolean isAtSetpoint() {
     var error = Math.abs(setpointHeightFromGroundInches - getHeightFromGroundInches());
     return (error < 1);
   }
 
-  private double getHeightFromBottomInches() {
+  public double getHeightFromBottomInches() {
     return encoder.getPosition();
   }
 
-  private double getHeightFromGroundInches() {
+  public double getHeightFromGroundInches() {
     return encoder.getPosition() + setpointHeightFromGroundInches;
   }
 
-  private void setMotorOutputForSetpoint() {
+  public void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getHeightFromBottomInches(), setpointHeightFromBottomInches);
     var output = pidOutput + ElevatorConfig.kElevatorKG;
@@ -150,7 +150,7 @@ public class Elevator extends SubsystemBase {
     leader.setVoltage(output);
   }
 
-  private void stop() {
+  public void stop() {
     leader.stopMotor();
     pid.reset();
   }
