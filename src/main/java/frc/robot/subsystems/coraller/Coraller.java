@@ -74,9 +74,7 @@ public class Coraller extends SubsystemBase {
 
   /** Updates the setpoints to the current positions. */
   private void updateSetpointsForDisabledMode() {
-    // only in disabled
     if (RobotState.isDisabled()) {
-      // angler
       angler.setSetpointAngle(angler.getAngle());
     }
   }
