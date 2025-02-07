@@ -20,6 +20,7 @@ import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.algae.collector.AlgaeCollector;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
@@ -81,6 +82,7 @@ public class RobotContainer {
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
   public static final AlgaeCollector kAlgaeCollector = new AlgaeCollector();
+  public static final Climber kClimber = new Climber();
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
@@ -144,6 +146,23 @@ public class RobotContainer {
 
   /** Binds commands to operator stick buttons. */
   private void configureOpertatorStickBindings() {
+    // Coraller
+    kOperatorStick.stow().onTrue(kCoraller.stow());
+    kOperatorStick.receive().onTrue(kCoraller.receive());
+    kOperatorStick.scoreL1().onTrue(kCoraller.scoreL1());
+    kOperatorStick.scoreL2().onTrue(kCoraller.scoreL2());
+    kOperatorStick.scoreL3().onTrue(kCoraller.scoreL3());
+    kOperatorStick.scoreL4().onTrue(kCoraller.scoreL4());
+    kOperatorStick.outtakeCoral().onTrue(kCoraller.outtakeCoral());
+    kOperatorStick.intakeCoral().onTrue(kCoraller.intakeCoral());
+
+    // Climber
+    kOperatorStick.engageClimberAnchor().onTrue(kClimber.engageAnchor());
+    kOperatorStick.unengageClimberAnchor().onTrue(kClimber.unengageAnchor());
+    kOperatorStick.reelInClimber().whileTrue(kClimber.reelIn());
+    kOperatorStick.reelOutClimber().whileTrue(kClimber.reelOut());
+    
+    // TODO: AlgaeCollector bindings
   }
 
   /** https://pathplanner.dev/home.html */
@@ -181,11 +200,11 @@ public class RobotContainer {
     // Coraller
     NamedCommands.registerCommand("STOPCoraller", kCoraller.stopCommand());
     NamedCommands.registerCommand("PrepareStow", kCoraller.stow());
+    NamedCommands.registerCommand("PreapareReceive", kCoraller.receive());
     NamedCommands.registerCommand("PrepareScoreL1", kCoraller.scoreL1());
     NamedCommands.registerCommand("PrepareScoreL2", kCoraller.scoreL2());
     NamedCommands.registerCommand("PrepareScoreL3", kCoraller.scoreL3());
     NamedCommands.registerCommand("PrepareScoreL4", kCoraller.scoreL4());
-    NamedCommands.registerCommand("PreapareReceive", kCoraller.receive());
     NamedCommands.registerCommand("IntakeCoral", kCoraller.intakeCoral());
     NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral());
 

@@ -26,6 +26,11 @@ public class Coraller extends SubsystemBase {
     return cmd;
   }
 
+  public Command receive() {
+    var cmd = setState(CorallerState.RECEIVE);
+    return cmd;
+  }
+
   public Command scoreL1() {
     var cmd = setState(CorallerState.L1);
     return cmd;
@@ -53,11 +58,6 @@ public class Coraller extends SubsystemBase {
 
   public Command scoreL4() {
     var cmd = setState(CorallerState.L4);
-    return cmd;
-  }
-
-  public Command receive() {
-    var cmd = setState(CorallerState.RECEIVE);
     return cmd;
   }
 

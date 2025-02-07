@@ -5,6 +5,7 @@
 package frc.robot.hid;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * Thrustmaster T16000M
@@ -14,51 +15,51 @@ public class OperatorStick extends Joystick {
     super(port);
   }
 
-  public boolean isPressingStow() {
-    return this.getRawButton(ButtonMap.STOW_BUTTON);
+  public Trigger stow() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.STOW_BUTTON));
   }
 
-  public boolean isPressingRecive() {
-    return this.getRawButton(ButtonMap.RECEIVE_BUTTON);
+  public Trigger receive() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.RECEIVE_BUTTON));
   }
 
-  public boolean isPressingL1() {
-    return this.getRawButton(ButtonMap.L1_BUTTON);
+  public Trigger scoreL1() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.L1_BUTTON));
   }
 
-  public boolean isPressingL2() {
-    return this.getRawButton(ButtonMap.L2_BUTTON);
+  public Trigger scoreL2() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.L2_BUTTON));
   }
 
-  public boolean isPressingL3() {
-    return this.getRawButton(ButtonMap.L3_BUTTON);
+  public Trigger scoreL3() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.L3_BUTTON));
   }
 
-  public boolean isPressingL4() {
-    return this.getRawButton(ButtonMap.L4_BUTTON);
+  public Trigger scoreL4() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.L4_BUTTON));
   }
 
-  public boolean isPressingOuttake() {
-    return this.getRawButton(ButtonMap.OUTTAKE_BUTTON);
+  public Trigger outtakeCoral() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.OUTTAKE_BUTTON));
   }
 
-  public boolean isPressingIntake() {
-    return this.getRawButton(ButtonMap.INTAKE_BUTTON);
+  public Trigger intakeCoral() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.INTAKE_BUTTON));
   }
 
-  public boolean isPressingReelinClimb() {
-    return this.getRawButton(ButtonMap.REEL_IN_BUTTON);
+  public Trigger reelInClimber() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.REEL_IN_BUTTON));
   }
 
-  public boolean isPressingReelOutClimber() {
-    return this.getRawButton(ButtonMap.REEL_OUT_BUTTON);
+  public Trigger reelOutClimber() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.REEL_OUT_BUTTON));
   }
 
-  public boolean isPressingEngageAnchor() {
-    return this.getRawButton(ButtonMap.ENGAGEANCHOR_BUTTON);
+  public Trigger engageClimberAnchor() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.ENGAGEANCHOR_BUTTON));
   }
 
-  public boolean isPressingUnengageAnchor() {
-    return this.getRawButton(ButtonMap.UNENGAGEANCHOR_BUTTON);
+  public Trigger unengageClimberAnchor() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.UNENGAGEANCHOR_BUTTON));
   }
 }

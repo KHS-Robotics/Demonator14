@@ -13,11 +13,12 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class Climber extends SubsystemBase {
-  private AnchorPosition currentPosition = AnchorPosition.kUnengaged;
+  private AnchorState currentPosition = AnchorState.kUnengaged;
 
   private final SparkMax reel;
   private final Servo anchor;
@@ -34,39 +35,57 @@ public class Climber extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters);
 
     anchor = new Servo(RobotMap.CLIMBER_ANCHOR_ID);
-    setAnchorPosition(AnchorPosition.kUnengaged);
+    setAnchorPosition(AnchorState.kUnengaged);
 
     SmartDashboard.putData(this);
   }
 
-  public void reelIn() {
-    // TODO: full speed once we know direction
-    reel.setVoltage(6);
-    reelState = ReelState.REELING_IN;
+  /** {@inheritDoc} */
+  @Override
+  public void periodic() {
   }
 
-  public void reelOut() {
-    // TODO: full speed??? once we know direction
-    reel.setVoltage(-6);
-    reelState = ReelState.REELING_OUT;
+  public Command engageAnchor() {
+    return setAnchor(AnchorState.kEngaged);
   }
 
-  public void reelStop(){
-    reel.stopMotor();
-    reelState = ReelState.OFF;
+  public Command unengageAnchor() {
+    return setAnchor(AnchorState.kUnengaged);
   }
 
-  public void setAnchorPosition(AnchorPosition position) {
+  private Command setAnchor(AnchorState position) {
+    var cmd = run(() -> setAnchor(position)).withTimeout(0.5);
+    return cmd.withName("SetAnchor(\"" + position.toString() + "\")");
+  }
+
+  private void setAnchorPosition(AnchorState position) {
     currentPosition = position;
     anchor.set(position.percent);
   }
 
   public boolean isEngaged() {
-    return getAnchorPosition() == AnchorPosition.kEngaged;
+    return currentPosition == AnchorState.kEngaged;
   }
 
-  public AnchorPosition getAnchorPosition() {
-    return currentPosition;
+  public Command reelIn() {
+    // TODO: full speed once we know direction???
+    var cmd = startEnd(() -> setReel(6), this::stop);
+    return cmd.withName("ClimberReelIn");
+  }
+
+  public Command reelOut() {
+    // TODO: full speed once we know direction???
+    var cmd = startEnd(() -> setReel(-6), this::stop);
+    return cmd.withName("ClimberReelOut");
+  }
+
+  private void setReel(double voltage) {
+    reelState = voltage > 0 ? ReelState.REELING_IN : voltage < 0 ? ReelState.REELING_OUT : ReelState.OFF;
+    reel.setVoltage(voltage);
+  }
+
+  public void stop() {
+    setReel(0);
   }
 
   /**
@@ -74,7 +93,7 @@ public class Climber extends SubsystemBase {
    * 
    * @see {@link edu.wpi.first.wpilibj.Servo#set(double)}
    */
-  public enum AnchorPosition {
+  private enum AnchorState {
     kEngaged(0.5),
     kUnengaged(0.0);
 
@@ -83,12 +102,12 @@ public class Climber extends SubsystemBase {
      */
     public final double percent;
 
-    private AnchorPosition(double percent) {
+    private AnchorState(double percent) {
       this.percent = percent;
     }
   }
   
-  public enum ReelState {
+  private enum ReelState {
     OFF("Off"),
     REELING_IN("Reeling In"),
     REELING_OUT("Reeling Out");
@@ -108,10 +127,9 @@ public class Climber extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
-    builder.setSafeState(this::reelStop);
+    builder.setSafeState(this::stop);
     builder.setActuator(true);
     builder.addBooleanProperty("IsAnchorEngaged", this::isEngaged, null);
-    builder.addDoubleProperty("AnchorPosition", () -> getAnchorPosition().percent, null);
     builder.addStringProperty("ReelingStatus", reelState::toString, null);
   }
 }
