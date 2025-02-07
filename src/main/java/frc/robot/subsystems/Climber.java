@@ -22,7 +22,7 @@ public class Climber extends SubsystemBase {
 
   private final SparkMax reel;
   private final Servo anchor;
-  private ReelState reelState;
+  private ReelState reelState = ReelState.OFF;
 
   public Climber() {
     var reelConfig = new SparkMaxConfig()

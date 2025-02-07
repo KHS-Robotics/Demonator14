@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 class Intake extends SubsystemBase {
-  private IntakeState intakeState;
+  private IntakeState intakeState = IntakeState.IDLE;
   private final SparkMax motor;
   private final SparkLimitSwitch sensor;
 
