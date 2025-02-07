@@ -1,8 +1,8 @@
 package frc.robot.subsystems.algae.collector;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class AlgaeCollector extends SubsystemBase {
@@ -13,37 +13,55 @@ public class AlgaeCollector extends SubsystemBase {
     SmartDashboard.putData(this);
   }
 
-  public Command setPosition(double pos) {
-    var cmd = Commands.parallel(
-      wrist.setAngleCommand(pos)
-    );
+  /** {@inheritDoc} */
+  @Override
+  public void periodic() {
+  }
+
+  public Command deploy() {
+    var cmd = setState(AlgaeCollectorState.DEPLOY);
+    return cmd;
+  }
+
+  public Command stow() {
+    var cmd = setState(AlgaeCollectorState.STOW);
+    return cmd;
+  }
+
+  private Command setState(AlgaeCollectorState state) {
+    var cmd = wrist.setAngleCommand(state.wristAngle);
     cmd.addRequirements(this);
-    return cmd.withName("SetAlgaeCollectorPosition");
+    return cmd.withName("SetAlgaeCollectorState(\"" + state.toString() + "\")");
   }
 
   public Command intakeAlgae() {
-    var cmd = startEnd(intake::start, intake::stop)
-      .until(intake::hasAlgae);
+    var cmd = startEnd(intake::start, intake::stop).until(intake::hasAlgae);
     cmd.addRequirements(intake);
-    return cmd
-      .withTimeout(3)
-      .withName("IntakeAlgae");
+    return cmd.withName("IntakeAlgae");
   }
 
   public Command outtakeAlgae() {
     var cmd = startEnd(intake::reverse, intake::stop);
     cmd.addRequirements(intake);
-    return cmd
-      .withTimeout(.5)
-      .withName("ReleaseAlgae");
+    return cmd.withName("ReleaseAlgae");
   }
 
   public Command stopCommand() {
-    var cmd = Commands.parallel(
-      intake.stopCommand(),
-      wrist.stopCommand()
-    );
-    cmd.addRequirements(this);
+    var cmd = runOnce(this::stop);
     return cmd.withName("StopAlgaeCollector");
+  }
+
+  public void stop() {
+    intake.stop();
+    wrist.stop();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.setActuator(true);
   }
 }
