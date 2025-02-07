@@ -86,10 +86,6 @@ public class Climber extends SubsystemBase {
     private AnchorPosition(double percent) {
       this.percent = percent;
     }
-
-    public double getPercent() {
-      return percent;
-    }
   }
   
   public enum ReelState {
@@ -115,7 +111,7 @@ public class Climber extends SubsystemBase {
     builder.setSafeState(this::reelStop);
     builder.setActuator(true);
     builder.addBooleanProperty("IsAnchorEngaged", this::isEngaged, null);
-    builder.addDoubleProperty("AnchorPosition", () -> getAnchorPosition().getPercent(), null);
+    builder.addDoubleProperty("AnchorPosition", () -> getAnchorPosition().percent, null);
     builder.addStringProperty("ReelingStatus", reelState::toString, null);
   }
 }

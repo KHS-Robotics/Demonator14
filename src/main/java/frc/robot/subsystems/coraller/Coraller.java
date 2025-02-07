@@ -26,10 +26,12 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command prepareToScoreReef(ReefScoringConfiguration cfg) {
-    return Commands.parallel(
+    var cmd = Commands.parallel(
       elevator.setHeightCommand(cfg.elevatorPosition),
       angler.setAngleCommand(cfg.anglerPosition)
-    ).withName("PrepareToScoreReef");
+    );
+    cmd.addRequirements(this);
+    return cmd.withName("PrepareToScoreReef");
   }
 
   public Command intakeCoral() {
@@ -50,11 +52,13 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command stopCommand() {
-    return Commands.parallel(
+    var cmd = Commands.parallel(
       elevator.stopCommand(),
       angler.stopCommand(),
       intake.stopCommand()
-    ).withName("StopCoraller");
+    );
+    cmd.addRequirements(this);
+    return cmd.withName("StopCoraller");
   }
 
   public void stop() {

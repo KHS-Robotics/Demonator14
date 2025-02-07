@@ -311,12 +311,13 @@ public class SwerveDrive extends SubsystemBase {
    * @return the command to reset the robot heading
    */
   public Command resetHeading() {
-    return runOnce(() -> {
+    var cmd = runOnce(() -> {
       var currentPose = getPose();
       var currentAlliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var awayAngle = currentAlliance == Alliance.Red ? 180 : 0;
       resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
-    }).withName("ResetRobotHeading");
+    });
+    return cmd.withName("ResetRobotHeading");
   }
 
   /**
@@ -433,7 +434,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public Command driveWithXboxController(CommandXboxController hid, BooleanSupplier fieldRelative,
       double joystickDeadband, double joystickSensitivity) {
-    return runEnd(() -> {
+    var cmd = runEnd(() -> {
       // Get the x speed. We are inverting this because Xbox controllers return
       // negative values when we push forward.
       var xSpeed = 0.0;
@@ -467,7 +468,8 @@ public class SwerveDrive extends SubsystemBase {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var sign = fieldRelative.getAsBoolean() && alliance == Alliance.Red ? -1 : 1;
       drive(sign * xSpeed, sign * ySpeed, rotationSpeed, fieldRelative.getAsBoolean());
-    }, this::stop).withName("DriveWithXboxController");
+    }, this::stop);
+    return cmd.withName("DriveWithXboxController");
   }
 
   /**
@@ -540,7 +542,8 @@ public class SwerveDrive extends SubsystemBase {
    * @return a command to stop all modules
    */
   public Command stopCommand() {
-    return runOnce(this::stop).withName("StopSwerve");
+    var cmd = runOnce(this::stop);
+    return cmd.withName("StopSwerve");
   }
 
   /**

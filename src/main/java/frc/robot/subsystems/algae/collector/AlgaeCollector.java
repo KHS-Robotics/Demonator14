@@ -8,17 +8,19 @@ public class AlgaeCollector extends SubsystemBase {
   private final Intake intake = new Intake();
   private final Wrist wrist = new Wrist();
 
-  public Command position(double pos) {
-    return startEnd(
-        () -> wrist.setAngleCommand(pos),
-        wrist::stop
-      )
-      .withName("PositionWrist");
+  public Command setPosition(double pos) {
+    var cmd = Commands.parallel(
+      wrist.setAngleCommand(pos)
+    );
+    cmd.addRequirements(this);
+    return cmd.withName("PositionWrist");
   }
 
   public Command intakeAlgae() {
-    return startEnd(intake::start, intake::stop)
-      .until(intake::hasAlgae)
+    var cmd = startEnd(intake::start, intake::stop)
+      .until(intake::hasAlgae);
+    cmd.addRequirements(intake);
+    return cmd
       .withTimeout(3)
       .withName("IntakeAlgae");
   }
@@ -32,10 +34,11 @@ public class AlgaeCollector extends SubsystemBase {
   }
 
   public Command stopCommand() {
-    return Commands.parallel(
+    var cmd = Commands.parallel(
       intake.stopCommand(),
       wrist.stopCommand()
-    ).withName("StopAlgaeCollector");
+    );
+    cmd.addRequirements(this);
+    return cmd.withName("StopAlgaeCollector");
   }
-
 }
