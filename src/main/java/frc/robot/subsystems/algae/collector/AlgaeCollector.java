@@ -18,7 +18,7 @@ public class AlgaeCollector extends SubsystemBase {
       wrist.setAngleCommand(pos)
     );
     cmd.addRequirements(this);
-    return cmd.withName("PositionWrist");
+    return cmd.withName("SetAlgaeCollectorPosition");
   }
 
   public Command intakeAlgae() {

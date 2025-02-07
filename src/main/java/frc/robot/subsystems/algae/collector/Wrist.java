@@ -58,12 +58,12 @@ class Wrist extends SubsystemBase {
   public Command setAngleCommand(double angleDegrees) {
     return this.run(() -> setSetpointAngle(angleDegrees))
       .until(this::isAtSetpoint)
-      .withName("SetAlgaeSetpoint");
+      .withName("SetAlgaeWristSetpoint");
   }
 
   public Command stopCommand() {
     return runOnce(this::stop)
-      .withName("StopAlgae");
+      .withName("StopAlgaeWrist");
   }
 
   /**
