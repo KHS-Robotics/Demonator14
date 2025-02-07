@@ -132,7 +132,7 @@ public class Coraller extends SubsystemBase {
   }
 
   /** Heights and angles for the Coraller's possible states. */
-  public enum CorallerState {
+  private enum CorallerState {
     STOW(ElevatorSetpoints.STOW_HEIGHT, AnglerSetpoints.STOW_ANGLE, FlickerSetpoints.STOW_ANGLE),
     L1(ElevatorSetpoints.L1_HEIGHT, AnglerSetpoints.L1_ANGLE, FlickerSetpoints.STOW_ANGLE),
     L2(ElevatorSetpoints.L2_HEIGHT, AnglerSetpoints.L2_ANGLE, FlickerSetpoints.STOW_ANGLE),
@@ -143,11 +143,11 @@ public class Coraller extends SubsystemBase {
     RECEIVE(ElevatorSetpoints.RECEIVE_HEIGHT, AnglerSetpoints.RECEIVE_ANGLE, FlickerSetpoints.STOW_ANGLE);
 
     /** Inches */
-    private final double elevatorPosition;
+    public final double elevatorPosition;
     /** Degrees */
-    private final double anglerPosition;
+    public final double anglerPosition;
     /** Degrees */
-    private final double flickerPosition;
+    public final double flickerPosition;
 
     private CorallerState(double elevatorPosition, double anglerPosition, double flickerPosition) {
       this.elevatorPosition = elevatorPosition;
