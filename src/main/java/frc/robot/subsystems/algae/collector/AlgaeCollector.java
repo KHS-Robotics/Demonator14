@@ -48,6 +48,7 @@ public class AlgaeCollector extends SubsystemBase {
 
   public Command stopCommand() {
     var cmd = runOnce(this::stop);
+    cmd.addRequirements(intake, wrist);
     return cmd.withName("StopAlgaeCollector");
   }
 

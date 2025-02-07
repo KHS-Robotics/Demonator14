@@ -108,6 +108,7 @@ public class Coraller extends SubsystemBase {
 
   public Command stopCommand() {
     var cmd = runOnce(this::stop);
+    cmd.addRequirements(elevator, intake, angler, flicker);
     return cmd.withName("StopCoraller");
   }
 
