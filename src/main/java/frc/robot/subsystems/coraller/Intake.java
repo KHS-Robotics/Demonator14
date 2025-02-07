@@ -37,6 +37,11 @@ class Intake extends SubsystemBase {
     SmartDashboard.putData(getName(), this);
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public void periodic() {
+  }
+
   public void stop() {
     outaking = intaking = false;
     motor.stopMotor();
@@ -66,7 +71,7 @@ class Intake extends SubsystemBase {
     motor.setVoltage(-6);
   }
 
-  public Command reverseCommand() {
+  public Command outtakeCommand() {
     var cmd = runOnce(this::reverse);
     return cmd.withName("ReverseIntake");
   }

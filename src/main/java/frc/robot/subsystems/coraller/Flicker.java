@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.coraller;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
@@ -14,25 +14,26 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.FlickerConfig;
-import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
-public class Flicker extends SubsystemBase {
+class Flicker extends SubsystemBase {
   private final SparkMax motor;
   private final RelativeEncoder encoder;
   private final PIDController pid;
+  // TODO: Absolute encoder???
 
-  private final Elevator elevator = RobotContainer.kElevator;
   private double setpointAngleDegrees;
 
   /** Creates a new Flicker. */
   public Flicker() {
+    super(Coraller.class.getSimpleName() + "/" + Flicker.class.getSimpleName());
+    
     var flickerEncoderConfig = new EncoderConfig()
         .positionConversionFactor(FlickerConfig.kFlickerEncoderPositionConversionFactor)
         .velocityConversionFactor(FlickerConfig.kFlickerEncoderVelocityConversionFactor);
@@ -53,22 +54,18 @@ public class Flicker extends SubsystemBase {
 
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
-
   }
 
+  /** {@inheritDoc} */
   @Override
   public void periodic() {
     setMotorOutputForSetpoint();
-  }
-
-  public Command prepareToFlickCommand(ReefScoringConfiguration cfg) {
-    var cmd = Commands.parallel(elevator.setHeightCommand(cfg.elevatorPosition), setAngleCommand(cfg.flickerPosition));
-    return cmd.withName("PrepareToFlick");
+    updateSetpointsForDisabledMode();
   }
 
   public Command setAngleCommand(double angleDegrees) {
     var cmd = this.run(() -> setSetpointAngle(angleDegrees)).until(this::isAtSetpoint);
-    return cmd.withName("SetAnglerSetpoint");
+    return cmd.withName("SetFlickerSetpoint");
   }
 
   public void setSetpointAngle(double setpointDegrees) {
@@ -93,7 +90,15 @@ public class Flicker extends SubsystemBase {
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
     var ffGravity = FlickerConfig.kFlickerKG * Math.cos(getAngle());
     var output = pidOutput + ffGravity;
+    // TODO: set output to zero when close enough to stow setpoint?
     motor.setVoltage(output);
+  }
+
+  /** Updates the setpoint to the current position. */
+  private void updateSetpointsForDisabledMode() {
+    if (RobotState.isDisabled()) {
+      setSetpointAngle(getAngle());
+    }
   }
 
   public void stop() {
@@ -115,22 +120,5 @@ public class Flicker extends SubsystemBase {
     builder.addDoubleProperty("Setpoint", () -> setpointAngleDegrees, this::setSetpointAngle);
     builder.addDoubleProperty("Angle", this::getAngle, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
-  }
-
-  /** Heights and angles to score on the reef. */
-  public enum ReefScoringConfiguration {
-    STOW(FlickerConfig.STOW_HEIGHT, FlickerConfig.STOW_ANGLE),
-    L2(FlickerConfig.L2_HEIGHT, FlickerConfig.L2_ANGLE),
-    L3(FlickerConfig.L3_HEIGHT, FlickerConfig.L3_ANGLE);
-
-    /** Inches */
-    private final double elevatorPosition;
-    /** Degrees */
-    private final double flickerPosition;
-
-    private ReefScoringConfiguration(double elevatorPosition, double anglerPosition) {
-      this.elevatorPosition = elevatorPosition;
-      this.flickerPosition = anglerPosition;
-    }
   }
 }

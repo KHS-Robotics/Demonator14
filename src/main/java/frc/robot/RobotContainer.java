@@ -24,9 +24,7 @@ import frc.robot.subsystems.algae.collector.AlgaeCollector;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
-import frc.robot.subsystems.coraller.Coraller.ReefScoringConfiguration;
 import frc.robot.subsystems.drive.SwerveDrive;
-import frc.robot.subsystems.Elevator;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -83,7 +81,6 @@ public class RobotContainer {
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
   public static final AlgaeCollector kAlgaeCollector = new AlgaeCollector();
-  public static final Elevator kElevator  = new Elevator();
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
@@ -142,7 +139,7 @@ public class RobotContainer {
     // reset robot heading to face away from the driver - this is useful during
     // driver practice to reset for field oriented driving direction or a rare odd
     // scenario on the field during a match
-    kDriverController.isPressingResetRobotHeading().onTrue(kSwerveDrive.resetHeading());
+    kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading());
   }
 
   /** Binds commands to operator stick buttons. */
@@ -173,18 +170,27 @@ public class RobotContainer {
   /** https://pathplanner.dev/pplib-named-commands.html */
   private void configureNamedCommandsForAuto() {
     // String names here must match what is used in the PathPlanner GUI in order to
-    // work properly
+    // work properly!
+
+    // stop all
+    NamedCommands.registerCommand("STOP", kSwerveDrive.stopCommand().andThen(kCoraller.stopCommand()).andThen(kAlgaeCollector.stopCommand()));
+
+    // Swerve Drive
     NamedCommands.registerCommand("STOPSwerve", kSwerveDrive.stopCommand());
+
+    // Coraller
     NamedCommands.registerCommand("STOPCoraller", kCoraller.stopCommand());
-    NamedCommands.registerCommand("STOP", kSwerveDrive.stopCommand().alongWith(kCoraller.stopCommand()));
-    NamedCommands.registerCommand("PrepareStow", kCoraller.prepareToScoreReef(ReefScoringConfiguration.STOW));
-    NamedCommands.registerCommand("PrepareScoreL1", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L1));
-    NamedCommands.registerCommand("PrepareScoreL2", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L2));
-    NamedCommands.registerCommand("PrepareScoreL3", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L3));
-    NamedCommands.registerCommand("PrepareScoreL4", kCoraller.prepareToScoreReef(ReefScoringConfiguration.L4));
-    NamedCommands.registerCommand("PreapareReceive", kCoraller.prepareToScoreReef(ReefScoringConfiguration.RECEIVE));
+    NamedCommands.registerCommand("PrepareStow", kCoraller.stow());
+    NamedCommands.registerCommand("PrepareScoreL1", kCoraller.scoreL1());
+    NamedCommands.registerCommand("PrepareScoreL2", kCoraller.scoreL2());
+    NamedCommands.registerCommand("PrepareScoreL3", kCoraller.scoreL3());
+    NamedCommands.registerCommand("PrepareScoreL4", kCoraller.scoreL4());
+    NamedCommands.registerCommand("PreapareReceive", kCoraller.receive());
     NamedCommands.registerCommand("IntakeCoral", kCoraller.intakeCoral());
     NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral());
+
+    // Algae
+    NamedCommands.registerCommand("STOPAlgae", kAlgaeCollector.stopCommand());
   }
 
   /** https://pathplanner.dev/pplib-custom-logging.html */

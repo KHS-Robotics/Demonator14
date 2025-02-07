@@ -17,7 +17,7 @@ public class DemonCommandXboxController extends CommandXboxController {
     super(port);
   }
 
-  public Trigger isPressingResetRobotHeading() {
+  public Trigger resetRobotHeading() {
     return this.start().debounce(0.5);
   }
 }

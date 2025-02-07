@@ -12,16 +12,16 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.RobotMap;
 import frc.robot.Constants.AlgaeWristConfig;
-import frc.robot.Constants.CorallerConfig;
 
 class Wrist extends SubsystemBase {
-  /** Creates a new AlgaeWrist. */
   private double setpointAngleDegrees;
 
   private final SparkMax motor;
@@ -29,6 +29,8 @@ class Wrist extends SubsystemBase {
   private final PIDController pid;
 
   public Wrist() {
+    super(AlgaeCollector.class.getSimpleName() + "/" + Wrist.class.getSimpleName());
+
     var algaeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(40)
@@ -79,7 +81,7 @@ class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
-    return encoder.getPosition();
+    return Units.rotationsToDegrees(encoder.getPosition());
   }
 
   public boolean isAtSetpoint() {
@@ -90,7 +92,7 @@ class Wrist extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = CorallerConfig.kAnglerKG * Math.cos(getAngle());
+    var ffGravity = AlgaeWristConfig.kAlageKG * Math.cos(getAngle());
     var output = pidOutput + ffGravity;
     motor.setVoltage(output);
   }
