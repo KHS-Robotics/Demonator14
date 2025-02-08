@@ -85,9 +85,9 @@ public class RobotContainer {
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
-      CameraSetup.kLowerFrontCameraName, CameraSetup.kRobotToLowerFrontCamera);
+      CameraSetup.PhotonvisionSetup.kLowerFrontCameraName, CameraSetup.PhotonvisionSetup.kRobotToLowerFrontCamera);
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
-    CameraSetup.kRearCameraName, CameraSetup.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+    CameraSetup.LimelightConfig.kRearCameraName, CameraSetup.LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,

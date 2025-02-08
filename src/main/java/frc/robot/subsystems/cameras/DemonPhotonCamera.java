@@ -71,7 +71,7 @@ public class DemonPhotonCamera extends SubsystemBase {
 
     camera = new PhotonCamera(cameraName);
 
-    poseEstimator = new PhotonPoseEstimator(CameraSetup.kTagLayout,
+    poseEstimator = new PhotonPoseEstimator(CameraSetup.PhotonvisionSetup.kTagLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
