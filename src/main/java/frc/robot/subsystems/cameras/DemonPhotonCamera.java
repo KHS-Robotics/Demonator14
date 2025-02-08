@@ -27,8 +27,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants.PhotonVisionConfig;
-
 /**
  * Encapsulates a camera using Photon Vision.
  * 
@@ -52,6 +50,7 @@ public class DemonPhotonCamera extends SubsystemBase {
   private Optional<List<PhotonTrackedTarget>> algaeTargets = Optional.empty();
   private Optional<PhotonTrackedTarget> bestAlgaeTarget = Optional.empty();
   private boolean enableAprilTagUpdates = true;
+  
 
   private final PhotonCamera camera;
   private final PhotonPoseEstimator poseEstimator;
@@ -72,7 +71,7 @@ public class DemonPhotonCamera extends SubsystemBase {
 
     camera = new PhotonCamera(cameraName);
 
-    poseEstimator = new PhotonPoseEstimator(PhotonVisionConfig.kTagLayout,
+    poseEstimator = new PhotonPoseEstimator(CameraSetup.kTagLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
