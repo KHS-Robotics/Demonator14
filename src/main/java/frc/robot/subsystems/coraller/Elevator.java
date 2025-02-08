@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
-import frc.robot.Constants.ElevatorConfig;
+import frc.robot.subsystems.coraller.CorallerConfig.ElevatorConfig;
 import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 
 class Elevator extends SubsystemBase {
