@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants.AnglerConfig;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.coraller.CorallerConfig.AnglerConfig;
 
 class Angler extends SubsystemBase {
   private double setpointAngleDegrees;
