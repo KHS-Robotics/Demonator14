@@ -20,7 +20,7 @@ import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.algae.collector.AlgaeCollector;
-import frc.robot.subsystems.cameras.CameraSetup;
+import frc.robot.subsystems.cameras.CameraConfig;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
@@ -85,9 +85,9 @@ public class RobotContainer {
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
-      CameraSetup.PhotonvisionSetup.kLowerFrontCameraName, CameraSetup.PhotonvisionSetup.kRobotToLowerFrontCamera);
+      CameraConfig.PhotonvisionSetup.kLowerFrontCameraName, CameraConfig.PhotonvisionSetup.kRobotToLowerFrontCamera);
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
-    CameraSetup.LimelightConfig.kRearCameraName, CameraSetup.LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+    CameraConfig.LimelightConfig.kRearCameraName, CameraConfig.LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,
