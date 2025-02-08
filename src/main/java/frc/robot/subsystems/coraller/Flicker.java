@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants.FlickerConfig;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.coraller.CorallerConfig.FlickerConfig;
 
 class Flicker extends SubsystemBase {
   private final SparkMax motor;
