@@ -40,7 +40,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.RobotMap;
 import frc.robot.hid.HIDUtils;
-import frc.robot.Constants.SwerveDriveConfig;
 import frc.robot.RobotContainer;
 
 /**
