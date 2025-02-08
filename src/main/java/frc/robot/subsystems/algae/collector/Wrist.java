@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
-import frc.robot.Constants.AlgaeWristConfig;
+import frc.robot.subsystems.algae.collector.AlgaeCollectorConfig.AlgaeWristConfig;
 
 class Wrist extends SubsystemBase {
   private double setpointAngleDegrees;

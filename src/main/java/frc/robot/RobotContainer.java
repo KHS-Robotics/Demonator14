@@ -15,12 +15,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import frc.robot.Constants.HIDConfig;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.algae.collector.AlgaeCollector;
-import frc.robot.subsystems.cameras.CameraConfig;
+import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
+import frc.robot.subsystems.cameras.CameraConfig.LimelightConfig;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
@@ -85,9 +85,9 @@ public class RobotContainer {
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
-      CameraConfig.PhotonvisionSetup.kLowerFrontCameraName, CameraConfig.PhotonvisionSetup.kRobotToLowerFrontCamera);
+      PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
-    CameraConfig.LimelightConfig.kRearCameraName, CameraConfig.LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+    LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,
@@ -108,7 +108,7 @@ public class RobotContainer {
   private void configureSubsystemDefaultCommands() {
     // control swerve drive with the xbox controller by default
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
-        HIDConfig.kJoystickDeadband, HIDConfig.kJoystickSensitivity));
+        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // LowerFrontPhotonCamera - AprilTag updates for odometry
     kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
