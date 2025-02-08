@@ -8,12 +8,14 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants.CorallerConfig;
+import frc.robot.Constants.AnglerConfig;
 import frc.robot.RobotMap;
 
 class Angler extends SubsystemBase {
@@ -38,7 +40,7 @@ class Angler extends SubsystemBase {
 
     encoder = motor.getAbsoluteEncoder();
 
-    pid = new PIDController(CorallerConfig.kAnglerP, CorallerConfig.kAnglerI, CorallerConfig.kAnglerD);
+    pid = new PIDController(AnglerConfig.kAnglerP, AnglerConfig.kAnglerI, AnglerConfig.kAnglerD);
     pid.setIZone(5);
 
     SmartDashboard.putData(getName(), this);
@@ -48,6 +50,7 @@ class Angler extends SubsystemBase {
   /** {@inheritDoc} */
   public void periodic() {
     setMotorOutputForSetpoint();
+    updateSetpointsForDisabledMode();
   }
 
   public Command setAngleCommand(double angleDegrees) {
@@ -75,7 +78,7 @@ class Angler extends SubsystemBase {
   }
 
   public double getAngle() {
-    return encoder.getPosition();
+    return Units.rotationsToDegrees(encoder.getPosition());
   }
 
   public boolean isAtSetpoint() {
@@ -86,9 +89,16 @@ class Angler extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = CorallerConfig.kAnglerKG * Math.cos(getAngle());
+    var ffGravity = AnglerConfig.kAnglerKG * Math.cos(getAngle());
     var output = pidOutput + ffGravity;
     motor.setVoltage(output);
+  }
+
+  /** Updates the setpoint to the current position. */
+  private void updateSetpointsForDisabledMode() {
+    if (RobotState.isDisabled()) {
+      setSetpointAngle(getAngle());
+    }
   }
 
   public void stop() {

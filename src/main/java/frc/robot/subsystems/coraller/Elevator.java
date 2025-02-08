@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.coraller;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -11,21 +11,25 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
 import frc.robot.Constants.ElevatorConfig;
-import frc.robot.subsystems.coraller.Coraller;
+import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 
-public class Elevator extends SubsystemBase {
+class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
   private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
+  // TODO: Absolute encoder / potentiometer for position?
 
-  private double setpointHeightFromGroundInches = ElevatorConfig.STOW_HEIGHT;
+  /** The current setpoint measured from the ground. */
+  private double setpointHeightFromGroundInches;
+  /** The current setpoint measured from the bottom of the elevator. */
   private double setpointHeightFromBottomInches;
 
   public Elevator() {
@@ -64,6 +68,8 @@ public class Elevator extends SubsystemBase {
 
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
+
+    setpointHeightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
   }
 
   /** {@inheritDoc} */
@@ -90,8 +96,8 @@ public class Elevator extends SubsystemBase {
    */
   public void setSetpointHeight(double heightFromGroundInches) {
     // extra precaution to prevent negative setpoints
-    if (heightFromGroundInches < ElevatorConfig.STOW_HEIGHT) {
-      heightFromGroundInches = ElevatorConfig.STOW_HEIGHT;
+    if (heightFromGroundInches < ElevatorSetpoints.STOW_HEIGHT) {
+      heightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
     }
 
     // only reset for new setpoints
@@ -99,7 +105,15 @@ public class Elevator extends SubsystemBase {
       pid.reset();
     }
     setpointHeightFromGroundInches = heightFromGroundInches;
-    setpointHeightFromBottomInches = heightFromGroundInches - ElevatorConfig.STOW_HEIGHT;
+    setpointHeightFromBottomInches = heightFromGroundInches - setpointHeightFromGroundInches;
+  }
+
+  /** Updates the setpoint to the current position. */
+  public void updateSetpointsForDisabledMode() {
+    if (RobotState.isDisabled()) {
+      var isElevatorEncoderNonNegative = getHeightFromBottomInches() >= 0;
+      setSetpointHeight(isElevatorEncoderNonNegative ? getHeightFromGroundInches() : setpointHeightFromGroundInches);
+    }
   }
 
   public boolean isAtBottom() {
@@ -116,7 +130,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getHeightFromGroundInches() {
-    return encoder.getPosition() + ElevatorConfig.STOW_HEIGHT;
+    return encoder.getPosition() + ElevatorSetpoints.STOW_HEIGHT;
   }
 
   private void setMotorOutputForSetpoint() {
@@ -126,7 +140,7 @@ public class Elevator extends SubsystemBase {
 
     // prevent trying to move past the bottom or setting motor outputs while limit
     // switch is pressed when the setpoint is the stow height
-    if ((output < 0 || setpointHeightFromGroundInches == ElevatorConfig.STOW_HEIGHT) && isAtBottom()) {
+    if ((output < 0 || setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT) && isAtBottom()) {
       output = 0;
     }
 

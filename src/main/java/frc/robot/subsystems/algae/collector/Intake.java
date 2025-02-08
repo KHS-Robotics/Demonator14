@@ -12,17 +12,19 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 class Intake extends SubsystemBase {
-  private IntakeState intakeState;
-  /** Creates a new AlgaeCollecter. */
+  private IntakeState intakeState = IntakeState.IDLE;
   private final SparkMax motor;
   private final SparkLimitSwitch sensor;
 
   public Intake() {
+    super(AlgaeCollector.class.getSimpleName() + "/" + Intake.class.getSimpleName());
+
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
@@ -32,7 +34,8 @@ class Intake extends SubsystemBase {
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
     sensor = motor.getForwardLimitSwitch();
-
+    
+    SmartDashboard.putData(getName(), this);
   }
 
   public void stop() {
@@ -57,7 +60,6 @@ class Intake extends SubsystemBase {
   }
 
   public void reverse() {
-    
     intakeState = IntakeState.OUTAKING;
     // TODO: test for a good reverse voltage
     motor.setVoltage(-6);
@@ -87,6 +89,7 @@ class Intake extends SubsystemBase {
       return this.state;
     }
   }
+  
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);

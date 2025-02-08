@@ -1,19 +1,16 @@
 package frc.robot.subsystems.coraller;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CorallerConfig;
-import frc.robot.subsystems.Elevator;
-import frc.robot.Constants.ElevatorConfig;
 
 public class Coraller extends SubsystemBase {
   private final Elevator elevator = new Elevator();
   private final Angler angler = new Angler();
   private final Intake intake = new Intake();
+  private final Flicker flicker = new Flicker();
 
   public Coraller() {
     SmartDashboard.putData(this);
@@ -22,16 +19,74 @@ public class Coraller extends SubsystemBase {
   /** {@inheritDoc} */
   @Override
   public void periodic() {
-    updateSetpointsForDisabledMode();
   }
 
-  public Command prepareToScoreReef(ReefScoringConfiguration cfg) {
+  public Command stow() {
+    var cmd = setState(CorallerState.STOW);
+    return cmd;
+  }
+
+  public Command receive() {
+    var cmd = setState(CorallerState.RECEIVE);
+    return cmd;
+  }
+
+  public Command scoreL1() {
+    var cmd = setState(CorallerState.L1);
+    return cmd;
+  }
+
+  public Command scoreL2() {
+    var cmd = setState(CorallerState.L2);
+    return cmd;
+  }
+
+  public Command algaeL2() {
+    var cmd = setState(CorallerState.L2_ALGAE);
+    return cmd;
+  }
+
+  public Command scoreL3() {
+    var cmd = setState(CorallerState.L3);
+    return cmd;
+  }
+
+  public Command algaeL3() {
+    var cmd = setState(CorallerState.L3_ALGAE);
+    return cmd;
+  }
+
+  public Command scoreL4() {
+    var cmd = setState(CorallerState.L4);
+    return cmd;
+  }
+
+  private Command setState(CorallerState state) {
     var cmd = Commands.parallel(
-      elevator.setHeightCommand(cfg.elevatorPosition),
-      angler.setAngleCommand(cfg.anglerPosition)
+      elevator.setHeightCommand(state.elevatorPosition),
+      angler.setAngleCommand(state.anglerPosition),
+      flicker.setAngleCommand(state.flickerPosition)
     );
     cmd.addRequirements(this);
-    return cmd.withName("PrepareToScoreReef");
+    return cmd.withName("SetCorallerState(\"" + state.toString() + "\")");
+  }
+
+  public Command deployFlickerL2() {
+    var cmd = flicker.setAngleCommand(CorallerState.L2_ALGAE.flickerPosition);
+    cmd.addRequirements(this);
+    return cmd.withName("DeployFlickerL2");
+  }
+
+  public Command deployFlickerL3() {
+    var cmd = flicker.setAngleCommand(CorallerState.L3_ALGAE.flickerPosition);
+    cmd.addRequirements(this);
+    return cmd.withName("DeployFlickerL3");
+  }
+
+  public Command retractFlicker() {
+    var cmd = flicker.setAngleCommand(CorallerState.STOW.flickerPosition);
+    cmd.addRequirements(this);
+    return cmd.withName("RetractFlicker");
   }
 
   public Command intakeCoral() {
@@ -39,7 +94,7 @@ public class Coraller extends SubsystemBase {
     cmd.addRequirements(intake);
     return cmd
       .until(intake::hasCoral)
-      .withTimeout(3)
+      .withTimeout(15)
       .withName("IntakeCoral");
   }
 
@@ -52,12 +107,8 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command stopCommand() {
-    var cmd = Commands.parallel(
-      elevator.stopCommand(),
-      angler.stopCommand(),
-      intake.stopCommand()
-    );
-    cmd.addRequirements(this);
+    var cmd = runOnce(this::stop);
+    cmd.addRequirements(elevator, intake, angler, flicker);
     return cmd.withName("StopCoraller");
   }
 
@@ -65,19 +116,7 @@ public class Coraller extends SubsystemBase {
     elevator.stop();
     angler.stop();
     intake.stop();
-  }
-
-  /** Updates the setpoints to the current positions. */
-  private void updateSetpointsForDisabledMode() {
-    // only in disabled
-    if (RobotState.isDisabled()) {
-      // elevator - ensure non-negative
-      var isElevatorEncoderNonNegative = elevator.getHeightFromBottomInches() >= 0;
-      elevator.setSetpointHeight(isElevatorEncoderNonNegative ? elevator.getHeightFromGroundInches() : ElevatorConfig.STOW_HEIGHT);
-
-      // angler
-      angler.setSetpointAngle(angler.getAngle());
-    }
+    flicker.stop();
   }
 
   /** {@inheritDoc} */
@@ -87,25 +126,5 @@ public class Coraller extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-  }
-
-  /** Heights and angles to score on the reef. */
-  public enum ReefScoringConfiguration {
-    STOW(ElevatorConfig.STOW_HEIGHT, CorallerConfig.STOW_ANGLE),
-    L1(ElevatorConfig.L1_HEIGHT, CorallerConfig.L1_ANGLE),
-    L2(ElevatorConfig.L2_HEIGHT, CorallerConfig.L2_ANGLE),
-    L3(ElevatorConfig.L3_HEIGHT, CorallerConfig.L3_ANGLE),
-    L4(ElevatorConfig.L4_HEIGHT, CorallerConfig.L4_ANGLE),
-    RECEIVE(ElevatorConfig.RECEIVE_HEIGHT, CorallerConfig.RECEIVE_ANGLE);
-
-    /** Inches */
-    private final double elevatorPosition;
-    /** Degrees */
-    private final double anglerPosition;
-
-    private ReefScoringConfiguration(double elevatorPosition, double anglerPosition) {
-      this.elevatorPosition = elevatorPosition;
-      this.anglerPosition = anglerPosition;
-    }
   }
 }

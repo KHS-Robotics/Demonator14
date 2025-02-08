@@ -140,11 +140,18 @@ public final class Constants {
     public static final double DRIVE_PATHING_ROTATION_D = 0.8;
   }
 
-  /**
-   * Configurations for the coraller.
-   */
-  public static final class CorallerConfig {
-    // Angler
+  public static final class ElevatorConfig {
+    public static final double kElevatorP = 0.0;
+    public static final double kElevatorI = 0.0;
+    public static final double kElevatorD = 0.0; 
+    /** Gravity term in volts. */
+    public static final double kElevatorKG = 0.0;
+    public static final double kElevatorEncoderPositionConversionFactor = 1;
+    public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
+        / 60.0;
+  }
+
+  public static final class AnglerConfig {
     public static final double kAnglerP = 0.0;
     public static final double kAnglerI = 0.0;
     public static final double kAnglerD = 0.0;
@@ -153,58 +160,23 @@ public final class Constants {
     public static final double kAnglerEncoderPositionConversionFactor = 1;
     public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
 
-    // Coraller Configuration
-    public static final double STOW_ANGLE = 0;
-    public static final double L1_ANGLE = 0;
-    public static final double L2_ANGLE = 0;
-    public static final double L3_ANGLE = 0;
-    public static final double L4_ANGLE = 0;
-    public static final double RECEIVE_ANGLE = 0;
-  }
-
-  public static final class AlgaeWristConfig {
-    // Angler
-    public static final double kAlgaeP = 0.0;
-    public static final double kAlgaeI = 0.0;
-    public static final double kAlgaeD = 0.0;
   }
 
   public static final class FlickerConfig {
     public static final double kFlickerP = 0.0;
     public static final double kFlickerI = 0.0;
     public static final double kFlickerD = 0.0;
-    
+    /** Gravity term in volts. */
     public static final double kFlickerKG = 0.0;
     public static final double kFlickerEncoderPositionConversionFactor = 1;
     public static final double kFlickerEncoderVelocityConversionFactor = kFlickerEncoderPositionConversionFactor / 60.0;
-
-    public static final double STOW_ANGLE = 0;
-    public static final double L2_ANGLE = 0;
-    public static final double L3_ANGLE = 0;
-    public static final double RECEIVE_ANGLE = 0;
-
-    public static final double STOW_HEIGHT = 0;
-    public static final double L2_HEIGHT = 0;
-    public static final double L3_HEIGHT = 0;
   }
-  
 
-  public static final class ElevatorConfig{
-    public static final double kElevatorP = 0.0;
-    public static final double kElevatorI = 0.0;
-    public static final double kElevatorD = 0.0; 
-
-    public static final double kElevatorKG = 0.0;
-    public static final double kElevatorEncoderPositionConversionFactor = 1;
-    public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
-        / 60.0;
-
-    // Coraller Configuration
-    public static final double STOW_HEIGHT = 0;
-    public static final double L1_HEIGHT = 0;
-    public static final double L2_HEIGHT = 0;
-    public static final double L3_HEIGHT = 0;
-    public static final double L4_HEIGHT = 0;
-    public static final double RECEIVE_HEIGHT = 0;
+  public static final class AlgaeWristConfig {
+    public static final double kAlgaeP = 0.0;
+    public static final double kAlgaeI = 0.0;
+    public static final double kAlgaeD = 0.0;
+    /** Gravity term in volts. */
+    public static final double kAlageKG = 0.0;
   }
 }
