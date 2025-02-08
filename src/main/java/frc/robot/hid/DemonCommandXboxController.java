@@ -13,6 +13,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * @see edu.wpi.first.wpilibj2.command.button.CommandXboxController
  */
 public class DemonCommandXboxController extends CommandXboxController {
+
+  /** Ranges from [0, 1] where 0 is full linear and 1 is full cubic. */
+  public static final double kJoystickSensitivity = 0.5;
+
+  /** Deadband since joysticks vary in how well they snap back to zero. */
+  public static final double kJoystickDeadband = 0.035;
+
   public DemonCommandXboxController(int port) {
     super(port);
   }

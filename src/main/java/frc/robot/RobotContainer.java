@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import frc.robot.Constants.HIDConfig;
 import frc.robot.Constants.LimelightConfig;
 import frc.robot.Constants.PhotonVisionConfig;
 import frc.robot.hid.DemonCommandXboxController;
@@ -109,7 +108,7 @@ public class RobotContainer {
   private void configureSubsystemDefaultCommands() {
     // control swerve drive with the xbox controller by default
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
-        HIDConfig.kJoystickDeadband, HIDConfig.kJoystickSensitivity));
+        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // LowerFrontPhotonCamera - AprilTag updates for odometry
     kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
