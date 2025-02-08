@@ -82,8 +82,6 @@ public final class Constants {
         Units.inchesToMeters(0), Units.inchesToMeters(0), new Rotation3d(0, 0, 0));
   }
 
-  
-
   public static final class ElevatorConfig {
     public static final double kElevatorP = 0.0;
     public static final double kElevatorI = 0.0;
@@ -103,7 +101,6 @@ public final class Constants {
     public static final double kAnglerKG = 0.0;
     public static final double kAnglerEncoderPositionConversionFactor = 1;
     public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
-
   }
 
   public static final class FlickerConfig {
