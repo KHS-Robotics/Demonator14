@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
 
 /**
  * Encapsulates a camera using Photon Vision.
@@ -71,7 +72,7 @@ public class DemonPhotonCamera extends SubsystemBase {
 
     camera = new PhotonCamera(cameraName);
 
-    poseEstimator = new PhotonPoseEstimator(CameraConfig.PhotonvisionSetup.kTagLayout,
+    poseEstimator = new PhotonPoseEstimator(PhotonVisionConfig.kTagLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 

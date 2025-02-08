@@ -8,7 +8,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.cameras.DemonLimelightCamera.LimelightPoseEstimateAlgorithm;
 
 public class CameraConfig {
-  public class PhotonvisionSetup {
+  public class PhotonVisionConfig {
     /** The nickname of the camera (found in the PhotonVision UI). */
     public static final String kLowerFrontCameraName = "4342_AprilTag_1";
     /**
