@@ -94,7 +94,6 @@ public class Coraller extends SubsystemBase {
     cmd.addRequirements(intake);
     return cmd
       .until(intake::hasCoral)
-      .withTimeout(15)
       .withName("IntakeCoral");
   }
 
