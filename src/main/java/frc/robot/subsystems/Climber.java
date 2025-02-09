@@ -54,7 +54,7 @@ public class Climber extends SubsystemBase {
   }
 
   private Command setAnchor(AnchorState position) {
-    var cmd = run(() -> setAnchor(position)).withTimeout(0.5);
+    var cmd = run(() -> setAnchorPosition(position)).withTimeout(0.5);
     return cmd.withName("SetAnchor(\"" + position.toString() + "\")");
   }
 
