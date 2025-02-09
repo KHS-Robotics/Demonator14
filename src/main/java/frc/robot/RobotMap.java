@@ -32,7 +32,6 @@ public final class RobotMap {
   public static final int REAR_LEFT_PIVOT_ENCODER = 32;
   public static final int REAR_RIGHT_PIVOT_ENCODER = 42;
 
-  // TODO: get the CAN IDs from hardware team
   public static final int ELEVATOR_DRIVE_LEADER_ID = 12;
   public static final int ELEVATOR_DRIVE_FOLLOWER_ID = 7;
 
