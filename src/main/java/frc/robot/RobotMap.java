@@ -32,22 +32,12 @@ public final class RobotMap {
   public static final int REAR_LEFT_PIVOT_ENCODER = 32;
   public static final int REAR_RIGHT_PIVOT_ENCODER = 42;
 
-<<<<<<< HEAD
-  // TODO: get the CAN IDs from hardware team
-  public static final int ELEVATOR_DRIVE_LEADER_ID = -1;
-  public static final int ELEVATOR_DRIVE_FOLLOWER_ID = -2;
-  public static final int CORALLER_ANGLE_ID = -3;
-  public static final int CORALLER_INTAKE_MOTOR_ID = -4;
-
-  public static final int CLIMBER_REEL_ID = -5;
-=======
   public static final int ELEVATOR_DRIVE_LEADER_ID = 12;
   public static final int ELEVATOR_DRIVE_FOLLOWER_ID = 7;
 
   public static final int CORALLER_ANGLE_ID = 4;
   public static final int CORALLER_INTAKE_MOTOR_ID = 5;
   public static final int CLIMBER_REEL_ID = 16;
->>>>>>> 9613bcbfe2cc87813919968dcb0ba450d01aec2c
   public static final int CLIMBER_ANCHOR_ID = 0;
 
   public static final int ALGAE_INTAKE_MOTOR_ID = 17;
