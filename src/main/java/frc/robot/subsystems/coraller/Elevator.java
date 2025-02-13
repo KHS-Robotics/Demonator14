@@ -2,14 +2,17 @@ package frc.robot.subsystems.coraller;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,8 +27,8 @@ class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
   private final SparkLimitSwitch bottomLimitSwitch;
-  private final PIDController pid;
-  // TODO: Absolute encoder / potentiometer for position?
+  private final SparkClosedLoopController pid;
+  // TODO: Multi-turn potentiometer for position instead of relative encoder
 
   /** The current setpoint measured from the ground. */
   private double setpointHeightFromGroundInches;
@@ -39,13 +42,18 @@ class Elevator extends SubsystemBase {
       .positionConversionFactor(ElevatorConfig.kElevatorEncoderPositionConversionFactor)
       .velocityConversionFactor(ElevatorConfig.kElevatorEncoderVelocityConversionFactor);
 
+    var pidConfig = new ClosedLoopConfig()
+      .pid(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD)
+      .iZone(3);
+
     var leaderConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kCoast)
       .smartCurrentLimit(45)
       // TODO: set inverted based on our desired sign of direction (positive up /
       // negative down)
       .inverted(false)
-      .apply(elevatorEncoderConfig);
+      .apply(elevatorEncoderConfig)
+      .apply(pidConfig);
     leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);
     leader.configure(leaderConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -63,11 +71,9 @@ class Elevator extends SubsystemBase {
     // TODO: should be reverse? something to check...
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
-    pid = new PIDController(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD);
-    pid.setIZone(3);
+    pid = leader.getClosedLoopController();
 
     SmartDashboard.putData(getName(), this);
-    SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
 
     setpointHeightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
   }
@@ -99,11 +105,7 @@ class Elevator extends SubsystemBase {
     if (heightFromGroundInches < ElevatorSetpoints.STOW_HEIGHT) {
       heightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
     }
-
-    // only reset for new setpoints
-    if (setpointHeightFromGroundInches != heightFromGroundInches) {
-      pid.reset();
-    }
+    
     setpointHeightFromGroundInches = heightFromGroundInches;
     setpointHeightFromBottomInches = heightFromGroundInches - setpointHeightFromGroundInches;
   }
@@ -134,22 +136,11 @@ class Elevator extends SubsystemBase {
   }
 
   private void setMotorOutputForSetpoint() {
-    // TODO: sysid characterization + feedforward terms
-    var pidOutput = pid.calculate(getHeightFromBottomInches(), setpointHeightFromBottomInches);
-    var output = pidOutput + ElevatorConfig.kElevatorKG;
-
-    // prevent trying to move past the bottom or setting motor outputs while limit
-    // switch is pressed when the setpoint is the stow height
-    if ((output < 0 || setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT) && isAtBottom()) {
-      output = 0;
-    }
-
-    leader.setVoltage(output);
+    pid.setReference(setpointHeightFromBottomInches, ControlType.kPosition, ClosedLoopSlot.kSlot0, ElevatorConfig.kElevatorKG);
   }
 
   public void stop() {
     leader.stopMotor();
-    pid.reset();
   }
 
   public void keepHeight() {
