@@ -10,6 +10,7 @@ public class CorallerConfig {
     public static final double kElevatorEncoderPositionConversionFactor = 1;
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
+    public static final double kHoldElevatorPositionVoltage = 1.5;
   }
 
   public static final class AnglerConfig {
