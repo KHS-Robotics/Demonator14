@@ -153,7 +153,7 @@ class Elevator extends SubsystemBase {
   }
 
   public void keepHeight() {
-    leader.setVoltage(ElevatorConfig.kHoldElevatorPositionVoltage);
+    leader.setVoltage(ElevatorConfig.kElevatorKG);
   }
 
   /** {@inheritDoc} */
