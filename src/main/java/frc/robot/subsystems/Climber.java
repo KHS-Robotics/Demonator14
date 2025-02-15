@@ -15,7 +15,9 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
 public class Climber extends SubsystemBase {
@@ -69,14 +71,18 @@ public class Climber extends SubsystemBase {
   }
 
   public Command reelIn() {
+    var climbAlgae = RobotContainer.kAlgaeCollector.climb();
     // TODO: full speed once we know direction???
-    var cmd = startEnd(() -> setReel(6), this::stop);
+    var reelIn = startEnd(() -> setReel(6), this::stop);
+    var cmd = Commands.sequence(climbAlgae, reelIn);
     return cmd.withName("ClimberReelIn");
   }
 
   public Command reelOut() {
+    var climbAlgae = RobotContainer.kAlgaeCollector.climb();
     // TODO: full speed once we know direction???
-    var cmd = startEnd(() -> setReel(-6), this::stop);
+    var reelOut = startEnd(() -> setReel(-6), this::stop);
+    var cmd = Commands.sequence(climbAlgae, reelOut);
     return cmd.withName("ClimberReelOut");
   }
 
