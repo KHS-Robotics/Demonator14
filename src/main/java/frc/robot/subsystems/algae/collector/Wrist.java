@@ -81,6 +81,7 @@ class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
+    //0 is strait up
     return Units.rotationsToDegrees(encoder.getPosition());
   }
 
@@ -92,7 +93,7 @@ class Wrist extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = AlgaeWristConfig.kAlageKG * Math.cos(getAngle());
+    var ffGravity = AlgaeWristConfig.kAlageKG * Math.sin(getAngle());
     var output = pidOutput + ffGravity;
     motor.setVoltage(output);
   }
