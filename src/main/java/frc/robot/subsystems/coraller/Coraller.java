@@ -10,7 +10,8 @@ public class Coraller extends SubsystemBase {
   private final Elevator elevator = new Elevator();
   private final Angler angler = new Angler();
   private final Intake intake = new Intake();
-  private final Flicker flicker = new Flicker();
+  // private final Flicker flicker = new Flicker();
+  // May revisit Flicker later - not on robot at the moment
 
   public Coraller() {
     SmartDashboard.putData(this);
@@ -63,29 +64,32 @@ public class Coraller extends SubsystemBase {
 
   private Command setState(CorallerState state) {
     var cmd = Commands.parallel(
+      // flicker.setAngleCommand(state.flickerPosition)
       elevator.setHeightCommand(state.elevatorPosition),
-      angler.setAngleCommand(state.anglerPosition),
-      flicker.setAngleCommand(state.flickerPosition)
+      angler.setAngleCommand(state.anglerPosition)
     );
     cmd.addRequirements(this);
     return cmd.withName("SetCorallerState(\"" + state.toString() + "\")");
   }
 
   public Command deployFlickerL2() {
-    var cmd = flicker.setAngleCommand(CorallerState.L2_ALGAE.flickerPosition);
-    cmd.addRequirements(this);
+    // var cmd = flicker.setAngleCommand(CorallerState.L2_ALGAE.flickerPosition);
+    // cmd.addRequirements(this);
+    var cmd = Commands.none();
     return cmd.withName("DeployFlickerL2");
   }
 
   public Command deployFlickerL3() {
-    var cmd = flicker.setAngleCommand(CorallerState.L3_ALGAE.flickerPosition);
-    cmd.addRequirements(this);
+    // var cmd = flicker.setAngleCommand(CorallerState.L3_ALGAE.flickerPosition);
+    // cmd.addRequirements(this);
+    var cmd = Commands.none();
     return cmd.withName("DeployFlickerL3");
   }
 
   public Command retractFlicker() {
-    var cmd = flicker.setAngleCommand(CorallerState.STOW.flickerPosition);
-    cmd.addRequirements(this);
+    // var cmd = flicker.setAngleCommand(CorallerState.STOW.flickerPosition);
+    // cmd.addRequirements(this);
+    var cmd = Commands.none();
     return cmd.withName("RetractFlicker");
   }
 
@@ -94,7 +98,6 @@ public class Coraller extends SubsystemBase {
     cmd.addRequirements(intake);
     return cmd
       .until(intake::hasCoral)
-      .withTimeout(15)
       .withName("IntakeCoral");
   }
 
@@ -108,7 +111,7 @@ public class Coraller extends SubsystemBase {
 
   public Command stopCommand() {
     var cmd = runOnce(this::stop);
-    cmd.addRequirements(elevator, intake, angler, flicker);
+    cmd.addRequirements(elevator, intake, angler);
     return cmd.withName("StopCoraller");
   }
 
@@ -116,7 +119,7 @@ public class Coraller extends SubsystemBase {
     elevator.stop();
     angler.stop();
     intake.stop();
-    flicker.stop();
+    // flicker.stop();
   }
 
   /** {@inheritDoc} */

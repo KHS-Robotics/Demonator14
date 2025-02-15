@@ -152,8 +152,8 @@ public class RobotContainer {
     kOperatorStick.scoreL2().onTrue(kCoraller.scoreL2());
     kOperatorStick.scoreL3().onTrue(kCoraller.scoreL3());
     kOperatorStick.scoreL4().onTrue(kCoraller.scoreL4());
-    kOperatorStick.outtakeCoral().onTrue(kCoraller.outtakeCoral());
-    kOperatorStick.intakeCoral().onTrue(kCoraller.intakeCoral());
+    kOperatorStick.outtakeCoral().whileTrue(kCoraller.outtakeCoral());
+    kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
 
     // Climber
     kOperatorStick.engageClimberAnchor().onTrue(kClimber.engageAnchor());

@@ -78,6 +78,7 @@ class Angler extends SubsystemBase {
   }
 
   public double getAngle() {
+    //0 is strait out
     return Units.rotationsToDegrees(encoder.getPosition());
   }
 

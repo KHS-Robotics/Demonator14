@@ -28,6 +28,11 @@ public class AlgaeCollector extends SubsystemBase {
     return cmd;
   }
 
+  public Command climb(){
+    var cmd = setState(AlgaeCollectorState.CLIMB);
+    return cmd;    
+  }
+
   private Command setState(AlgaeCollectorState state) {
     var cmd = wrist.setAngleCommand(state.wristAngle);
     cmd.addRequirements(this);
