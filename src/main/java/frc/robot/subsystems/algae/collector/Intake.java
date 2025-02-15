@@ -62,7 +62,7 @@ class Intake extends SubsystemBase {
   public void reverse() {
     intakeState = IntakeState.OUTAKING;
     // TODO: test for a good reverse voltage
-    motor.setVoltage(-6);
+    motor.setVoltage(-2.4);
   }
 
   public Command reverseCommand() {
