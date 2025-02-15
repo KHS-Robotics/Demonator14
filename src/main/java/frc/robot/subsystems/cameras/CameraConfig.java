@@ -28,7 +28,7 @@ public class CameraConfig {
      * <p>
      * https://docs.wpilib.org/en/stable/docs/software/vision-processing/apriltag/apriltag-intro.html
      */
-    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
   }
 
   public class LimelightConfig {
