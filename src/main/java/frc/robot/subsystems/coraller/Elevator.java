@@ -76,6 +76,7 @@ class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     setMotorOutputForSetpoint();
+    updateSetpointsForDisabledMode();
   }
 
   public Command stopCommand() {
@@ -109,7 +110,7 @@ class Elevator extends SubsystemBase {
   }
 
   /** Updates the setpoint to the current position. */
-  public void updateSetpointsForDisabledMode() {
+  private void updateSetpointsForDisabledMode() {
     if (RobotState.isDisabled()) {
       var isElevatorEncoderNonNegative = getHeightFromBottomInches() >= 0;
       setSetpointHeight(isElevatorEncoderNonNegative ? getHeightFromGroundInches() : setpointHeightFromGroundInches);
