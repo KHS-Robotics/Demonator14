@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
-import frc.robot.Constants.AlgaeWristConfig;
+import frc.robot.subsystems.algae.collector.AlgaeCollectorConfig.AlgaeWristConfig;
 
 class Wrist extends SubsystemBase {
   private double setpointAngleDegrees;
@@ -83,6 +83,7 @@ class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
+    //0 is strait up
     return Units.rotationsToDegrees(encoder.getPosition());
   }
 
@@ -94,7 +95,7 @@ class Wrist extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = AlgaeWristConfig.kAlageKG * Math.cos(getAngle());
+    var ffGravity = AlgaeWristConfig.kAlageKG * Math.sin(getAngle());
     var output = pidOutput + ffGravity;
     motor.setVoltage(output);
   }

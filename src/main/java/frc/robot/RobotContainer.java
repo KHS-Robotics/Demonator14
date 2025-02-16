@@ -15,13 +15,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import frc.robot.Constants.HIDConfig;
-import frc.robot.Constants.LimelightConfig;
-import frc.robot.Constants.PhotonVisionConfig;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.algae.collector.AlgaeCollector;
+import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
+import frc.robot.subsystems.cameras.CameraConfig.LimelightConfig;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
@@ -88,7 +87,7 @@ public class RobotContainer {
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
       PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
-      LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+    LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,
@@ -109,7 +108,7 @@ public class RobotContainer {
   private void configureSubsystemDefaultCommands() {
     // control swerve drive with the xbox controller by default
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
-        HIDConfig.kJoystickDeadband, HIDConfig.kJoystickSensitivity));
+        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // LowerFrontPhotonCamera - AprilTag updates for odometry
     kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
@@ -153,8 +152,8 @@ public class RobotContainer {
     kOperatorStick.scoreL2().onTrue(kCoraller.scoreL2());
     kOperatorStick.scoreL3().onTrue(kCoraller.scoreL3());
     kOperatorStick.scoreL4().onTrue(kCoraller.scoreL4());
-    kOperatorStick.outtakeCoral().onTrue(kCoraller.outtakeCoral());
-    kOperatorStick.intakeCoral().onTrue(kCoraller.intakeCoral());
+    kOperatorStick.outtakeCoral().whileTrue(kCoraller.outtakeCoral());
+    kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
 
     // Climber
     kOperatorStick.engageClimberAnchor().onTrue(kClimber.engageAnchor());
