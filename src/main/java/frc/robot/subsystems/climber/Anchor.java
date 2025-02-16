@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -23,11 +24,16 @@ class Anchor extends SubsystemBase {
   
 
   public Anchor(){
-    var anchorConfig = new SparkMaxConfig();
+    var anchorConfig = new SparkMaxConfig()
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(40)
+      // TODO: set inverted based on our desired sign of direction (positive up /
+      // negative down)
+      .inverted(false);
     anchor = new SparkMax(RobotMap.CLIMBER_ANCHOR_ID, MotorType.kBrushless);
     anchor.configure(anchorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-    var anchorEncoderConfig = new EncoderConfig();
+    encoder = anchor.getEncoder();
 
     pid = new PIDController(AnchorConfig.kAnchorP, AnchorConfig.kAnchorI, AnchorConfig.kAnchorD);
 
