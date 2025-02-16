@@ -1,0 +1,56 @@
+package frc.robot.subsystems.climber;
+
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
+import frc.robot.subsystems.climber.ClimberConfig.AnchorConfig;
+
+class Anchor extends SubsystemBase {
+  
+  private final SparkMax anchor;
+  private final RelativeEncoder encoder;
+  private final PIDController pid;
+
+  
+
+  public Anchor(){
+    var anchorConfig = new SparkMaxConfig();
+    anchor = new SparkMax(RobotMap.CLIMBER_ANCHOR_ID, MotorType.kBrushless);
+    anchor.configure(anchorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
+    var anchorEncoderConfig = new EncoderConfig();
+
+    pid = new PIDController(AnchorConfig.kAnchorP, AnchorConfig.kAnchorI, AnchorConfig.kAnchorD);
+
+  }
+
+  public void periodic(){
+    setMotorOutputForSetpoint();
+  }
+
+  public Command engageAnchor(){
+    //set anchor to 90 degrees
+  }
+
+  public Command unengageAnchor(){
+    //set anchor to 0 degrees  
+  }
+
+ 
+
+  private void setMotorOutputForSetpoint(){
+    var pidOutput = pid.calculate(encoder.getPosition(), /*setpoint */ );
+    anchor.setVoltage(pidOutput);
+    // idk about gravity stuff so not messing w/ it for now
+  }
+}
+
