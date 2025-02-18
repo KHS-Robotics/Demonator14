@@ -1,6 +1,7 @@
 package frc.robot.subsystems.coraller;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -22,7 +23,8 @@ import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 
 class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
-  private final AbsoluteEncoder encoder;
+  private final RelativeEncoder encoder;
+  //private final AbsoluteEncoder encoder;
   private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
   // TODO: Absolute encoder / potentiometer for position?
@@ -59,7 +61,8 @@ class Elevator extends SubsystemBase {
     follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
-    encoder = leader.getAbsoluteEncoder();
+    //encoder = leader.getAbsoluteEncoder();
+    encoder = leader.getEncoder();
     // TODO: should be reverse? something to check...
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
