@@ -20,6 +20,7 @@ class Anchor extends SubsystemBase {
   private final SparkMax anchor;
   private final RelativeEncoder encoder;
   private final PIDController pid;
+  // private double setpointAngleDegrees;
 
   
 
@@ -45,16 +46,18 @@ class Anchor extends SubsystemBase {
 
   public Command engageAnchor(){
     //set anchor to 90 degrees
+    //setpointAngleDegrees = 90;
   }
 
   public Command unengageAnchor(){
-    //set anchor to 0 degrees  
+    //set anchor to 0 degrees
+    //setpointAngleDegrees = 90;  
   }
 
  
 
   private void setMotorOutputForSetpoint(){
-    var pidOutput = pid.calculate(encoder.getPosition(), /*setpoint */ );
+    var pidOutput = pid.calculate(encoder.getPosition(), /*setpointAngleDegrees */ );
     anchor.setVoltage(pidOutput);
     // idk about gravity stuff so not messing w/ it for now
   }
