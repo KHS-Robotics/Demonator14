@@ -17,7 +17,9 @@ final class CorallerSetpoints {
   }
 
   protected static final class ElevatorSetpoints {
-    public static final double STOW_HEIGHT = 0;
+    // all in Inches
+    public static final double STOW_HEIGHT = 35;
+    // ^2.057 Tonys
     public static final double RECEIVE_HEIGHT = 0;
     public static final double L1_HEIGHT = 0;
     public static final double L2_HEIGHT = 0;
