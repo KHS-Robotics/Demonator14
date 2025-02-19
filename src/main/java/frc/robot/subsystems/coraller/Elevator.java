@@ -43,7 +43,7 @@ class Elevator extends SubsystemBase {
 
     var leaderConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(45)
+      .smartCurrentLimit(40)
       // TODO: set inverted based on our desired sign of direction (positive up /
       // negative down)
       .inverted(false)
@@ -54,7 +54,7 @@ class Elevator extends SubsystemBase {
 
     var followerConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(45)
+      .smartCurrentLimit(40)
       .follow(RobotMap.ELEVATOR_DRIVE_LEADER_ID, true)
       .apply(elevatorEncoderConfig);
     follower = new SparkMax(RobotMap.ELEVATOR_DRIVE_FOLLOWER_ID, MotorType.kBrushless);
@@ -126,7 +126,7 @@ class Elevator extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointHeightFromGroundInches - getHeightFromGroundInches());
-    return (error < 1);
+    return (error < 0.1);
   }
 
   public double getHeightFromBottomInches() {
@@ -154,10 +154,6 @@ class Elevator extends SubsystemBase {
   public void stop() {
     leader.stopMotor();
     pid.reset();
-  }
-
-  public void keepHeight() {
-    leader.setVoltage(ElevatorConfig.kElevatorKG);
   }
 
   /** {@inheritDoc} */
