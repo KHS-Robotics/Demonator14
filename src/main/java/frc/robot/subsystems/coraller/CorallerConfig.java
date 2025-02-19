@@ -11,7 +11,7 @@ public class CorallerConfig {
     public static final double kElevatorKGAscent = 1.7;
     public static final double kElevatorSprocketRadiusInches = 0.88;
     public static final double kElevatorGearing = 3.0;
-    public static final double kElevatorEncoderPositionConversionFactor = (2*(Math.PI)*kElevatorSprocketRadiusInches)/kElevatorGearing;
+    public static final double kElevatorEncoderPositionConversionFactor = (4*(Math.PI)*kElevatorSprocketRadiusInches)/kElevatorGearing;
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
   }
