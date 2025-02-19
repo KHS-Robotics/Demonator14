@@ -28,8 +28,8 @@ class Intake extends SubsystemBase {
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
-      // TODO: set inverted based on our desired sign of direction (positive intake / negative outake)
-      .inverted(false);
+      //positive in and negative out after invert
+      .inverted(true);
     motor = new SparkMax(RobotMap.ALGAE_INTAKE_MOTOR_ID, MotorType.kBrushless);
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -62,7 +62,7 @@ class Intake extends SubsystemBase {
   public void reverse() {
     intakeState = IntakeState.OUTAKING;
     // TODO: test for a good reverse voltage
-    motor.setVoltage(-6);
+    motor.setVoltage(-2.4);
   }
 
   public Command reverseCommand() {

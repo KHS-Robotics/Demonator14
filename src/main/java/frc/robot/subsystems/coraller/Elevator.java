@@ -1,5 +1,6 @@
 package frc.robot.subsystems.coraller;
 
+//import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkBase;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
+  //private final AbsoluteEncoder encoder;
   private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
   // TODO: Absolute encoder / potentiometer for position?
@@ -41,7 +43,7 @@ class Elevator extends SubsystemBase {
 
     var leaderConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(45)
+      .smartCurrentLimit(40)
       // TODO: set inverted based on our desired sign of direction (positive up /
       // negative down)
       .inverted(false)
@@ -52,13 +54,14 @@ class Elevator extends SubsystemBase {
 
     var followerConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(45)
+      .smartCurrentLimit(40)
       .follow(RobotMap.ELEVATOR_DRIVE_LEADER_ID, true)
       .apply(elevatorEncoderConfig);
     follower = new SparkMax(RobotMap.ELEVATOR_DRIVE_FOLLOWER_ID, MotorType.kBrushless);
     follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
+    //encoder = leader.getAbsoluteEncoder();
     encoder = leader.getEncoder();
     // TODO: should be reverse? something to check...
     bottomLimitSwitch = leader.getReverseLimitSwitch();
@@ -76,6 +79,7 @@ class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     setMotorOutputForSetpoint();
+    updateSetpointsForDisabledMode();
   }
 
   public Command stopCommand() {
@@ -109,7 +113,7 @@ class Elevator extends SubsystemBase {
   }
 
   /** Updates the setpoint to the current position. */
-  public void updateSetpointsForDisabledMode() {
+  private void updateSetpointsForDisabledMode() {
     if (RobotState.isDisabled()) {
       var isElevatorEncoderNonNegative = getHeightFromBottomInches() >= 0;
       setSetpointHeight(isElevatorEncoderNonNegative ? getHeightFromGroundInches() : setpointHeightFromGroundInches);
@@ -122,7 +126,7 @@ class Elevator extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointHeightFromGroundInches - getHeightFromGroundInches());
-    return (error < 1);
+    return (error < 0.1);
   }
 
   public double getHeightFromBottomInches() {
@@ -150,10 +154,6 @@ class Elevator extends SubsystemBase {
   public void stop() {
     leader.stopMotor();
     pid.reset();
-  }
-
-  public void keepHeight() {
-    leader.setVoltage(ElevatorConfig.kElevatorKG);
   }
 
   /** {@inheritDoc} */

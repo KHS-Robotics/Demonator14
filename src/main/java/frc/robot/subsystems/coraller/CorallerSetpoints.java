@@ -17,14 +17,16 @@ final class CorallerSetpoints {
   }
 
   protected static final class ElevatorSetpoints {
-    public static final double STOW_HEIGHT = 0;
+    // all in Inches
+    public static final double STOW_HEIGHT = 35;
+    // ^2.057 Tonys
     public static final double RECEIVE_HEIGHT = 0;
-    public static final double L1_HEIGHT = 0;
-    public static final double L2_HEIGHT = 0;
-    public static final double L2_ALGAE_HEIGHT = 0;
-    public static final double L3_HEIGHT = 0;
-    public static final double L3_ALGAE_HEIGHT = 0;
-    public static final double L4_HEIGHT = 0;
+    public static final double L1_HEIGHT = 35;
+    public static final double L2_HEIGHT = 35;
+    public static final double L2_ALGAE_HEIGHT = 35;
+    public static final double L3_HEIGHT = 50;
+    public static final double L3_ALGAE_HEIGHT = 48;
+    public static final double L4_HEIGHT = 75;
   }
 
   protected static final class FlickerSetpoints {

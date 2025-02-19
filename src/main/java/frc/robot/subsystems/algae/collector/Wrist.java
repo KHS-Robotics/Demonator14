@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,11 +33,11 @@ class Wrist extends SubsystemBase {
     super(AlgaeCollector.class.getSimpleName() + "/" + Wrist.class.getSimpleName());
 
     var algaeConfig = new SparkMaxConfig()
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(40)
-      // TODO: set inverted based on our desired sign of direction (positive up /
-      // negative down)
-      .inverted(false);
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(40)
+        // TODO: set inverted based on our desired sign of direction (positive up /
+        // negative down)
+        .inverted(false);
     motor = new SparkMax(RobotMap.ALGAE_WRIST_MOTOR_ID, MotorType.kBrushless);
     motor.configure(algaeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -53,17 +54,18 @@ class Wrist extends SubsystemBase {
   /** {@inheritDoc} */
   public void periodic() {
     setMotorOutputForSetpoint();
+    updateSetpointsForDisabledMode();
   }
 
   public Command setAngleCommand(double angleDegrees) {
     return this.run(() -> setSetpointAngle(angleDegrees))
-      .until(this::isAtSetpoint)
-      .withName("SetAlgaeWristSetpoint");
+        .until(this::isAtSetpoint)
+        .withName("SetAlgaeWristSetpoint");
   }
 
   public Command stopCommand() {
     return runOnce(this::stop)
-      .withName("StopAlgaeWrist");
+        .withName("StopAlgaeWrist");
   }
 
   /**
@@ -81,8 +83,8 @@ class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
-    //0 is strait up
-    return Units.rotationsToDegrees(encoder.getPosition());
+    // 0 is straight up
+    return Units.rotationsToDegrees(encoder.getPosition()) + AlgaeWristConfig.kAlgaeWristOffset;
   }
 
   public boolean isAtSetpoint() {
@@ -93,9 +95,15 @@ class Wrist extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = AlgaeWristConfig.kAlageKG * Math.sin(getAngle());
+    var ffGravity = AlgaeWristConfig.kAlgaeKG * Math.sin(Math.toRadians(getAngle()));
     var output = pidOutput + ffGravity;
     motor.setVoltage(output);
+  }
+
+  private void updateSetpointsForDisabledMode() {
+    if (RobotState.isDisabled()) {
+      setSetpointAngle(getAngle());
+    }
   }
 
   public void stop() {
@@ -114,4 +122,4 @@ class Wrist extends SubsystemBase {
     builder.addDoubleProperty("Angle", this::getAngle, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
   }
-  }
+}
