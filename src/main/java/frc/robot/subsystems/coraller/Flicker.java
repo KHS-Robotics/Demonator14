@@ -39,7 +39,7 @@ class Flicker extends SubsystemBase {
         .velocityConversionFactor(FlickerConfig.kFlickerEncoderVelocityConversionFactor);
     var flickerConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(40)
+        .smartCurrentLimit(30)
         // TODO: set inverted based on our desired sign of direction (positive up /
         // negative down)
         .inverted(false)
@@ -88,7 +88,7 @@ class Flicker extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = FlickerConfig.kFlickerKG * Math.cos(getAngle());
+    var ffGravity = FlickerConfig.kFlickerKG * Math.cos(Math.toRadians(getAngle()));
     var output = pidOutput + ffGravity;
     // TODO: set output to zero when close enough to stow setpoint?
     motor.setVoltage(output);

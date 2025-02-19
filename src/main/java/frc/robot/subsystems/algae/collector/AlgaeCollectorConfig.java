@@ -6,6 +6,7 @@ public class AlgaeCollectorConfig {
     public static final double kAlgaeI = 0.0;
     public static final double kAlgaeD = 0.0;
     /** Gravity term in volts. */
-    public static final double kAlageKG = 0.0;
+    public static final double kAlgaeKG = 0.0;
+    public static final double kAlgaeWristOffset = 0.0;
   }
 }

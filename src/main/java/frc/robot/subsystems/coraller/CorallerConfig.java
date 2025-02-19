@@ -20,11 +20,11 @@ public class CorallerConfig {
     public static final double kAnglerP = 0.0;
     public static final double kAnglerI = 0.0;
     public static final double kAnglerD = 0.0;
-    /** Gravity term in volts. */
+    /** Gravity term in volts. Might be a negative number */
     public static final double kAnglerKG = 0.0;
     public static final double kAnglerEncoderPositionConversionFactor = 1;
     public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
-
+    public static final double kAnglerOffset = 0.0;
   }
 
   public static final class FlickerConfig {

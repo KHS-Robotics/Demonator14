@@ -30,7 +30,7 @@ class Angler extends SubsystemBase {
 
     var anglerConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(40)
+      .smartCurrentLimit(30)
       // TODO: set inverted based on our desired sign of direction (positive up /
       // negative down)
       .inverted(false);
@@ -79,7 +79,7 @@ class Angler extends SubsystemBase {
 
   public double getAngle() {
     //0 is strait out
-    return Units.rotationsToDegrees(encoder.getPosition());
+    return Units.rotationsToDegrees(encoder.getPosition()) + AnglerConfig.kAnglerOffset;
   }
 
   public boolean isAtSetpoint() {
@@ -90,7 +90,7 @@ class Angler extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = AnglerConfig.kAnglerKG * Math.cos(getAngle());
+    var ffGravity = AnglerConfig.kAnglerKG * Math.cos(Math.toRadians(getAngle()));
     var output = pidOutput + ffGravity;
     motor.setVoltage(output);
   }
