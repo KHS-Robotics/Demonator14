@@ -20,6 +20,8 @@ class Reel extends SubsystemBase {
   private ReelState reelState = ReelState.OFF;
 
   public Reel() {
+    super(Climber.class.getSimpleName() + "/" + Reel.class.getSimpleName());
+
     var reelConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)
@@ -60,6 +62,10 @@ class Reel extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.setActuator(true);
+    builder.addStringProperty("ReelState", reelState::toString, null);
   }
 
   private enum ReelState {

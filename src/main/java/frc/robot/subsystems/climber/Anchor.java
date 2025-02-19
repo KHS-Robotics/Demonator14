@@ -1,33 +1,46 @@
 package frc.robot.subsystems.climber;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.climber.ClimberConfig.AnchorConfig;
+import frc.robot.subsystems.climber.ClimberSetpoints.AnchorSetpoints;
+import frc.robot.subsystems.drive.SwerveDriveConfig;;
 
 class Anchor extends SubsystemBase {
-  
+  private double currentSetpoint;
+
   private final SparkMax anchor;
   private final RelativeEncoder encoder;
-  private final PIDController pid;
-  // private double setpointAngleDegrees;
+  private final SparkClosedLoopController pid;
 
-  
+  public Anchor() {
+    super(Climber.class.getSimpleName() + "/" + Anchor.class.getSimpleName());
 
-  public Anchor(){
+    var encoderConfig = new EncoderConfig()
+      .positionConversionFactor(AnchorConfig.kDriveEncoderPositionConversionFactor);
+    var pidConfig = new ClosedLoopConfig()
+      .pid(AnchorConfig.kAnchorP, 0, 0, ClosedLoopSlot.kSlot0);
     var anchorConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(40)
+      .apply(encoderConfig)
+      .apply(pidConfig)
       // TODO: set inverted based on our desired sign of direction (positive up /
       // negative down)
       .inverted(false);
@@ -35,31 +48,36 @@ class Anchor extends SubsystemBase {
     anchor.configure(anchorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     encoder = anchor.getEncoder();
+    pid = anchor.getClosedLoopController();
 
-    pid = new PIDController(AnchorConfig.kAnchorP, AnchorConfig.kAnchorI, AnchorConfig.kAnchorD);
-
+    SmartDashboard.putData(this);
   }
 
   public void periodic(){
-    setMotorOutputForSetpoint();
   }
 
-  public Command engageAnchor(){
-    //set anchor to 90 degrees
-    //setpointAngleDegrees = 90;
+  public Command engageAnchor() {
+    var cmd = run(() -> setSetpoint(AnchorSetpoints.kAnchorEngaged)).until(this::isAtSetpoint);
+    return cmd.withName("EngageAnchor");
   }
 
-  public Command unengageAnchor(){
-    //set anchor to 0 degrees
-    //setpointAngleDegrees = 90;  
+  public Command unengageAnchor() {
+    var cmd = run(() -> setSetpoint(AnchorSetpoints.kAnchorUnengaged)).until(this::isAtSetpoint);
+    return cmd.withName("UnengageAnchor");
   }
 
- 
+  public double getAngle() {
+    return encoder.getPosition();
+  }
 
-  private void setMotorOutputForSetpoint(){
-    var pidOutput = pid.calculate(encoder.getPosition(), /*setpointAngleDegrees */ );
-    anchor.setVoltage(pidOutput);
-    // idk about gravity stuff so not messing w/ it for now
+  public boolean isAtSetpoint() {
+    var error = Math.abs(currentSetpoint - getAngle());
+    return (error < 3);
+  }
+
+  private void setSetpoint(double setpoint) {
+    currentSetpoint = setpoint;
+    pid.setReference(setpoint, ControlType.kPosition);
   }
 }
 
