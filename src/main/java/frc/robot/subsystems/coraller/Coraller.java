@@ -105,7 +105,7 @@ public class Coraller extends SubsystemBase {
     var cmd = startEnd(intake::reverse, intake::stop);
     cmd.addRequirements(intake);
     return cmd
-      .withTimeout(.5)
+      .withTimeout(1)
       .withName("ReleaseCoral");
   }
 
