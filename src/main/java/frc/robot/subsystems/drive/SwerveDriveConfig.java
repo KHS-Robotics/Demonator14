@@ -7,7 +7,7 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
-public final class SwerveDriveConfig {
+final class SwerveDriveConfig {
   public static final double kDriveWheelRadiusMeters = Units.inchesToMeters(2);
   public static final double SDS_L2_DRIVE_GEARING = 6.75;
   public static final double kDriveEncoderPositionConversionFactor = (2 * Math.PI * kDriveWheelRadiusMeters)

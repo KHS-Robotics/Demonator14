@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
 import frc.robot.subsystems.climber.Climber;
@@ -87,7 +87,7 @@ public class RobotContainer {
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
       PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
-    LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+      LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,
@@ -191,7 +191,9 @@ public class RobotContainer {
     // work properly!
 
     // stop all
-    NamedCommands.registerCommand("STOP", kSwerveDrive.stopCommand().andThen(kCoraller.stopCommand()).andThen(kAlgaeCollector.stopCommand()));
+    NamedCommands.registerCommand("STOP",
+        Commands.sequence(kSwerveDrive.stopCommand(), kCoraller.stopCommand(), kAlgaeCollector.stopCommand())
+            .withName("StopAll"));
 
     // Swerve Drive
     NamedCommands.registerCommand("STOPSwerve", kSwerveDrive.stopCommand());

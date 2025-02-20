@@ -104,6 +104,7 @@ class Flicker extends SubsystemBase {
   public void stop() {
     motor.stopMotor();
     pid.reset();
+    setSetpointAngle(getAngle());
   }
 
   public Command stopCommand() {

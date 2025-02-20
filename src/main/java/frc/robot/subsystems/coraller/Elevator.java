@@ -31,8 +31,6 @@ class Elevator extends SubsystemBase {
 
   /** The current setpoint measured from the ground. */
   private double setpointHeightFromGroundInches;
-  /** The current setpoint measured from the bottom of the elevator. */
-  private double setpointHeightFromBottomInches;
 
   public Elevator() {
     super(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName());
@@ -99,9 +97,13 @@ class Elevator extends SubsystemBase {
    * @see {@link #periodic()}
    */
   public void setSetpointHeight(double heightFromGroundInches) {
-    // extra precaution to prevent negative setpoints
+    // extra precaution to prevent too low of setpoints
     if (heightFromGroundInches < ElevatorSetpoints.STOW_HEIGHT) {
       heightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
+    }
+    // extra precaution to prevent too large of setpoints
+    if (heightFromGroundInches > ElevatorSetpoints.L4_HEIGHT) {
+      heightFromGroundInches = ElevatorSetpoints.L4_HEIGHT;
     }
 
     // only reset for new setpoints
@@ -109,14 +111,16 @@ class Elevator extends SubsystemBase {
       pid.reset();
     }
     setpointHeightFromGroundInches = heightFromGroundInches;
-    setpointHeightFromBottomInches = heightFromGroundInches - setpointHeightFromGroundInches;
   }
 
   /** Updates the setpoint to the current position. */
   private void updateSetpointsForDisabledMode() {
     if (RobotState.isDisabled()) {
-      var isElevatorEncoderNonNegative = getHeightFromBottomInches() >= 0;
-      setSetpointHeight(isElevatorEncoderNonNegative ? getHeightFromGroundInches() : setpointHeightFromGroundInches);
+      setSetpointHeight(getHeightFromGroundInches());
+      // reset RelativeEncoder when sitting at bottom in disabled
+      if (isAtBottom()) {
+        encoder.setPosition(0);
+      }
     }
   }
 
@@ -129,17 +133,13 @@ class Elevator extends SubsystemBase {
     return (error < 0.1);
   }
 
-  public double getHeightFromBottomInches() {
-    return encoder.getPosition();
-  }
-
   public double getHeightFromGroundInches() {
     return encoder.getPosition() + ElevatorSetpoints.STOW_HEIGHT;
   }
 
   private void setMotorOutputForSetpoint() {
     // TODO: sysid characterization + feedforward terms
-    var pidOutput = pid.calculate(getHeightFromBottomInches(), setpointHeightFromBottomInches);
+    var pidOutput = pid.calculate(getHeightFromGroundInches(), setpointHeightFromGroundInches);
     var output = pidOutput + ElevatorConfig.kElevatorKG;
 
     // prevent trying to move past the bottom or setting motor outputs while limit
@@ -154,6 +154,7 @@ class Elevator extends SubsystemBase {
   public void stop() {
     leader.stopMotor();
     pid.reset();
+    setSetpointHeight(getHeightFromGroundInches());
   }
 
   /** {@inheritDoc} */
@@ -165,7 +166,6 @@ class Elevator extends SubsystemBase {
     builder.setActuator(true);
     builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGroundInches, this::setSetpointHeight);
     builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches, null);
-    builder.addDoubleProperty("HeightFromBottom", this::getHeightFromBottomInches, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
     builder.addBooleanProperty("IsAtBottom", this::isAtBottom, null);
   }
