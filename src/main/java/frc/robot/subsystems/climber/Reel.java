@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
-class Reel extends SubsystemBase {
+public class Reel extends SubsystemBase {
 
   private final SparkMax reel;
   private ReelState reelState = ReelState.OFF;

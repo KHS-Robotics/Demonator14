@@ -22,7 +22,7 @@ import frc.robot.subsystems.climber.ClimberConfig.AnchorConfig;
 import frc.robot.subsystems.climber.ClimberSetpoints.AnchorSetpoints;
 import frc.robot.subsystems.drive.SwerveDriveConfig;;
 
-class Anchor extends SubsystemBase {
+public class Anchor extends SubsystemBase {
   private double currentSetpoint;
 
   private final SparkMax anchor;
@@ -61,7 +61,7 @@ class Anchor extends SubsystemBase {
     return cmd.withName("EngageAnchor");
   }
 
-  public Command unengageAnchor() {
+  public Command disengageAnchor() {
     var cmd = run(() -> setSetpoint(AnchorSetpoints.kAnchorUnengaged)).until(this::isAtSetpoint);
     return cmd.withName("UnengageAnchor");
   }
