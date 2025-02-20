@@ -5,7 +5,7 @@
 package frc.robot.subsystems.coraller;
 
 final class CorallerSetpoints {
-  protected static final class AnglerSetpoints {
+  protected final class AnglerSetpoints {
     public static final double STOW_ANGLE = 0;
     public static final double L1_ANGLE = 0;
     public static final double L2_ANGLE = 0;
@@ -16,7 +16,7 @@ final class CorallerSetpoints {
     public static final double RECEIVE_ANGLE = 0;
   }
 
-  protected static final class ElevatorSetpoints {
+  protected final class ElevatorSetpoints {
     // all in Inches
     public static final double STOW_HEIGHT = 35;
     // ^2.057 Tonys
@@ -29,7 +29,7 @@ final class CorallerSetpoints {
     public static final double L4_HEIGHT = 75;
   }
 
-  protected static final class FlickerSetpoints {
+  protected final class FlickerSetpoints {
     public static final double STOW_ANGLE = 0;
     public static final double L2_ANGLE = 0;
     public static final double L3_ANGLE = 0;
