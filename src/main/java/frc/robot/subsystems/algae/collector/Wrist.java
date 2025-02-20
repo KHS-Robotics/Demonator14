@@ -109,6 +109,7 @@ class Wrist extends SubsystemBase {
   public void stop() {
     motor.stopMotor();
     pid.reset();
+    setSetpointAngle(getAngle());
   }
 
   /** {@inheritDoc} */
