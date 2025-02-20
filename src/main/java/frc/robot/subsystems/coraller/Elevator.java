@@ -154,6 +154,7 @@ class Elevator extends SubsystemBase {
   public void stop() {
     leader.stopMotor();
     pid.reset();
+    setSetpointHeight(getHeightFromGroundInches());
   }
 
   /** {@inheritDoc} */

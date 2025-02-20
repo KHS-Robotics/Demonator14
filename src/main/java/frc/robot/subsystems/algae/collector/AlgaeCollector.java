@@ -28,9 +28,9 @@ public class AlgaeCollector extends SubsystemBase {
     return cmd;
   }
 
-  public Command climb(){
+  public Command climb() {
     var cmd = setState(AlgaeCollectorState.CLIMB);
-    return cmd;    
+    return cmd;
   }
 
   private Command setState(AlgaeCollectorState state) {
