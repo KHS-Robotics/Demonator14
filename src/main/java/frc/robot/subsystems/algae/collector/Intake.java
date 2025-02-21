@@ -28,7 +28,6 @@ class Intake extends SubsystemBase {
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
-      //positive in and negative out after invert
       .inverted(true);
     motor = new SparkMax(RobotMap.ALGAE_INTAKE_MOTOR_ID, MotorType.kBrushless);
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
@@ -50,7 +49,6 @@ class Intake extends SubsystemBase {
 
   public void start() {
     intakeState = IntakeState.INTAKING;
-    // TODO: test for a good intake voltage
     motor.setVoltage(6);
   }
 
@@ -61,7 +59,6 @@ class Intake extends SubsystemBase {
 
   public void reverse() {
     intakeState = IntakeState.OUTAKING;
-    // TODO: test for a good reverse voltage
     motor.setVoltage(-2.4);
   }
 
@@ -98,7 +95,5 @@ class Intake extends SubsystemBase {
     builder.setActuator(true);
     builder.addBooleanProperty("HasAlgae", this::hasAlgae, null);
     builder.addStringProperty("IntakeState", () -> intakeState.toString(), null);
-    
   }
-  
 }

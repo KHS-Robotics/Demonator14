@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 class Intake extends SubsystemBase {
-  private boolean intaking, outaking;
+  private IntakeState intakeState = IntakeState.IDLE;
 
   private final SparkMax motor;
   private final SparkLimitSwitch sensor;
@@ -43,7 +43,7 @@ class Intake extends SubsystemBase {
   }
 
   public void stop() {
-    outaking = intaking = false;
+    intakeState = IntakeState.IDLE;
     motor.stopMotor();
   }
 
@@ -53,8 +53,7 @@ class Intake extends SubsystemBase {
   }
 
   public void start() {
-    outaking = false;
-    intaking = true;
+    intakeState = IntakeState.INTAKING;
     // TODO: test for a good intake voltage
     motor.setVoltage(6);
   }
@@ -65,8 +64,7 @@ class Intake extends SubsystemBase {
   }
 
   public void reverse() {
-    outaking = true;
-    intaking = false;
+    intakeState = IntakeState.OUTAKING;
     // TODO: test for a good reverse voltage
     motor.setVoltage(-6);
   }
@@ -88,7 +86,22 @@ class Intake extends SubsystemBase {
     builder.setSafeState(this::stop);
     builder.setActuator(true);
     builder.addBooleanProperty("HasCoral", this::hasCoral, null);
-    builder.addBooleanProperty("Intaking", () -> intaking, null);
-    builder.addBooleanProperty("Outaking", () -> outaking, null);
+    builder.addStringProperty("IntakeState", () -> intakeState.toString(), null);
+  }
+
+  public enum IntakeState {
+    IDLE("Idle"),
+    INTAKING("Intaking"),
+    OUTAKING("Outaking");
+
+    private final String state;
+
+    private IntakeState(String s) {
+      state = s;
+    }
+
+    public String toString() {
+      return this.state;
+    }
   }
 }
