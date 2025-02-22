@@ -111,15 +111,15 @@ public class RobotContainer {
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // LowerFrontPhotonCamera - AprilTag updates for odometry
-    kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
+   /*  kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
         (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
-            update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
+            update.estimatedRobotPose.timestampSeconds, update.stdDevs))); 
 
     // RearLimelightCamera - AprilTag updates for odometry
     kRearLimelightCamera.setDefaultCommand(
         kRearLimelightCamera
             .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs))); */
   }
 
   /**
@@ -156,10 +156,12 @@ public class RobotContainer {
     kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
 
     // Climber
-    kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
+   /*  kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
     kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
     kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
-    kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());
+    kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());  
+
+    */
     
     // TODO: AlgaeCollector bindings
   }

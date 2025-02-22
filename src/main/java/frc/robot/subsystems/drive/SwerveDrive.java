@@ -236,8 +236,7 @@ public class SwerveDrive extends SubsystemBase {
 
   /** https://pathplanner.dev/pplib-getting-started.html#holonomic-swerve */
   private void configurePathPlannerAutoBuilder() {
-    // Load the RobotConfig from the GUI settings. You should probably
-    // store this in your Constants file
+    // Load the RobotConfig from the GUI settings.
     RobotConfig config;
     try {
       config = RobotConfig.fromGUISettings();
