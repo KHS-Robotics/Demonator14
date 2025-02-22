@@ -27,7 +27,7 @@
           {
             "title": "HasAlgae",
             "x": 0.0,
-            "y": 384.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Boolean Box",
@@ -44,7 +44,7 @@
           {
             "title": "Algae IntakeState",
             "x": 256.0,
-            "y": 512.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -86,7 +86,7 @@
           {
             "title": "Algae Command",
             "x": 256.0,
-            "y": 384.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
