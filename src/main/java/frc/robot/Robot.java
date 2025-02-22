@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -62,6 +63,10 @@ public class Robot extends TimedRobot {
 
     // Update the robot's position and heading on the Dashboard GUI
     RobotContainer.kField.setRobotPose(RobotContainer.kSwerveDrive.getPose());
+    
+    // Joystick connection info
+    SmartDashboard.putBoolean("Joysticks/Xbox Controller", RobotContainer.kDriverController.isConnected());
+    SmartDashboard.putBoolean("Joysticks/Operator Stick", RobotContainer.kOperatorStick.isConnected());
   }
 
   /** This method is called once each time the robot enters disabled mode. */
