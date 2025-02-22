@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.algae.collector.AlgaeCollector;
 import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
 import frc.robot.subsystems.cameras.CameraConfig.LimelightConfig;
@@ -156,11 +156,11 @@ public class RobotContainer {
     kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
 
     // Climber
-    kOperatorStick.engageClimberAnchor().onTrue(kClimber.engageAnchor());
-    kOperatorStick.unengageClimberAnchor().onTrue(kClimber.unengageAnchor());
-    kOperatorStick.reelInClimber().whileTrue(kClimber.reelIn());
-    kOperatorStick.reelOutClimber().whileTrue(kClimber.reelOut());
-
+    kOperatorStick.engageClimberAnchor().onTrue(kClimber.kAnchor.engageAnchor());
+    kOperatorStick.unengageClimberAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
+    kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
+    kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());
+    
     // TODO: AlgaeCollector bindings
   }
 
