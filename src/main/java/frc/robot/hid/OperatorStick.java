@@ -55,11 +55,11 @@ public class OperatorStick extends Joystick {
     return new Trigger(() -> this.getRawButton(ButtonMap.REEL_OUT_BUTTON));
   }
 
-  public Trigger engageClimberAnchor() {
+  public Trigger engageAnchor() {
     return new Trigger(() -> this.getRawButton(ButtonMap.ENGAGEANCHOR_BUTTON));
   }
 
-  public Trigger unengageClimberAnchor() {
+  public Trigger disengageAnchor() {
     return new Trigger(() -> this.getRawButton(ButtonMap.UNENGAGEANCHOR_BUTTON));
   }
 }

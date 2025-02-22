@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.hid.DemonCommandXboxController;
 import frc.robot.hid.OperatorStick;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.algae.collector.AlgaeCollector;
 import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
 import frc.robot.subsystems.cameras.CameraConfig.LimelightConfig;
@@ -81,7 +81,7 @@ public class RobotContainer {
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
   public static final AlgaeCollector kAlgaeCollector = new AlgaeCollector();
-  public static final Climber kClimber = new Climber();
+  //public static final Climber kClimber = new Climber();
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
@@ -111,15 +111,15 @@ public class RobotContainer {
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // LowerFrontPhotonCamera - AprilTag updates for odometry
-    kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
+   /*  kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
         (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
-            update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
+            update.estimatedRobotPose.timestampSeconds, update.stdDevs))); 
 
     // RearLimelightCamera - AprilTag updates for odometry
     kRearLimelightCamera.setDefaultCommand(
         kRearLimelightCamera
             .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs))); */
   }
 
   /**
@@ -156,11 +156,13 @@ public class RobotContainer {
     kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
 
     // Climber
-    kOperatorStick.engageClimberAnchor().onTrue(kClimber.engageAnchor());
-    kOperatorStick.unengageClimberAnchor().onTrue(kClimber.unengageAnchor());
-    kOperatorStick.reelInClimber().whileTrue(kClimber.reelIn());
-    kOperatorStick.reelOutClimber().whileTrue(kClimber.reelOut());
+   /*  kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
+    kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
+    kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
+    kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());  
 
+    */
+    
     // TODO: AlgaeCollector bindings
   }
 
