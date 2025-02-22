@@ -80,7 +80,8 @@ public class Anchor extends SubsystemBase {
   }
 
   public void stop(){
-    
+    anchor.stopMotor();
+    setSetpoint(getAngle());
   }
 
   @Override
