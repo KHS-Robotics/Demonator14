@@ -12,15 +12,14 @@ import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.units.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.climber.ClimberConfig.AnchorConfig;
 import frc.robot.subsystems.climber.ClimberSetpoints.AnchorSetpoints;
-import frc.robot.subsystems.drive.SwerveDriveConfig;;
+
 
 public class Anchor extends SubsystemBase {
   private double currentSetpoint;
@@ -78,6 +77,22 @@ public class Anchor extends SubsystemBase {
   private void setSetpoint(double setpoint) {
     currentSetpoint = setpoint;
     pid.setReference(setpoint, ControlType.kPosition);
+  }
+
+  public void stop(){
+    
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    // TODO Auto-generated method stub
+    super.initSendable(builder);
+    builder.setSmartDashboardType(getName());
+    builder.setSafeState(this::stop);
+    builder.setActuator(true);
+    builder.addBooleanProperty("isAtSetpoint", this::isAtSetpoint, null);
+    builder.addDoubleProperty("Angle", this::getAngle, null);
+    builder.addDoubleProperty("Setpoint", () -> currentSetpoint, this::setSetpoint);
   }
 }
 

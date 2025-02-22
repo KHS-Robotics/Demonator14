@@ -156,8 +156,8 @@ public class RobotContainer {
     kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
 
     // Climber
-    kOperatorStick.engageClimberAnchor().onTrue(kClimber.kAnchor.engageAnchor());
-    kOperatorStick.unengageClimberAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
+    kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
+    kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
     kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
     kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());
     
