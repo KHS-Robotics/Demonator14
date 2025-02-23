@@ -8,7 +8,7 @@ final class CorallerConfig {
     /** Gravity term in volts. */
     public static final double kElevatorKG = 1.5;
     public static final double kElevatorKGSlowDescent = 0.8;
-    public static final double kElevatorKGAscent = 1.7;
+    public static final double kElevatorKGAscent = 1.9;
     public static final double kElevatorSprocketRadiusInches = 0.88;
     public static final double kElevatorGearing = 3.0;
     public static final double kElevatorEncoderPositionConversionFactor = (4*(Math.PI)*kElevatorSprocketRadiusInches)/kElevatorGearing;
@@ -21,10 +21,11 @@ final class CorallerConfig {
     public static final double kAnglerI = 0.0;
     public static final double kAnglerD = 0.0;
     /** Gravity term in volts. */
-    public static final double kAnglerKG = 0.0;
+    public static final double kAnglerKG = 0.25;
+    public static final double kAnglerCoralKG = 0.065;
     public static final double kAnglerEncoderPositionConversionFactor = 1;
     public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
-    public static final double kAnglerOffset = 0.0;
+    public static final double kAnglerOffset = 171.0;
   }
 
   protected final class FlickerConfig {

@@ -1,7 +1,8 @@
 package frc.robot.subsystems.coraller;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -18,9 +19,9 @@ class Intake extends SubsystemBase {
   private IntakeState intakeState = IntakeState.IDLE;
 
   private final SparkMax motor;
-  private final SparkLimitSwitch sensor;
+  private final BooleanSupplier hasCoral;
 
-  public Intake() {
+  public Intake(BooleanSupplier hasCoral) {
     super(Coraller.class.getSimpleName() + "/" + Intake.class.getSimpleName());
     
     var intakeConfig = new SparkMaxConfig()
@@ -32,7 +33,7 @@ class Intake extends SubsystemBase {
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
-    sensor = motor.getForwardLimitSwitch();
+    this.hasCoral = hasCoral;
 
     SmartDashboard.putData(getName(), this);
   }
@@ -75,7 +76,7 @@ class Intake extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    return sensor.isPressed();
+    return hasCoral.getAsBoolean();
   }
   
   /** {@inheritDoc} */
@@ -85,7 +86,6 @@ class Intake extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addBooleanProperty("HasCoral", this::hasCoral, null);
     builder.addStringProperty("IntakeState", () -> intakeState.toString(), null);
   }
 

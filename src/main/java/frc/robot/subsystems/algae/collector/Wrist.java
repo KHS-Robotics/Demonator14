@@ -11,7 +11,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotState;
@@ -21,34 +20,29 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
 import frc.robot.subsystems.algae.collector.AlgaeCollectorConfig.AlgaeWristConfig;
+import frc.robot.subsystems.algae.collector.AlgaeCollectorSetpoints.WristSetpoints;
 
 class Wrist extends SubsystemBase {
   private double setpointAngleDegrees;
+  private boolean hasReachedSetpoint = false;
 
   private final SparkMax motor;
   private final AbsoluteEncoder encoder;
-  private final PIDController pid;
 
   public Wrist() {
     super(AlgaeCollector.class.getSimpleName() + "/" + Wrist.class.getSimpleName());
 
     var algaeConfig = new SparkMaxConfig()
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(40)
-        // TODO: set inverted based on our desired sign of direction (positive up /
-        // negative down)
-        .inverted(false);
+      .idleMode(IdleMode.kCoast)
+      .smartCurrentLimit(30)
+      .inverted(true);
     motor = new SparkMax(RobotMap.ALGAE_WRIST_MOTOR_ID, MotorType.kBrushless);
     motor.configure(algaeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
     encoder = motor.getAbsoluteEncoder();
 
-    pid = new PIDController(AlgaeWristConfig.kAlgaeP, AlgaeWristConfig.kAlgaeI, AlgaeWristConfig.kAlgaeD);
-    pid.setIZone(5);
-
     SmartDashboard.putData(getName(), this);
-    SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
   }
 
   /** {@inheritDoc} */
@@ -57,8 +51,18 @@ class Wrist extends SubsystemBase {
     updateSetpointsForDisabledMode();
   }
 
-  public Command setAngleCommand(double angleDegrees) {
-    return this.run(() -> setSetpointAngle(angleDegrees))
+  public Command deploy() {
+    hasReachedSetpoint = false;
+    setSetpointAngle(WristSetpoints.DEPLOY);
+    return this.run(() -> setSetpointAngle(WristSetpoints.DEPLOY))
+        .until(this::isAtSetpoint)
+        .withName("SetAlgaeWristSetpoint");
+  }
+
+  public Command stow() {
+    hasReachedSetpoint = false;
+    setSetpointAngle(WristSetpoints.STOW);
+    return this.run(() -> setSetpointAngle(WristSetpoints.STOW))
         .until(this::isAtSetpoint)
         .withName("SetAlgaeWristSetpoint");
   }
@@ -75,41 +79,37 @@ class Wrist extends SubsystemBase {
    * @see {@link #periodic()}
    */
   public void setSetpointAngle(double setpointDegrees) {
-    // only reset for new setpoints
-    if (setpointDegrees != setpointAngleDegrees) {
-      pid.reset();
-    }
     setpointAngleDegrees = setpointDegrees;
   }
 
   public double getAngle() {
     // 0 is straight up
-    return Units.rotationsToDegrees(encoder.getPosition()) + AlgaeWristConfig.kAlgaeWristOffset;
+    return Units.rotationsToDegrees(-encoder.getPosition()) + AlgaeWristConfig.kAlgaeWristOffset;
   }
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointAngleDegrees - getAngle());
-    return (error < 1);
+    return (error < 5);
   }
 
   private void setMotorOutputForSetpoint() {
-    // TODO: sysid characterization + feedforward terms
-    var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = AlgaeWristConfig.kAlgaeKG * Math.sin(Math.toRadians(getAngle()));
-    var output = pidOutput + ffGravity;
+    // bang bang control since there are only two setpoints
+    // stowed + deployed
+    hasReachedSetpoint |= isAtSetpoint();
+    var error = !hasReachedSetpoint ? setpointAngleDegrees - getAngle() : 0;
+    var output = 2 * Math.signum(error);
     motor.setVoltage(output);
   }
 
   private void updateSetpointsForDisabledMode() {
     if (RobotState.isDisabled()) {
       setSetpointAngle(getAngle());
+      hasReachedSetpoint = true;
     }
   }
 
   public void stop() {
     motor.stopMotor();
-    pid.reset();
-    setSetpointAngle(getAngle());
   }
 
   /** {@inheritDoc} */
@@ -119,8 +119,9 @@ class Wrist extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addDoubleProperty("Setpoint", () -> setpointAngleDegrees, this::setSetpointAngle);
     builder.addDoubleProperty("Angle", this::getAngle, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
+    builder.addBooleanProperty("HasReached", () -> hasReachedSetpoint, null);
+    builder.addDoubleProperty("SetpointAngle", () -> setpointAngleDegrees, null);
   }
 }

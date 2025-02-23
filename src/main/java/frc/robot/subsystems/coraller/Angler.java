@@ -2,9 +2,11 @@ package frc.robot.subsystems.coraller;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -24,21 +26,25 @@ class Angler extends SubsystemBase {
   private final SparkMax motor;
   private final AbsoluteEncoder encoder;
   private final PIDController pid;
+  private final SparkLimitSwitch sensor;
 
   public Angler() {
     super(Coraller.class.getSimpleName() + "/" + Angler.class.getSimpleName());
 
+    var limitSwitchConfig = new LimitSwitchConfig()
+      .forwardLimitSwitchEnabled(false)
+      .reverseLimitSwitchEnabled(false);
     var anglerConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
-      // TODO: set inverted based on our desired sign of direction (positive up /
-      // negative down)
-      .inverted(false);
+      .inverted(true)
+      .apply(limitSwitchConfig);
     motor = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
     motor.configure(anglerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
     encoder = motor.getAbsoluteEncoder();
+    sensor = motor.getForwardLimitSwitch();
 
     pid = new PIDController(AnglerConfig.kAnglerP, AnglerConfig.kAnglerI, AnglerConfig.kAnglerD);
     pid.setIZone(5);
@@ -79,7 +85,7 @@ class Angler extends SubsystemBase {
 
   public double getAngle() {
     //0 is strait out
-    return Units.rotationsToDegrees(encoder.getPosition()) + AnglerConfig.kAnglerOffset;
+    return Units.rotationsToDegrees(-encoder.getPosition()) + AnglerConfig.kAnglerOffset;
   }
 
   public boolean isAtSetpoint() {
@@ -87,11 +93,15 @@ class Angler extends SubsystemBase {
     return (error < 1);
   }
 
+  public boolean hasCoral() {
+    return sensor.isPressed();
+  }
+
   private void setMotorOutputForSetpoint() {
-    // TODO: sysid characterization + feedforward terms
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
     var ffGravity = AnglerConfig.kAnglerKG * Math.cos(Math.toRadians(getAngle()));
-    var output = pidOutput + ffGravity;
+    var ffCoral = hasCoral() ? AnglerConfig.kAnglerCoralKG * Math.cos(Math.toRadians(getAngle())) : 0;
+    var output = pidOutput + ffGravity + ffCoral;
     motor.setVoltage(output);
   }
 
@@ -118,5 +128,6 @@ class Angler extends SubsystemBase {
     builder.addDoubleProperty("Setpoint", () -> setpointAngleDegrees, this::setSetpointAngle);
     builder.addDoubleProperty("Angle", this::getAngle, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
+    builder.addBooleanProperty("HasCoral", this::hasCoral, null);
   }
 }

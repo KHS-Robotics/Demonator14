@@ -81,7 +81,7 @@ public class RobotContainer {
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
   public static final AlgaeCollector kAlgaeCollector = new AlgaeCollector();
-  //public static final Climber kClimber = new Climber();
+  // public static final Climber kClimber = new Climber();
 
   // Subsystems - Cameras
   public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
@@ -98,6 +98,7 @@ public class RobotContainer {
     configureBindings();
     configureAutonomous();
 
+    SmartDashboard.putData(kNavx);
     SmartDashboard.putData(kField);
     SmartDashboard.putData(CommandScheduler.getInstance());
   }
@@ -111,15 +112,16 @@ public class RobotContainer {
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // LowerFrontPhotonCamera - AprilTag updates for odometry
-   /*  kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
-        (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
-            update.estimatedRobotPose.timestampSeconds, update.stdDevs))); 
+    // kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
+    //     (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
+    //         update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
 
-    // RearLimelightCamera - AprilTag updates for odometry
-    kRearLimelightCamera.setDefaultCommand(
-        kRearLimelightCamera
-            .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs))); */
+    // // RearLimelightCamera - AprilTag updates for odometry
+    // kRearLimelightCamera.setDefaultCommand(
+    //     kRearLimelightCamera
+    //         .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+    //             estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
+
   }
 
   /**
@@ -156,13 +158,11 @@ public class RobotContainer {
     kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
 
     // Climber
-   /*  kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
-    kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
-    kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
-    kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());  
+    // kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
+    // kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
+    // kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
+    // kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());
 
-    */
-    
     // TODO: AlgaeCollector bindings
   }
 

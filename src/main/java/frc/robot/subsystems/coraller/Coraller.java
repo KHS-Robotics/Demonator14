@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Coraller extends SubsystemBase {
   private final Elevator elevator = new Elevator();
   private final Angler angler = new Angler();
-  private final Intake intake = new Intake();
+  // private final Intake intake = new Intake(angler::hasCoral);
   // private final Flicker flicker = new Flicker();
   // May revisit Flicker later - not on robot at the moment
 
@@ -94,31 +94,33 @@ public class Coraller extends SubsystemBase {
   }
 
   public Command intakeCoral() {
-    var cmd = startEnd(intake::start, intake::stop);
-    cmd.addRequirements(intake);
-    return cmd
-      .until(intake::hasCoral)
-      .withName("IntakeCoral");
+    // var cmd = startEnd(intake::start, intake::stop);
+    // cmd.addRequirements(intake);
+    // return cmd
+    //   .until(intake::hasCoral)
+    //   .withName("IntakeCoral");
+    return Commands.none();
   }
 
   public Command outtakeCoral() {
-    var cmd = startEnd(intake::reverse, intake::stop);
-    cmd.addRequirements(intake);
-    return cmd
-      .withTimeout(1)
-      .withName("ReleaseCoral");
+    // var cmd = startEnd(intake::reverse, intake::stop);
+    // cmd.addRequirements(intake);
+    // return cmd
+    //   .withTimeout(1)
+    //   .withName("ReleaseCoral");
+    return Commands.none();
   }
 
   public Command stopCommand() {
     var cmd = runOnce(this::stop);
-    cmd.addRequirements(elevator, intake, angler);
+    cmd.addRequirements(elevator, angler);//, intake);
     return cmd.withName("StopCoraller");
   }
 
   public void stop() {
     elevator.stop();
     angler.stop();
-    intake.stop();
+    // intake.stop();
     // flicker.stop();
   }
 

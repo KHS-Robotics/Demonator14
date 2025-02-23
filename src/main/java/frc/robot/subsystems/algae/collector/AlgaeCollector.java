@@ -19,24 +19,15 @@ public class AlgaeCollector extends SubsystemBase {
   }
 
   public Command deploy() {
-    var cmd = setState(AlgaeCollectorState.DEPLOY);
+    var cmd = wrist.deploy();
+    cmd.addRequirements(this);
     return cmd;
   }
 
   public Command stow() {
-    var cmd = setState(AlgaeCollectorState.STOW);
-    return cmd;
-  }
-
-  public Command climb() {
-    var cmd = setState(AlgaeCollectorState.CLIMB);
-    return cmd;
-  }
-
-  private Command setState(AlgaeCollectorState state) {
-    var cmd = wrist.setAngleCommand(state.wristAngle);
+    var cmd = wrist.stow();
     cmd.addRequirements(this);
-    return cmd.withName("SetAlgaeCollectorState(\"" + state.toString() + "\")");
+    return cmd;
   }
 
   public Command intakeAlgae() {

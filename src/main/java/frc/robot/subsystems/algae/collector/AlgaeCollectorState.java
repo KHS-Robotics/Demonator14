@@ -8,7 +8,6 @@ import frc.robot.subsystems.algae.collector.AlgaeCollectorSetpoints.WristSetpoin
 
 enum AlgaeCollectorState {
   STOW(WristSetpoints.STOW),
-  CLIMB(WristSetpoints.CLIMB),
   DEPLOY(WristSetpoints.DEPLOY);
 
   public final double wristAngle;

@@ -35,18 +35,18 @@ public class Reel extends SubsystemBase {
   }
 
   public Command reelIn() {
-    var climbAlgae = RobotContainer.kAlgaeCollector.climb();
+    var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
     // TODO: full speed once we know direction???
     var reelIn = startEnd(() -> setReel(6), this::stop);
-    var cmd = Commands.sequence(climbAlgae, reelIn);
+    var cmd = Commands.sequence(deployAlgae, reelIn);
     return cmd.withName("ClimberReelIn");
   }
 
   public Command reelOut() {
-    var climbAlgae = RobotContainer.kAlgaeCollector.climb();
+    var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
     // TODO: full speed once we know direction???
     var reelOut = startEnd(() -> setReel(-6), this::stop);
-    var cmd = Commands.sequence(climbAlgae, reelOut);
+    var cmd = Commands.sequence(deployAlgae, reelOut);
     return cmd.withName("ClimberReelOut");
   }
 

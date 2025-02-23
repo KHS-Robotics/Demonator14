@@ -6,16 +6,20 @@ package frc.robot.hid;
 
 public class ButtonMap {
   // Elevator + Angler
-  public static final int STOW_BUTTON = 5;
-  public static final int RECEIVE_BUTTON = 6;
-  public static final int L1_BUTTON = 7;
-  public static final int L2_BUTTON = 8;
-  public static final int L3_BUTTON = 9;
-  public static final int L4_BUTTON = 10;
+  public static final int STOW_BUTTON = 8;
+  public static final int RECEIVE_BUTTON = 7;
+  public static final int L1_BUTTON = 9;
+  public static final int L2_BUTTON = 10;
+  public static final int L3_BUTTON = 6;
+  public static final int L4_BUTTON = 5;
 
-  // Intake
-  public static final int OUTTAKE_BUTTON = 1;
-  public static final int INTAKE_BUTTON = 2;
+  // Coral Intake
+  public static final int CORAL_OUTTAKE_BUTTON = 1;
+  public static final int CORAL_INTAKE_BUTTON = 2;
+
+  // Algae Intake
+  public static final int ALGAE_OUTTAKE_BUTTON = 4;
+  public static final int ALGAE_INTAKE_BUTTON = 3;
 
   // Climber
   public static final int REEL_IN_BUTTON = 16;

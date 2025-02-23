@@ -15,7 +15,7 @@
             "height": 256.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/Coraller/Intake/HasCoral",
+              "topic": "/SmartDashboard/Coraller/Angler/HasCoral",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1014,6 +1014,20 @@
               "data_type": "double",
               "show_submit_button": false
             }
+          },
+          {
+            "title": "NavX",
+            "x": 1280.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/navX-Sensor[2]/Value",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
           }
         ]
       }
@@ -1341,6 +1355,23 @@
               "color": 4278238420,
               "line_width": 2.0
             }
+          },
+          {
+            "title": "HasCoral",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Coraller/Angler/HasCoral",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
           }
         ]
       }
@@ -1420,7 +1451,7 @@
           {
             "title": "IsAtSetpoint",
             "x": 256.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -1449,62 +1480,6 @@
             }
           },
           {
-            "title": "Setpoint",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/Setpoint",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "p",
-            "x": 0.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/PIDController/p",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "i",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/PIDController/i",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "d",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/PIDController/d",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "izone",
             "x": 0.0,
             "y": 512.0,
@@ -1519,35 +1494,20 @@
             }
           },
           {
-            "title": "error",
-            "x": 128.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/PIDController/error",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Error Graph",
+            "title": "HasReached",
             "x": 384.0,
             "y": 0.0,
-            "width": 768.0,
-            "height": 640.0,
-            "type": "Graph",
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/PIDController/error",
-              "period": 0.033,
-              "data_type": "double",
-              "time_displayed": 60.0,
-              "min_value": -180.0,
-              "max_value": 180.0,
-              "color": 4278238420,
-              "line_width": 2.0
+              "topic": "/SmartDashboard/AlgaeCollector/Wrist/HasReached",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]

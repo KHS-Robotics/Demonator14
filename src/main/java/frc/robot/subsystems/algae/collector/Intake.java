@@ -27,7 +27,7 @@ class Intake extends SubsystemBase {
 
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(30)
+      .smartCurrentLimit(40)
       .inverted(true);
     motor = new SparkMax(RobotMap.ALGAE_INTAKE_MOTOR_ID, MotorType.kBrushless);
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
@@ -49,7 +49,7 @@ class Intake extends SubsystemBase {
 
   public void start() {
     intakeState = IntakeState.INTAKING;
-    motor.setVoltage(6);
+    motor.setVoltage(12);
   }
 
   public Command intakeCommand() {

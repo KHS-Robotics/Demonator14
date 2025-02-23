@@ -8,7 +8,6 @@ final class AlgaeCollectorSetpoints {
   /** Setpoints in degrees. */
   protected static final class WristSetpoints {
     public static final double STOW = 0;
-    public static final double DEPLOY = 60;
-    public static final double CLIMB = 69; //to be revised
+    public static final double DEPLOY = 59;
   }
 }

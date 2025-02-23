@@ -12,6 +12,6 @@ final class AlgaeCollectorConfig {
      * robot.
      */
     public static final double kAlgaeKG = 0.0;
-    public static final double kAlgaeWristOffset = 0.0;
+    public static final double kAlgaeWristOffset = 205;
   }
 }

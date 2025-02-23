@@ -40,11 +40,11 @@ public class OperatorStick extends Joystick {
   }
 
   public Trigger outtakeCoral() {
-    return new Trigger(() -> this.getRawButton(ButtonMap.OUTTAKE_BUTTON));
+    return new Trigger(() -> this.getRawButton(ButtonMap.CORAL_OUTTAKE_BUTTON));
   }
 
   public Trigger intakeCoral() {
-    return new Trigger(() -> this.getRawButton(ButtonMap.INTAKE_BUTTON));
+    return new Trigger(() -> this.getRawButton(ButtonMap.CORAL_INTAKE_BUTTON));
   }
 
   public Trigger reelInClimber() {
