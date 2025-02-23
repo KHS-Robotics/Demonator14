@@ -110,6 +110,7 @@ class Wrist extends SubsystemBase {
 
   public void stop() {
     motor.stopMotor();
+    hasReachedSetpoint = true;
   }
 
   /** {@inheritDoc} */
