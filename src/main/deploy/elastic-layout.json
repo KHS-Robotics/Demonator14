@@ -1110,7 +1110,7 @@
               "topic": "/SmartDashboard/Coraller/Elevator/SetPointFromGround",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
@@ -1170,7 +1170,7 @@
               "topic": "/SmartDashboard/Coraller/Elevator/PIDController/d",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
@@ -1198,7 +1198,7 @@
               "topic": "/SmartDashboard/Coraller/Elevator/PIDController/p",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           }
         ]
@@ -1265,7 +1265,7 @@
               "topic": "/SmartDashboard/Coraller/Angler/Setpoint",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
@@ -1279,7 +1279,7 @@
               "topic": "/SmartDashboard/Coraller/Angler/PIDController/p",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "show_submit_button": true
             }
           },
           {
@@ -1350,8 +1350,8 @@
               "period": 0.033,
               "data_type": "double",
               "time_displayed": 60.0,
-              "min_value": -180.0,
-              "max_value": 180.0,
+              "min_value": -100.0,
+              "max_value": 100.0,
               "color": 4278238420,
               "line_width": 2.0
             }
