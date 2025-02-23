@@ -87,6 +87,7 @@ class Intake extends SubsystemBase {
     builder.setSafeState(this::stop);
     builder.setActuator(true);
     builder.addStringProperty("IntakeState", () -> intakeState.toString(), null);
+    builder.addBooleanProperty("HasCoral", () -> hasCoral.getAsBoolean(), null);
   }
 
   public enum IntakeState {
