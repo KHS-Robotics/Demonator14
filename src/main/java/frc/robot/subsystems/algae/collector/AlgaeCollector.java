@@ -21,13 +21,13 @@ public class AlgaeCollector extends SubsystemBase {
   public Command deploy() {
     var cmd = wrist.deploy();
     cmd.addRequirements(this);
-    return cmd;
+    return cmd.withName("DeployAlgaeWrist");
   }
 
   public Command stow() {
     var cmd = wrist.stow();
     cmd.addRequirements(this);
-    return cmd;
+    return cmd.withName("StowAlgaeWrist");
   }
 
   public Command intakeAlgae() {
@@ -39,7 +39,7 @@ public class AlgaeCollector extends SubsystemBase {
   public Command outtakeAlgae() {
     var cmd = startEnd(intake::reverse, intake::stop);
     cmd.addRequirements(intake);
-    return cmd.withName("ReleaseAlgae");
+    return cmd.withName("OuttakeAlgae");
   }
 
   public Command stopCommand() {

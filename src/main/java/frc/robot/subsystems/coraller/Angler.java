@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -31,6 +32,8 @@ class Angler extends SubsystemBase {
   public Angler() {
     super(Coraller.class.getSimpleName() + "/" + Angler.class.getSimpleName());
 
+    var encoderConfig = new AbsoluteEncoderConfig()
+      .inverted(true);
     var limitSwitchConfig = new LimitSwitchConfig()
       .forwardLimitSwitchEnabled(false)
       .reverseLimitSwitchEnabled(false);
@@ -38,7 +41,8 @@ class Angler extends SubsystemBase {
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
       .inverted(true)
-      .apply(limitSwitchConfig);
+      .apply(limitSwitchConfig)
+      .apply(encoderConfig);
     motor = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
     motor.configure(anglerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -85,7 +89,7 @@ class Angler extends SubsystemBase {
 
   public double getAngle() {
     //0 is strait out
-    return Units.rotationsToDegrees(-encoder.getPosition()) + AnglerConfig.kAnglerOffset;
+    return Units.rotationsToDegrees(encoder.getPosition()) + AnglerConfig.kAnglerOffset;
   }
 
   public boolean isAtSetpoint() {
@@ -99,8 +103,11 @@ class Angler extends SubsystemBase {
 
   private void setMotorOutputForSetpoint() {
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
-    var ffGravity = AnglerConfig.kAnglerKG * Math.cos(Math.toRadians(getAngle()));
-    var ffCoral = hasCoral() ? AnglerConfig.kAnglerCoralKG * Math.cos(Math.toRadians(getAngle())) : 0;
+
+    var angle = Math.cos(Math.toRadians(getAngle()));
+    var ffGravity = AnglerConfig.kAnglerKG * angle;
+    var ffCoral = hasCoral() ? AnglerConfig.kAnglerCoralKG * angle : 0;
+
     var output = pidOutput + ffGravity + ffCoral;
     motor.setVoltage(output);
   }

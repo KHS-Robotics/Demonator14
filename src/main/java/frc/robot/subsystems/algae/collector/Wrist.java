@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
@@ -24,6 +25,7 @@ import frc.robot.subsystems.algae.collector.AlgaeCollectorSetpoints.WristSetpoin
 
 class Wrist extends SubsystemBase {
   private double setpointAngleDegrees;
+  // for setpoint debouncing
   private boolean hasReachedSetpoint = false;
 
   private final SparkMax motor;
@@ -32,10 +34,13 @@ class Wrist extends SubsystemBase {
   public Wrist() {
     super(AlgaeCollector.class.getSimpleName() + "/" + Wrist.class.getSimpleName());
 
+    var encoderConfig = new AbsoluteEncoderConfig()
+      .inverted(true);
     var algaeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kCoast)
       .smartCurrentLimit(30)
-      .inverted(true);
+      .inverted(true)
+      .apply(encoderConfig);
     motor = new SparkMax(RobotMap.ALGAE_WRIST_MOTOR_ID, MotorType.kBrushless);
     motor.configure(algaeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -55,21 +60,21 @@ class Wrist extends SubsystemBase {
     hasReachedSetpoint = false;
     setSetpointAngle(WristSetpoints.DEPLOY);
     return this.run(() -> setSetpointAngle(WristSetpoints.DEPLOY))
-        .until(this::isAtSetpoint)
-        .withName("SetAlgaeWristSetpoint");
+        .until(() -> hasReachedSetpoint)
+        .withName("DeployWrist");
   }
 
   public Command stow() {
     hasReachedSetpoint = false;
     setSetpointAngle(WristSetpoints.STOW);
     return this.run(() -> setSetpointAngle(WristSetpoints.STOW))
-        .until(this::isAtSetpoint)
-        .withName("SetAlgaeWristSetpoint");
+        .until(() -> hasReachedSetpoint)
+        .withName("StowWrist");
   }
 
   public Command stopCommand() {
     return runOnce(this::stop)
-        .withName("StopAlgaeWrist");
+        .withName("StopWrist");
   }
 
   /**
@@ -83,8 +88,8 @@ class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
-    // 0 is straight up
-    return Units.rotationsToDegrees(-encoder.getPosition()) + AlgaeWristConfig.kAlgaeWristOffset;
+    // 0 is stowed
+    return Units.rotationsToDegrees(encoder.getPosition()) + AlgaeWristConfig.kAlgaeWristOffset;
   }
 
   public boolean isAtSetpoint() {

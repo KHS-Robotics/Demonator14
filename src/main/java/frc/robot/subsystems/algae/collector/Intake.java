@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -25,13 +26,18 @@ class Intake extends SubsystemBase {
   public Intake() {
     super(AlgaeCollector.class.getSimpleName() + "/" + Intake.class.getSimpleName());
 
+    var limitSwitchConfig = new LimitSwitchConfig()
+      .forwardLimitSwitchEnabled(true)
+      .reverseLimitSwitchEnabled(false);
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(40)
-      .inverted(true);
+      .inverted(true)
+      .apply(limitSwitchConfig);
     motor = new SparkMax(RobotMap.ALGAE_INTAKE_MOTOR_ID, MotorType.kBrushless);
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
+    
     sensor = motor.getForwardLimitSwitch();
     
     SmartDashboard.putData(getName(), this);

@@ -35,7 +35,7 @@ class Elevator extends SubsystemBase {
   public Elevator() {
     super(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName());
 
-    var elevatorEncoderConfig = new EncoderConfig()
+    var relativeEncoderConfig = new EncoderConfig()
       .positionConversionFactor(ElevatorConfig.kElevatorEncoderPositionConversionFactor)
       .velocityConversionFactor(ElevatorConfig.kElevatorEncoderVelocityConversionFactor);
 
@@ -43,7 +43,7 @@ class Elevator extends SubsystemBase {
       .idleMode(IdleMode.kCoast)
       .smartCurrentLimit(60)
       .inverted(false)
-      .apply(elevatorEncoderConfig);
+      .apply(relativeEncoderConfig);
     leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);
     leader.configure(leaderConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -52,18 +52,18 @@ class Elevator extends SubsystemBase {
       .idleMode(IdleMode.kCoast)
       .smartCurrentLimit(60)
       .follow(RobotMap.ELEVATOR_DRIVE_LEADER_ID, true)
-      .apply(elevatorEncoderConfig);
+      .apply(relativeEncoderConfig);
     follower = new SparkMax(RobotMap.ELEVATOR_DRIVE_FOLLOWER_ID, MotorType.kBrushless);
     follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
-    //encoder = leader.getAbsoluteEncoder();
+    // encoder = leader.getAbsoluteEncoder();
     encoder = leader.getEncoder();
-    // TODO: should be reverse? something to check...
+    
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
     pid = new PIDController(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD);
-    pid.setIZone(3);
+    pid.setIZone(1);
 
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
@@ -128,7 +128,7 @@ class Elevator extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointHeightFromGroundInches - getHeightFromGroundInches());
-    return (error < 0.1);
+    return (error < 0.25);
   }
 
   public double getHeightFromGroundInches() {

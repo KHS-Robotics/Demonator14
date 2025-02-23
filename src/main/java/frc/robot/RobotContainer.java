@@ -148,8 +148,8 @@ public class RobotContainer {
   /** Binds commands to operator stick buttons. */
   private void configureOpertatorStickBindings() {
     // Coraller
-    kOperatorStick.stow().onTrue(kCoraller.stow());
-    kOperatorStick.receive().onTrue(kCoraller.receive());
+    kOperatorStick.stowCoraller().onTrue(kCoraller.stow());
+    kOperatorStick.receiveCoraller().onTrue(kCoraller.receive());
     kOperatorStick.scoreL1().onTrue(kCoraller.scoreL1());
     kOperatorStick.scoreL2().onTrue(kCoraller.scoreL2());
     kOperatorStick.scoreL3().onTrue(kCoraller.scoreL3());
@@ -157,13 +157,17 @@ public class RobotContainer {
     kOperatorStick.outtakeCoral().whileTrue(kCoraller.outtakeCoral());
     kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
 
+    // Algae Collector
+    kOperatorStick.stowAlgaeCollector().onTrue(kAlgaeCollector.stow());
+    kOperatorStick.deployAlgaeCollector().onTrue(kAlgaeCollector.deploy());
+    kOperatorStick.outtakeAlgae().onTrue(kAlgaeCollector.outtakeAlgae());
+    kOperatorStick.intakeAlgae().onTrue(kAlgaeCollector.intakeAlgae());
+
     // Climber
     // kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
     // kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
     // kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
     // kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());
-
-    // TODO: AlgaeCollector bindings
   }
 
   /** https://pathplanner.dev/home.html */

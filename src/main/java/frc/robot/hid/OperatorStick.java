@@ -15,11 +15,13 @@ public class OperatorStick extends Joystick {
     super(port);
   }
 
-  public Trigger stow() {
+  // Elevator + Angler
+
+  public Trigger stowCoraller() {
     return new Trigger(() -> this.getRawButton(ButtonMap.STOW_BUTTON));
   }
 
-  public Trigger receive() {
+  public Trigger receiveCoraller() {
     return new Trigger(() -> this.getRawButton(ButtonMap.RECEIVE_BUTTON));
   }
 
@@ -39,6 +41,8 @@ public class OperatorStick extends Joystick {
     return new Trigger(() -> this.getRawButton(ButtonMap.L4_BUTTON));
   }
 
+  // Coral Intake
+
   public Trigger outtakeCoral() {
     return new Trigger(() -> this.getRawButton(ButtonMap.CORAL_OUTTAKE_BUTTON));
   }
@@ -46,6 +50,26 @@ public class OperatorStick extends Joystick {
   public Trigger intakeCoral() {
     return new Trigger(() -> this.getRawButton(ButtonMap.CORAL_INTAKE_BUTTON));
   }
+  
+  // Algae Intake
+  
+  public Trigger stowAlgaeCollector() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.ALGAE_STOW_BUTTON));
+  }
+  
+  public Trigger deployAlgaeCollector() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.ALGAE_DEPLOY_BUTTON));
+  }
+
+  public Trigger intakeAlgae() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.ALGAE_INTAKE_BUTTON));
+  }
+
+  public Trigger outtakeAlgae() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.ALGAE_OUTTAKE_BUTTON));
+  }
+
+  // Climber
 
   public Trigger reelInClimber() {
     return new Trigger(() -> this.getRawButton(ButtonMap.REEL_IN_BUTTON));

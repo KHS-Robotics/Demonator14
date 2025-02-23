@@ -22,10 +22,9 @@ final class CorallerConfig {
     public static final double kAnglerD = 0.0;
     /** Gravity term in volts. */
     public static final double kAnglerKG = 0.25;
+    /** Additional gravity term in volts for coral. */
     public static final double kAnglerCoralKG = 0.065;
-    public static final double kAnglerEncoderPositionConversionFactor = 1;
-    public static final double kAnglerEncoderVelocityConversionFactor = kAnglerEncoderPositionConversionFactor / 60.0;
-    public static final double kAnglerOffset = 171.0;
+    public static final double kAnglerOffset = 180.0;
   }
 
   protected final class FlickerConfig {
