@@ -27,4 +27,8 @@ public class DemonCommandXboxController extends CommandXboxController {
   public Trigger resetRobotHeading() {
     return this.start().debounce(0.5);
   }
+
+  public Trigger goSlow() {
+    return this.leftBumper();
+  }
 }

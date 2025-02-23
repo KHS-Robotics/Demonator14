@@ -143,6 +143,10 @@ public class RobotContainer {
     // driver practice to reset for field oriented driving direction or a rare odd
     // scenario on the field during a match
     kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading());
+
+    // give driver ability to limit speeds for when elevator is high up to
+    // help prevent tipping over - useful for slight alignment adjustments too
+    kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
   }
 
   /** Binds commands to operator stick buttons. */

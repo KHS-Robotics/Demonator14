@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -417,6 +418,24 @@ public class SwerveDrive extends SubsystemBase {
    */
   private Rotation2d getAngleForOdometry() {
     return RobotContainer.kNavx.getRotation2d();
+  }
+
+  /**
+   * Command to set the swerve drive to go slow until interrupted.
+   * 
+   * @return the go slow comamnd
+   */
+  public Command goSlow() {
+    Runnable setSlowSpeed = () -> {
+      maxTranslationalSpeedMetersPerSecond = 0.5;
+      maxAngularSpeedRadiansPerSecond = Math.toRadians(90);
+    };
+    Runnable setNormalSpeed = () -> {
+      maxTranslationalSpeedMetersPerSecond = 4.6;
+      maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
+    };
+    var cmd = Commands.startEnd(setSlowSpeed, setNormalSpeed);
+    return cmd.withName("SwerveGoSlow");
   }
 
   /**
