@@ -14,33 +14,41 @@ package frc.robot;
  * floating around.
  */
 public final class RobotMap {
+  // Joysticks
   public static final int XBOX_PORT = 0;
-  public static final int JOYSTICK_PORT = 1;
+  public static final int OPERATOR_STICK_PORT = 1;
   
+  // Swerve pivot motors
   public static final int FRONT_LEFT_PIVOT = 10;
   public static final int FRONT_RIGHT_PIVOT = 8;
   public static final int REAR_LEFT_PIVOT = 18;
   public static final int REAR_RIGHT_PIVOT = 20;
 
+  // Swerve drive motors
   public static final int FRONT_LEFT_DRIVE = 11;
   public static final int FRONT_RIGHT_DRIVE = 9;
   public static final int REAR_LEFT_DRIVE = 19;
   public static final int REAR_RIGHT_DRIVE = 1;
 
+  // Swerve pivot encoders
   public static final int FRONT_LEFT_PIVOT_ENCODER = 12;
   public static final int FRONT_RIGHT_PIVOT_ENCODER = 22;
   public static final int REAR_LEFT_PIVOT_ENCODER = 32;
   public static final int REAR_RIGHT_PIVOT_ENCODER = 42;
 
+  // Elevator
   public static final int ELEVATOR_DRIVE_LEADER_ID = 12;
   public static final int ELEVATOR_DRIVE_FOLLOWER_ID = 7;
 
+  // Coral Mechanism
   public static final int CORALLER_ANGLE_ID = 14;
   public static final int CORALLER_INTAKE_MOTOR_ID = 15;
-  public static final int CLIMBER_REEL_ID = 16;
-  public static final int CLIMBER_ANCHOR_ID = 0;
 
+  // Algae
   public static final int ALGAE_INTAKE_MOTOR_ID = 17;
   public static final int ALGAE_WRIST_MOTOR_ID = 2;
-  public static final int ALGAE_FLICKER_MOTOR_ID = -1;
+
+  // Climber
+  public static final int CLIMBER_REEL_ID = 16;
+  public static final int CLIMBER_ANCHOR_ID = 0;
 }

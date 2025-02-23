@@ -6,19 +6,19 @@ package frc.robot.subsystems.coraller;
 
 final class CorallerSetpoints {
   protected final class AnglerSetpoints {
-    public static final double STOW_ANGLE = -90;
+    public static final double STOW_ANGLE = -70;
     public static final double L1_ANGLE = -40;
     public static final double L2_ANGLE = -35;
-    public static final double L2_ALGAE_ANGLE = -90;
+    public static final double L2_ALGAE_ANGLE = -70;
     public static final double L3_ANGLE = -35;
-    public static final double L3_ALGAE_ANGLE = -90;
-    public static final double L4_ANGLE = -90;
+    public static final double L3_ALGAE_ANGLE = -70;
+    public static final double L4_ANGLE = -70;
     public static final double RECEIVE_ANGLE = 35;
   }
 
   protected final class ElevatorSetpoints {
     // all in Inches
-    public static final double STOW_HEIGHT = 35;
+    public static final double STOW_HEIGHT = 35; // 36.5" with the pool noodle
     // ^2.057 Tonys
     public static final double RECEIVE_HEIGHT = 35;
     public static final double L1_HEIGHT = 38;
@@ -27,11 +27,5 @@ final class CorallerSetpoints {
     public static final double L3_HEIGHT = 58;
     public static final double L3_ALGAE_HEIGHT = 48;
     public static final double L4_HEIGHT = 80;
-  }
-
-  protected final class FlickerSetpoints {
-    public static final double STOW_ANGLE = 0;
-    public static final double L2_ANGLE = 0;
-    public static final double L3_ANGLE = 0;
   }
 }

@@ -40,8 +40,8 @@ class Elevator extends SubsystemBase {
       .velocityConversionFactor(ElevatorConfig.kElevatorEncoderVelocityConversionFactor);
 
     var leaderConfig = new SparkMaxConfig()
-      .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(60)
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(30)
       .inverted(false)
       .apply(relativeEncoderConfig);
     leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);
@@ -49,8 +49,8 @@ class Elevator extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters);
 
     var followerConfig = new SparkMaxConfig()
-      .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(60)
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(30)
       .follow(RobotMap.ELEVATOR_DRIVE_LEADER_ID, true)
       .apply(relativeEncoderConfig);
     follower = new SparkMax(RobotMap.ELEVATOR_DRIVE_FOLLOWER_ID, MotorType.kBrushless);
@@ -59,6 +59,7 @@ class Elevator extends SubsystemBase {
 
     // encoder = leader.getAbsoluteEncoder();
     encoder = leader.getEncoder();
+    encoder.setPosition(0);
     
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
@@ -116,9 +117,9 @@ class Elevator extends SubsystemBase {
     if (RobotState.isDisabled()) {
       setSetpointHeight(getHeightFromGroundInches());
       // reset RelativeEncoder when sitting at bottom in disabled
-      if (isAtBottom()) {
-        encoder.setPosition(0);
-      }
+      // if (isAtBottom()) {
+      //   encoder.setPosition(0);
+      // }
     }
   }
 
@@ -136,7 +137,6 @@ class Elevator extends SubsystemBase {
   }
 
   private void setMotorOutputForSetpoint() {
-    // TODO: PID tuning and feedforward terms
     var pidOutput = pid.calculate(getHeightFromGroundInches(), setpointHeightFromGroundInches);
     var output = pidOutput + ElevatorConfig.kElevatorKG;
 
@@ -145,6 +145,8 @@ class Elevator extends SubsystemBase {
     if ((output < 0 || setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT) && isAtBottom()) {
       output = 0;
     }
+
+    leader.setVoltage(output);
   }
 
   public void stop() {

@@ -27,8 +27,7 @@ class Intake extends SubsystemBase {
     var intakeConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
-      // TODO: set inverted based on our desired sign of direction (positive intake / negative outake)
-      .inverted(false);
+      .inverted(true);
     motor = new SparkMax(RobotMap.CORALLER_INTAKE_MOTOR_ID, MotorType.kBrushless);
     motor.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);

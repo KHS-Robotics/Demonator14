@@ -72,7 +72,7 @@ public class RobotContainer {
   // Operator / Human Interface Devices (HIDs)
   // https://docs.wpilib.org/en/stable/docs/software/basic-programming/joystick.html
   public static final DemonCommandXboxController kDriverController = new DemonCommandXboxController(RobotMap.XBOX_PORT);
-  public static final OperatorStick kOperatorStick = new OperatorStick(RobotMap.JOYSTICK_PORT);
+  public static final OperatorStick kOperatorStick = new OperatorStick(RobotMap.OPERATOR_STICK_PORT);
 
   // Subsystems
   // https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html
@@ -164,8 +164,8 @@ public class RobotContainer {
     // Algae Collector
     kOperatorStick.stowAlgaeCollector().onTrue(kAlgaeCollector.stow());
     kOperatorStick.deployAlgaeCollector().onTrue(kAlgaeCollector.deploy());
-    kOperatorStick.outtakeAlgae().onTrue(kAlgaeCollector.outtakeAlgae());
-    kOperatorStick.intakeAlgae().onTrue(kAlgaeCollector.intakeAlgae());
+    kOperatorStick.outtakeAlgae().whileTrue(kAlgaeCollector.outtakeAlgae());
+    kOperatorStick.intakeAlgae().whileTrue(kAlgaeCollector.intakeAlgae());
 
     // Climber
     // kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());

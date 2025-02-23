@@ -17,6 +17,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
@@ -37,7 +38,7 @@ class Wrist extends SubsystemBase {
     var encoderConfig = new AbsoluteEncoderConfig()
       .inverted(true);
     var algaeConfig = new SparkMaxConfig()
-      .idleMode(IdleMode.kCoast)
+      .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
       .inverted(true)
       .apply(encoderConfig);
@@ -57,19 +58,24 @@ class Wrist extends SubsystemBase {
   }
 
   public Command deploy() {
-    hasReachedSetpoint = false;
-    setSetpointAngle(WristSetpoints.DEPLOY);
-    return this.run(() -> setSetpointAngle(WristSetpoints.DEPLOY))
-        .until(() -> hasReachedSetpoint)
-        .withName("DeployWrist");
+    var cmd = setSetpointCmd(WristSetpoints.DEPLOY);
+    return cmd.withName("DeplpyWrist");
   }
 
   public Command stow() {
-    hasReachedSetpoint = false;
-    setSetpointAngle(WristSetpoints.STOW);
-    return this.run(() -> setSetpointAngle(WristSetpoints.STOW))
-        .until(() -> hasReachedSetpoint)
-        .withName("StowWrist");
+    var cmd = setSetpointCmd(WristSetpoints.STOW);
+    return cmd.withName("StowWrist");
+  }
+
+  private Command setSetpointCmd(double setpoint) {
+    var resetSetpoint = this.runOnce(() -> {
+      hasReachedSetpoint = false;
+      setSetpointAngle(setpoint);
+    });
+    var setNewSetpoint = this.run(() -> setSetpointAngle(setpoint))
+      .until(() -> hasReachedSetpoint);
+    var cmd = Commands.sequence(resetSetpoint, setNewSetpoint);
+    return cmd;
   }
 
   public Command stopCommand() {
