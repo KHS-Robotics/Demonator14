@@ -211,7 +211,7 @@ public class RobotContainer {
     // Coraller
     NamedCommands.registerCommand("STOPCoraller", kCoraller.stopCommand());
     NamedCommands.registerCommand("PrepareStow", kCoraller.stow());
-    NamedCommands.registerCommand("PreapareReceive", kCoraller.receive());
+    NamedCommands.registerCommand("PrepareReceive", kCoraller.receive());
     NamedCommands.registerCommand("PrepareScoreL1", kCoraller.scoreL1());
     NamedCommands.registerCommand("PrepareScoreL2", kCoraller.scoreL2());
     NamedCommands.registerCommand("PrepareScoreL3", kCoraller.scoreL3());
