@@ -61,6 +61,8 @@ public class SwerveDrive extends SubsystemBase {
   /** Max allowable angular speed of the robot in radians per second. */
   public static double maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
 
+  private Translation2d centerOfRotation = Translation2d.kZero;
+
   private final SwerveModule kFrontLeft = new SwerveModule(
       "FrontLeft",
       RobotMap.FRONT_LEFT_DRIVE,
@@ -319,6 +321,17 @@ public class SwerveDrive extends SubsystemBase {
     return cmd.withName("ResetRobotHeading");
   }
 
+  public Command setCenterOfRotation(Translation2d rotationPoint) {
+    Runnable setNewRotation = () -> {
+     centerOfRotation = rotationPoint;
+    };
+    Runnable setCenterRotation = () -> {
+      centerOfRotation = Translation2d.kZero;
+    };
+    var cmd = Commands.startEnd(setNewRotation, setCenterRotation);
+    return cmd.withName("SwerveSetCenterRotation");
+  }
+
   /**
    * Gets the robot's current speed.
    * 
@@ -351,12 +364,8 @@ public class SwerveDrive extends SubsystemBase {
     // optimize chassis speeds
     var optimizedChassisSpeeds = correctForDynamics(originalSpeeds);
 
-    // TODO: add class variable for second parameter to change center of rotation
-    // with toSwerveModuleStates AKA ability to switch between Translation2d.kZero
-    // and at another point on our robot using a Command that will be eventually
-    // bound to a buton for the driver.
     // https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#using-custom-centers-of-rotation
-    var optimizedModuleStates = kSwerveKinematics.toSwerveModuleStates(optimizedChassisSpeeds, Translation2d.kZero);
+    var optimizedModuleStates = kSwerveKinematics.toSwerveModuleStates(optimizedChassisSpeeds, centerOfRotation);
 
     // normalize wheel speeds
     SwerveDriveKinematics.desaturateWheelSpeeds(optimizedModuleStates, maxTranslationalSpeedMetersPerSecond);

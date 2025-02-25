@@ -7,7 +7,7 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
-final class SwerveDriveConfig {
+public final class SwerveDriveConfig {
   public static final double kDriveWheelRadiusMeters = Units.inchesToMeters(2);
   public static final double SDS_L2_DRIVE_GEARING = 6.75;
   public static final double kDriveEncoderPositionConversionFactor = (2 * Math.PI * kDriveWheelRadiusMeters)
@@ -22,6 +22,8 @@ final class SwerveDriveConfig {
       Units.inchesToMeters(11.75));
   public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-11.25),
       Units.inchesToMeters(-11.75));
+
+  public static final Translation2d kCorallerL2Positon = new Translation2d(11.25, 0);
 
   // individual offsets after calibrating each module
   public static final double kFrontLeftPivotOffsetDegrees = 225;

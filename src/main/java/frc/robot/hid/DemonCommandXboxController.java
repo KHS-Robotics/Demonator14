@@ -31,4 +31,8 @@ public class DemonCommandXboxController extends CommandXboxController {
   public Trigger goSlow() {
     return this.leftBumper();
   }
+
+  public Trigger changeRotationForScoring() {
+    return this.rightBumper();
+  }
 }

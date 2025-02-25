@@ -25,6 +25,7 @@ import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.drive.SwerveDrive;
+import frc.robot.subsystems.drive.SwerveDriveConfig;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -147,6 +148,8 @@ public class RobotContainer {
     // give driver ability to limit speeds for when elevator is high up to
     // help prevent tipping over - useful for slight alignment adjustments too
     kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
+
+    kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
   }
 
   /** Binds commands to operator stick buttons. */
