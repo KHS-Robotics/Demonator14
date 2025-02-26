@@ -7,9 +7,12 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotState;
@@ -24,7 +27,7 @@ import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
-  //private final AbsoluteEncoder encoder;
+  // private final AbsoluteEncoder encoder;
   private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
   // TODO: Absolute encoder / potentiometer for position?
@@ -36,23 +39,29 @@ class Elevator extends SubsystemBase {
     super(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName());
 
     var relativeEncoderConfig = new EncoderConfig()
-      .positionConversionFactor(ElevatorConfig.kElevatorEncoderPositionConversionFactor)
-      .velocityConversionFactor(ElevatorConfig.kElevatorEncoderVelocityConversionFactor);
+        .positionConversionFactor(ElevatorConfig.kElevatorEncoderPositionConversionFactor)
+        .velocityConversionFactor(ElevatorConfig.kElevatorEncoderVelocityConversionFactor);
+
+    var limitSwitchConfig = new LimitSwitchConfig()
+        .forwardLimitSwitchEnabled(false)
+        .reverseLimitSwitchEnabled(true)
+        .reverseLimitSwitchType(Type.kNormallyClosed);
 
     var leaderConfig = new SparkMaxConfig()
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(30)
-      .inverted(false)
-      .apply(relativeEncoderConfig);
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .inverted(false)
+        .apply(relativeEncoderConfig)
+        .apply(limitSwitchConfig);
     leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);
     leader.configure(leaderConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
     var followerConfig = new SparkMaxConfig()
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(30)
-      .follow(RobotMap.ELEVATOR_DRIVE_LEADER_ID, true)
-      .apply(relativeEncoderConfig);
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .follow(RobotMap.ELEVATOR_DRIVE_LEADER_ID, true)
+        .apply(relativeEncoderConfig);
     follower = new SparkMax(RobotMap.ELEVATOR_DRIVE_FOLLOWER_ID, MotorType.kBrushless);
     follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
@@ -60,11 +69,11 @@ class Elevator extends SubsystemBase {
     // encoder = leader.getAbsoluteEncoder();
     encoder = leader.getEncoder();
     encoder.setPosition(0);
-    
+
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
     pid = new PIDController(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD);
-    pid.setIZone(1);
+    pid.setIZone(3);
 
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
@@ -117,9 +126,9 @@ class Elevator extends SubsystemBase {
     if (RobotState.isDisabled()) {
       setSetpointHeight(getHeightFromGroundInches());
       // reset RelativeEncoder when sitting at bottom in disabled
-      // if (isAtBottom()) {
-      //   encoder.setPosition(0);
-      // }
+      if (isAtBottom()) {
+        encoder.setPosition(0);
+      }
     }
   }
 
@@ -145,6 +154,14 @@ class Elevator extends SubsystemBase {
     if ((output < 0 || setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT) && isAtBottom()) {
       output = 0;
     }
+
+    // reset elevator when stowed and reaches the bottom
+    if (setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT && isAtBottom()) {
+      encoder.setPosition(0);
+    }
+
+    // limit down voltage
+    output = MathUtil.clamp(output, -5, 12);
 
     leader.setVoltage(output);
   }

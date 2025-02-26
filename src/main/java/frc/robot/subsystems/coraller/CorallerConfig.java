@@ -3,7 +3,7 @@ package frc.robot.subsystems.coraller;
 final class CorallerConfig {
   protected final class ElevatorConfig {
     public static final double kElevatorP = 0.5;
-    public static final double kElevatorI = 0.0;
+    public static final double kElevatorI = 0.12;
     public static final double kElevatorD = 0.07;
     /** Gravity term in volts. */
     public static final double kElevatorKG = 0.4;

@@ -7,7 +7,7 @@ package frc.robot.subsystems.algae.collector;
 final class AlgaeCollectorSetpoints {
   /** Setpoints in degrees. */
   protected static final class WristSetpoints {
-    public static final double STOW = -52;
-    public static final double DEPLOY = 12;
+    public static final double STOW = 0;
+    public static final double DEPLOY = 59;
   }
 }

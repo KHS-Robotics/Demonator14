@@ -54,8 +54,7 @@ class Intake extends SubsystemBase {
 
   public void start() {
     intakeState = IntakeState.INTAKING;
-    // TODO: test for a good intake voltage
-    motor.setVoltage(6);
+    motor.setVoltage(3);
   }
 
   public Command intakeCommand() {
@@ -65,7 +64,6 @@ class Intake extends SubsystemBase {
 
   public void reverse() {
     intakeState = IntakeState.OUTAKING;
-    // TODO: test for a good reverse voltage
     motor.setVoltage(-6);
   }
 
