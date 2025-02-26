@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start Center"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "STOPSwerve"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareScoreL1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareStow"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
