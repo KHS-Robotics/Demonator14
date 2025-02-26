@@ -18,9 +18,9 @@ final class CorallerSetpoints {
 
   protected final class ElevatorSetpoints {
     // all in Inches
-    public static final double STOW_HEIGHT = 35; // 36.5" with the pool noodle
+    public static final double STOW_HEIGHT = 34.625;
     // ^2.057 Tonys
-    public static final double RECEIVE_HEIGHT = 35;
+    public static final double RECEIVE_HEIGHT = 34.625;
     public static final double L1_HEIGHT = 38;
     public static final double L2_HEIGHT = 43;
     public static final double L2_ALGAE_HEIGHT = 35;
