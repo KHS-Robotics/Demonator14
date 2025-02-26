@@ -6,7 +6,7 @@ package frc.robot.subsystems.coraller;
 
 final class CorallerSetpoints {
   protected final class AnglerSetpoints {
-    public static final double STOW_ANGLE = -65;
+    public static final double STOW_ANGLE = 65;
     public static final double L1_ANGLE = -40;
     public static final double L2_ANGLE = -35;
     public static final double L2_ALGAE_ANGLE = -65;
