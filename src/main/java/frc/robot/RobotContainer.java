@@ -221,7 +221,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepareScoreL3", kCoraller.scoreL3());
     NamedCommands.registerCommand("PrepareScoreL4", kCoraller.scoreL4());
     NamedCommands.registerCommand("IntakeCoral", kCoraller.intakeCoral());
-    NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral());
+    NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral().withTimeout(1));
 
     // Algae
     NamedCommands.registerCommand("STOPAlgae", kAlgaeCollector.stopCommand());

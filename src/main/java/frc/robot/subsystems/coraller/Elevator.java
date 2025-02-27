@@ -3,6 +3,7 @@ package frc.robot.subsystems.coraller;
 //import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
@@ -27,7 +28,7 @@ import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 class Elevator extends SubsystemBase {
   private final SparkMax leader, follower;
   private final RelativeEncoder encoder;
-  // private final AbsoluteEncoder encoder;
+  private final SparkAnalogSensor absEncoder;
   private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
   // TODO: Absolute encoder / potentiometer for position?
@@ -66,9 +67,10 @@ class Elevator extends SubsystemBase {
     follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
-    // encoder = leader.getAbsoluteEncoder();
     encoder = leader.getEncoder();
     encoder.setPosition(0);
+    
+    absEncoder = leader.getAnalog();
 
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
@@ -166,6 +168,10 @@ class Elevator extends SubsystemBase {
     leader.setVoltage(output);
   }
 
+  private double getVoltage() {
+    return absEncoder.getPosition();
+  }
+
   public void stop() {
     leader.stopMotor();
     pid.reset();
@@ -183,5 +189,6 @@ class Elevator extends SubsystemBase {
     builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
     builder.addBooleanProperty("IsAtBottom", this::isAtBottom, null);
+    builder.addDoubleProperty("PotVoltage", this::getVoltage, null);
   }
 }

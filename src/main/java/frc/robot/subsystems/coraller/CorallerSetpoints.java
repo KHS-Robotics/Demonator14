@@ -12,7 +12,7 @@ final class CorallerSetpoints {
     public static final double L2_ALGAE_ANGLE = -65;
     public static final double L3_ANGLE = -35;
     public static final double L3_ALGAE_ANGLE = -65;
-    public static final double L4_ANGLE = -65;
+    public static final double L4_ANGLE = -35;
     public static final double RECEIVE_ANGLE = 35;
   }
 
@@ -26,6 +26,6 @@ final class CorallerSetpoints {
     public static final double L2_ALGAE_HEIGHT = 35;
     public static final double L3_HEIGHT = 59;
     public static final double L3_ALGAE_HEIGHT = 48;
-    public static final double L4_HEIGHT = 81;
+    public static final double L4_HEIGHT = 85;
   }
 }
