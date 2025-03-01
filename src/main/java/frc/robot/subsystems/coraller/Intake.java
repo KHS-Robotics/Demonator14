@@ -54,7 +54,7 @@ class Intake extends SubsystemBase {
 
   public void start() {
     intakeState = IntakeState.INTAKING;
-    motor.setVoltage(12);
+    motor.setVoltage(2.5);
   }
 
   public Command intakeCommand() {
@@ -67,9 +67,19 @@ class Intake extends SubsystemBase {
     motor.setVoltage(-12);
   }
 
+  public void reverseSlow() {
+    intakeState = IntakeState.OUTAKING;
+    motor.setVoltage(-5);
+  }
+
   public Command outtakeCommand() {
     var cmd = runOnce(this::reverse);
     return cmd.withName("ReverseIntake");
+  }
+
+  public Command outtakeSlowCommand() {
+    var cmd = runOnce(this::reverseSlow);
+    return cmd.withName("ReverseIntakeSlow");
   }
 
   public boolean hasCoral() {

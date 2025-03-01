@@ -15,6 +15,10 @@ public class OperatorStick extends Joystick {
     super(port);
   }
 
+  public Trigger outtakeForL4() {
+    return new Trigger(() -> this.getPOV() == ButtonMap.POV.OUTTAKE_L4);
+  }
+
   // Elevator + Angler
 
   public Trigger stowCoraller() {

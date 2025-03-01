@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.coraller.CorallerSetpoints.AnglerSetpoints;
 
 public class Coraller extends SubsystemBase {
   private final Elevator elevator = new Elevator();
@@ -69,20 +70,27 @@ public class Coraller extends SubsystemBase {
     return cmd.withName("SetCorallerState(\"" + state.toString() + "\")");
   }
 
-  public Command intakeCoral() {
+  public Command intakeCoral(boolean ignoreSensor) {
     var cmd = startEnd(intake::start, intake::stop);
     cmd.addRequirements(intake);
     return cmd
-      .until(intake::hasCoral)
+      .until(() -> intake.hasCoral() && !ignoreSensor)
       .withName("IntakeCoral");
   }
 
   public Command outtakeCoral() {
     var cmd = startEnd(intake::reverse, intake::stop);
     cmd.addRequirements(intake);
-    return cmd
-      //.withTimeout(1)
-      .withName("ReleaseCoral");
+    return cmd.withName("ReleaseCoral");
+  }
+
+  public Command flipIntake() {
+    var cmd = Commands.sequence(
+      intake.outtakeSlowCommand(),
+      angler.setAngleCommand(AnglerSetpoints.FLIP_FOR_L4),
+      intake.stopCommand()
+    );
+    return cmd.withName("CorallerFlipForL4");
   }
 
   public Command stopCommand() {

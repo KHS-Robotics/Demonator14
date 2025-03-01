@@ -163,7 +163,8 @@ public class RobotContainer {
     kOperatorStick.scoreL3().onTrue(kCoraller.scoreL3());
     kOperatorStick.scoreL4().onTrue(kCoraller.scoreL4());
     kOperatorStick.outtakeCoral().whileTrue(kCoraller.outtakeCoral());
-    kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral());
+    kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral(false));
+    kOperatorStick.outtakeForL4().whileTrue(kCoraller.intakeCoral(true));
 
     // Algae Collector
     kOperatorStick.stowAlgaeCollector().onTrue(kAlgaeCollector.stow());
@@ -220,7 +221,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepareScoreL2", kCoraller.scoreL2());
     NamedCommands.registerCommand("PrepareScoreL3", kCoraller.scoreL3());
     NamedCommands.registerCommand("PrepareScoreL4", kCoraller.scoreL4());
-    NamedCommands.registerCommand("IntakeCoral", kCoraller.intakeCoral());
+    NamedCommands.registerCommand("IntakeCoral", kCoraller.intakeCoral(false));
+    NamedCommands.registerCommand("L4OuttakeCoral", kCoraller.intakeCoral(true).withTimeout(1));
     NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral().withTimeout(1));
 
     // Algae
