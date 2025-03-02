@@ -5,6 +5,10 @@
 package frc.robot.hid;
 
 public class ButtonMap {
+  public static class POV {
+    public static final int OUTTAKE_L4 = 0;
+  }
+
   // Elevator + Angler
   public static final int STOW_BUTTON = 8;
   public static final int RECEIVE_BUTTON = 7;

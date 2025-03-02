@@ -88,13 +88,13 @@ public class DemonPhotonCamera extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates,
         (enable) -> enableAprilTagUpdates = enable);
-    builder.addBooleanProperty("HasAprilTagUpdate", aprilTagUpdate::isPresent, null);
-    builder.addBooleanProperty("HasAlgaeTargets", algaeTargets::isPresent, null);
-    builder.addBooleanProperty("HasBestAlgaeTarget", bestAlgaeTarget::isPresent, null);
+    builder.addBooleanProperty("HasAprilTagUpdate", () -> aprilTagUpdate.isPresent(), null);
+    builder.addBooleanProperty("HasAlgaeTargets", () -> algaeTargets.isPresent(), null);
+    builder.addBooleanProperty("HasBestAlgaeTarget", () -> bestAlgaeTarget.isPresent(), null);
     builder.addIntegerProperty("NumAprilTags",
         () -> aprilTagUpdate.isPresent() ? aprilTagUpdate.get().cameraResult.getTargets().size() : 0, null);
     builder.addIntegerProperty("NumAlgae", () -> algaeTargets.isPresent() ? algaeTargets.get().size() : 0, null);
-    builder.addStringProperty("PipelineMode", currentPipelineMode::toString, null);
+    builder.addStringProperty("PipelineMode", () -> currentPipelineMode.toString(), null);
   }
 
   /** {@inheritDoc} */
@@ -111,21 +111,9 @@ public class DemonPhotonCamera extends SubsystemBase {
    * @return a command to apply an action to Photon pose updates
    */
   public Command pollForPoseUpdates(Consumer<PhotonPoseUpdate> action) {
-    // instantiate command so we can override runsWhenDisabled to true
-    var pollForPoseUpdatesCmd = new Command() {
-      @Override
-      public void execute() {
-        getLatestAprilTagResults().ifPresent((estimate) -> action.accept(estimate));
-      }
-
-      @Override
-      public boolean runsWhenDisabled() {
-        return true;
-      }
-    };
-    pollForPoseUpdatesCmd.addRequirements(this);
+    var pollForPoseUpdatesCmd = run(() -> getLatestAprilTagResults().ifPresent((estimate) -> action.accept(estimate)));
     pollForPoseUpdatesCmd.setName(getName() + "_PollForPoseUpdates");
-    return pollForPoseUpdatesCmd;
+    return pollForPoseUpdatesCmd.ignoringDisable(true);
   }
 
   /**

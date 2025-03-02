@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start Center"
+            "pathName": "Start Center L1"
           }
         },
         {
@@ -32,6 +32,12 @@
           "type": "named",
           "data": {
             "name": "PrepareStow"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "STOP"
           }
         }
       ]

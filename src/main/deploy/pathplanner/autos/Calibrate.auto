@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "test path 1"
+            "pathName": "Calibrate"
           }
         },
         {
@@ -19,7 +19,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

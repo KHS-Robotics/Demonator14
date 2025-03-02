@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
@@ -28,6 +29,7 @@ class Wrist extends SubsystemBase {
   private double setpointAngleDegrees;
   // for setpoint debouncing
   private boolean hasReachedSetpoint = false;
+  private SparkBaseConfig motorConfig;
 
   private final SparkMax motor;
   private final AbsoluteEncoder encoder;
@@ -36,14 +38,14 @@ class Wrist extends SubsystemBase {
     super(AlgaeCollector.class.getSimpleName() + "/" + Wrist.class.getSimpleName());
 
     var encoderConfig = new AbsoluteEncoderConfig()
-      .inverted(true);
-    var algaeConfig = new SparkMaxConfig()
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(30)
-      .inverted(true)
-      .apply(encoderConfig);
+        .inverted(true);
+    motorConfig = new SparkMaxConfig()
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(30)
+        .inverted(true)
+        .apply(encoderConfig);
     motor = new SparkMax(RobotMap.ALGAE_WRIST_MOTOR_ID, MotorType.kBrushless);
-    motor.configure(algaeConfig, SparkBase.ResetMode.kResetSafeParameters,
+    motor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
     encoder = motor.getAbsoluteEncoder();
@@ -58,12 +60,26 @@ class Wrist extends SubsystemBase {
   }
 
   public Command deploy() {
-    var cmd = setSetpointCmd(WristSetpoints.DEPLOY);
+    var setCoast = Commands.runOnce(() -> {
+      motorConfig = new SparkMaxConfig()
+          .idleMode(IdleMode.kCoast);
+      motor.configure(motorConfig, SparkBase.ResetMode.kNoResetSafeParameters,
+          SparkBase.PersistMode.kNoPersistParameters);
+    });
+    var setWrist = setSetpointCmd(WristSetpoints.DEPLOY);
+    var cmd = Commands.sequence(setCoast, setWrist);
     return cmd.withName("DeplpyWrist");
   }
 
   public Command stow() {
-    var cmd = setSetpointCmd(WristSetpoints.STOW);
+    var setBrake = Commands.runOnce(() -> {
+      motorConfig = new SparkMaxConfig()
+          .idleMode(IdleMode.kBrake);
+      motor.configure(motorConfig, SparkBase.ResetMode.kNoResetSafeParameters,
+          SparkBase.PersistMode.kNoPersistParameters);
+    });
+    var setWrist = setSetpointCmd(WristSetpoints.STOW);
+    var cmd = Commands.sequence(setBrake, setWrist);
     return cmd.withName("StowWrist");
   }
 
@@ -73,7 +89,7 @@ class Wrist extends SubsystemBase {
       setSetpointAngle(setpoint);
     });
     var setNewSetpoint = this.run(() -> setSetpointAngle(setpoint))
-      .until(() -> hasReachedSetpoint);
+        .until(() -> hasReachedSetpoint);
     var cmd = Commands.sequence(resetSetpoint, setNewSetpoint);
     return cmd;
   }
