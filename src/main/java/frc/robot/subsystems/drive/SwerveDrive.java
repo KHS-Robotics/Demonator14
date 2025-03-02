@@ -314,8 +314,8 @@ public class SwerveDrive extends SubsystemBase {
   public Command resetHeading() {
     var cmd = runOnce(() -> {
       var currentPose = getPose();
-      var currentAlliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var awayAngle = currentAlliance == Alliance.Red ? 180 : 0;
+      // always reset with elevator facing RED alliance
+      var awayAngle = 0;
       resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
     });
     return cmd.withName("ResetRobotHeading");
@@ -488,7 +488,7 @@ public class SwerveDrive extends SubsystemBase {
         rotationSpeed = HIDUtils.smoothInputWithCubic(rightXInput, joystickSensitivity)
             * maxAngularSpeedRadiansPerSecond;
       }
-
+      
       // flip drive input based on alliance since robot's movement is always
       // relative to the blue alliance (AKA facing towards red alliance)
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;

@@ -117,12 +117,11 @@ public class RobotContainer {
     //     (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
     //         update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
 
-    // // RearLimelightCamera - AprilTag updates for odometry
-    // kRearLimelightCamera.setDefaultCommand(
-    //     kRearLimelightCamera
-    //         .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
-    //             estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
-
+    // RearLimelightCamera - AprilTag updates for odometry
+    kRearLimelightCamera.setDefaultCommand(
+        kRearLimelightCamera
+            .pollForPoseUpdates((estimate) -> kSwerveDrive.addVisionMeasurementForOdometry(estimate.pose,
+                estimate.timestampSeconds, SwerveDrive.kDefaultVisionMeasurementStdDevs)));
   }
 
   /**
@@ -222,6 +221,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepareScoreL3", kCoraller.scoreL3());
     NamedCommands.registerCommand("PrepareScoreL4", kCoraller.scoreL4());
     NamedCommands.registerCommand("IntakeCoral", kCoraller.intakeCoral(false));
+    NamedCommands.registerCommand("StartCoralIntake", kCoraller.intakeCoralToPrepareForStation());
     NamedCommands.registerCommand("L4OuttakeCoral", kCoraller.intakeCoral(true).withTimeout(1));
     NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral().withTimeout(1));
 

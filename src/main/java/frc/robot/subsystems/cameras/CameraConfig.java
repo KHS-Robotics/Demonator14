@@ -44,7 +44,7 @@ public final class CameraConfig {
      * <p>
      * <b>This must be configured in the Limelight UI too under 3-D.</b>
      */
-    public static final Transform3d kRobotToRearCamera = new Transform3d(Units.inchesToMeters(0),
-        Units.inchesToMeters(0), Units.inchesToMeters(0), new Rotation3d(0, 0, 0));
+    public static final Transform3d kRobotToRearCamera = new Transform3d(Units.inchesToMeters(-10),
+        Units.inchesToMeters(6), Units.inchesToMeters(30), new Rotation3d(0, Math.toRadians(6), Math.toRadians(180)));
   }
 }

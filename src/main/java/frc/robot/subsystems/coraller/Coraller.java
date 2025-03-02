@@ -78,6 +78,13 @@ public class Coraller extends SubsystemBase {
       .withName("IntakeCoral");
   }
 
+  public Command intakeCoralToPrepareForStation() {
+    var cmd = runOnce(intake::start);
+    cmd.addRequirements(intake);
+    return cmd
+      .withName("IntakeCoral");
+  }
+
   public Command outtakeCoral() {
     var cmd = startEnd(intake::reverse, intake::stop);
     cmd.addRequirements(intake);

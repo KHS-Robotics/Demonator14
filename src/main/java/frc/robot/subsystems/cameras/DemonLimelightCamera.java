@@ -71,10 +71,10 @@ public class DemonLimelightCamera extends SubsystemBase {
     super.initSendable(builder);
 
     builder.setSmartDashboardType(getName());
-    builder.addStringProperty("Algorithm", peAlgorithm::toString, null);
+    builder.addStringProperty("Algorithm", () -> peAlgorithm.toString(), null);
     builder.addBooleanProperty("AprilTagEnabled", () -> enableAprilTagUpdates,
         (enable) -> enableAprilTagUpdates = enable);
-    builder.addBooleanProperty("HasPoseEstimate", latestPoseEstimate::isPresent, null);
+    builder.addBooleanProperty("HasPoseEstimate", () -> latestPoseEstimate.isPresent(), null);
     builder.addIntegerProperty("NumAprilTags",
         () -> latestPoseEstimate.isPresent() ? latestPoseEstimate.get().tagCount : 0, null);
   }
@@ -93,21 +93,9 @@ public class DemonLimelightCamera extends SubsystemBase {
    * @return a command to apply an action to Limelight pose updates
    */
   public Command pollForPoseUpdates(Consumer<PoseEstimate> action) {
-    // instantiate command so we can override runsWhenDisabled to true
-    var pollForPoseUpdatesCmd = new Command() {
-      @Override
-      public void execute() {
-        getLatestPoseEstimate().ifPresent((estimate) -> action.accept(estimate));
-      }
-
-      @Override
-      public boolean runsWhenDisabled() {
-        return true;
-      }
-    };
-    pollForPoseUpdatesCmd.addRequirements(this);
+    var pollForPoseUpdatesCmd = run(() -> getLatestPoseEstimate().ifPresent((estimate) -> action.accept(estimate)));
     pollForPoseUpdatesCmd.setName(getName() + "_PollForPoseUpdates");
-    return pollForPoseUpdatesCmd;
+    return pollForPoseUpdatesCmd.ignoringDisable(true);
   }
 
   /**
