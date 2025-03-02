@@ -14,8 +14,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,7 +29,7 @@ class Elevator extends SubsystemBase {
   private final RelativeEncoder encoder;
   private final SparkAnalogSensor absEncoder;
   private final SparkLimitSwitch bottomLimitSwitch;
-  private final ProfiledPIDController pid;
+  private final ElevatorPID pid;
   // TODO: Absolute encoder / potentiometer for position?
 
   /** The current setpoint measured from the ground. */
@@ -75,12 +73,13 @@ class Elevator extends SubsystemBase {
 
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
-    pid = new ProfiledPIDController(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD,
-      new TrapezoidProfile.Constraints(5, 10));
-    pid.setIZone(3);
+    if (ElevatorConfig.kElevatorPIDMode == ElevatorConfig.PIDMode.TRAPEZOID){
+      pid = new ElevatorPIDTrapazoid();
+    } else {
+      pid = new ElevatorPIDBase();
+    }
 
     SmartDashboard.putData(getName(), this);
-    SmartDashboard.putData(getName() + "/" + ProfiledPIDController.class.getSimpleName(), pid);
 
     setpointHeightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
   }
@@ -120,7 +119,7 @@ class Elevator extends SubsystemBase {
 
     // only reset for new setpoints
     if (setpointHeightFromGroundInches != heightFromGroundInches) {
-      pid.reset(new TrapezoidProfile.State());
+      pid.reset(getHeightFromGroundInches());
     }
     setpointHeightFromGroundInches = heightFromGroundInches;
   }
@@ -176,7 +175,7 @@ class Elevator extends SubsystemBase {
 
   public void stop() {
     leader.stopMotor();
-    pid.reset(new TrapezoidProfile.State());
+    pid.reset(getHeightFromGroundInches());
     setSetpointHeight(getHeightFromGroundInches());
   }
 
