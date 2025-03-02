@@ -85,8 +85,8 @@ public class RobotContainer {
   // public static final Climber kClimber = new Climber();
 
   // Subsystems - Cameras
-  public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
-      PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
+  // public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
+  //     PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
       LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
@@ -222,8 +222,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("PrepareScoreL4", kCoraller.scoreL4());
     NamedCommands.registerCommand("IntakeCoral", kCoraller.intakeCoral(false));
     NamedCommands.registerCommand("StartCoralIntake", kCoraller.intakeCoralToPrepareForStation());
-    NamedCommands.registerCommand("L4OuttakeCoral", kCoraller.intakeCoral(true).withTimeout(1));
-    NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral().withTimeout(1));
+    NamedCommands.registerCommand("L4OuttakeCoral", kCoraller.intakeCoral(true).withTimeout(0.5));
+    NamedCommands.registerCommand("OuttakeCoral", kCoraller.outtakeCoral().withTimeout(0.5));
 
     // Algae
     NamedCommands.registerCommand("STOPAlgae", kAlgaeCollector.stopCommand());

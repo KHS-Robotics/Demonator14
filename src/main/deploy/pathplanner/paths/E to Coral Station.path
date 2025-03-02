@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.286577868852459,
-        "y": 2.388678278688524
+        "x": 5.1054545454545455,
+        "y": 2.564161931818181
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2366803278688523,
-        "y": 2.5085553278688515
+        "x": 3.4701136363688514,
+        "y": 1.4174289772763065
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.5584016393442621,
-        "y": 0.9141905737704917
+        "x": 1.2065624999999998,
+        "y": 1.0385085227272737
       },
       "prevControl": {
-        "x": 2.7931352459016394,
-        "y": 1.9691086065573766
+        "x": 1.9045738636363638,
+        "y": 2.095497159090909
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,9 +29,35 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "SlowForApproach",
+      "minWaypointRelativePos": 0.8487018800358097,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 90.0,
+        "maxAngularAcceleration": 180.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "PrepareReceive",
+      "waypointRelativePos": 0.1,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareReceive"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 3.0,

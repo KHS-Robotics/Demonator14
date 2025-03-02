@@ -5,21 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "PrepareStow"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Start Center L4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "STOPSwerve"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start Right Go To E"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOPSwerve"
+                }
+              }
+            ]
           }
         },
         {
@@ -30,12 +31,6 @@
                 "type": "named",
                 "data": {
                   "name": "PrepareScoreL4"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
                 }
               },
               {
@@ -62,28 +57,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "sequential",
+                      "type": "path",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "End Center L4"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "STOPSwerve"
-                            }
-                          }
-                        ]
+                        "pathName": "Back Off E"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "STOP"
+                        "name": "STOPSwerve"
                       }
                     }
                   ]
@@ -92,7 +74,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "PrepareStow"
+                  "name": "PrepareReceive"
                 }
               }
             ]
