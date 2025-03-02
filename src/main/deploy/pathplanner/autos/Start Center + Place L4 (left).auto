@@ -13,7 +13,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start Center L4"
+            "pathName": "Start Center L4 (left)"
           }
         },
         {
@@ -68,7 +68,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "End Center L4"
+                              "pathName": "End Center L4 (left)"
                             }
                           },
                           {

@@ -91,15 +91,6 @@ public class Coraller extends SubsystemBase {
     return cmd.withName("ReleaseCoral");
   }
 
-  public Command flipIntake() {
-    var cmd = Commands.sequence(
-      intake.outtakeSlowCommand(),
-      angler.setAngleCommand(AnglerSetpoints.FLIP_FOR_L4),
-      intake.stopCommand()
-    );
-    return cmd.withName("CorallerFlipForL4");
-  }
-
   public Command stopCommand() {
     var cmd = runOnce(this::stop);
     cmd.addRequirements(elevator, angler, intake);

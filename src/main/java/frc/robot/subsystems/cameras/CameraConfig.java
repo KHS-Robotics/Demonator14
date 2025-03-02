@@ -10,7 +10,8 @@ import frc.robot.subsystems.cameras.DemonLimelightCamera.LimelightPoseEstimateAl
 public final class CameraConfig {
   public class PhotonVisionConfig {
     /** The nickname of the camera (found in the PhotonVision UI). */
-    public static final String kLowerFrontCameraName = "4342_AprilTag_1";
+    public static final String kFrontRightCameraName = "Right";
+    public static final String kFrontLeftCameraName = "Left";
     /**
      * Transform3d from the center of the robot to the camera mount position (ie,
      * robot ➔ camera) in the <a href=
@@ -19,8 +20,10 @@ public final class CameraConfig {
      * <p>
      * https://docs.photonvision.org/en/latest/docs/programming/photonlib/robot-pose-estimator.html#creating-a-photonposeestimator
      */
-    public static final Transform3d kRobotToLowerFrontCamera = new Transform3d(Units.inchesToMeters(7.6882),
-        Units.inchesToMeters(13.0), Units.inchesToMeters(12.1545), new Rotation3d(0, Math.toRadians(-60), 0));
+    public static final Transform3d kRobotToFrontRightCamera = new Transform3d(Units.inchesToMeters(10.5),
+        Units.inchesToMeters(-7), Units.inchesToMeters(16.5), new Rotation3d(0, Math.toRadians(20), 0));
+    public static final Transform3d kRobotToFrontLeftCamera = new Transform3d(Units.inchesToMeters(10.5),
+        Units.inchesToMeters(7), Units.inchesToMeters(16.5), new Rotation3d(0, Math.toRadians(20), 0));
     /**
      * The layout of the AprilTags on the field.
      * <p>
