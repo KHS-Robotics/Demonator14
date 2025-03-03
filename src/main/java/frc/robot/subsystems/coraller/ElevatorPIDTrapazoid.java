@@ -12,6 +12,5 @@ public class ElevatorPIDTrapazoid extends ProfiledPIDController implements Eleva
   public ElevatorPIDTrapazoid() {
     super(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD,
       new TrapezoidProfile.Constraints(ElevatorConfig.kElevatorMaxVelocity, ElevatorConfig.kElevatorMaxAcceleration));
-    this.setIZone(3);
   }
 }

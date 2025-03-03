@@ -7,6 +7,7 @@ package frc.robot.subsystems.coraller;
 import edu.wpi.first.util.sendable.Sendable;
 
 public interface ElevatorPID extends Sendable {
+  void setIZone(double iZone);
   double calculate(double measurement, double goal);
   void reset(double measurement);
 }

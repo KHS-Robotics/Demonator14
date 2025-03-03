@@ -78,6 +78,7 @@ class Elevator extends SubsystemBase {
     } else {
       pid = new ElevatorPIDDefault();
     }
+    pid.setIZone(3);
 
     SmartDashboard.putData(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName(), this);
     SmartDashboard.putData(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName() + "/PID", pid);

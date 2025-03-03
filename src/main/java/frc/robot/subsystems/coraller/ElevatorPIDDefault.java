@@ -10,7 +10,6 @@ import frc.robot.subsystems.coraller.CorallerConfig.ElevatorConfig;
 public class ElevatorPIDDefault extends PIDController implements ElevatorPID {
   public ElevatorPIDDefault() {
     super(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD);
-    this.setIZone(3);
   }
 
   @Override
