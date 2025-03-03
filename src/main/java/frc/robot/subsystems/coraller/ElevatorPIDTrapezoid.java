@@ -8,8 +8,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.subsystems.coraller.CorallerConfig.ElevatorConfig;
 
-public class ElevatorPIDTrapazoid extends ProfiledPIDController implements ElevatorPID {
-  public ElevatorPIDTrapazoid() {
+public class ElevatorPIDTrapezoid extends ProfiledPIDController implements ElevatorPID {
+  public ElevatorPIDTrapezoid() {
     super(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD,
       new TrapezoidProfile.Constraints(ElevatorConfig.kElevatorMaxVelocity, ElevatorConfig.kElevatorMaxAcceleration));
   }

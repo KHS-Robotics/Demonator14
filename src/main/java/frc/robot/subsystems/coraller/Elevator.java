@@ -74,7 +74,7 @@ class Elevator extends SubsystemBase {
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
     if (ElevatorConfig.kElevatorPIDMode == ElevatorConfig.PIDMode.TRAPEZOID){
-      pid = new ElevatorPIDTrapazoid();
+      pid = new ElevatorPIDTrapezoid();
     } else {
       pid = new ElevatorPIDDefault();
     }
