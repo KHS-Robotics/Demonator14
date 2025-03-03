@@ -85,8 +85,12 @@ public class RobotContainer {
   // public static final Climber kClimber = new Climber();
 
   // Subsystems - Cameras
-  // public static final DemonPhotonCamera kLowerFrontPhotonCamera = new DemonPhotonCamera(
-  //     PhotonVisionConfig.kLowerFrontCameraName, PhotonVisionConfig.kRobotToLowerFrontCamera);
+  // photon
+  public static final DemonPhotonCamera kFrontRightPhotonCamera = new DemonPhotonCamera(
+       PhotonVisionConfig.kFrontRightCameraName, PhotonVisionConfig.kRobotToFrontRightCamera);
+  public static final DemonPhotonCamera kFrontLeftPhotonCamera = new DemonPhotonCamera(
+        PhotonVisionConfig.kFrontLeftCameraName, PhotonVisionConfig.kRobotToFrontLeftCamera);
+  // limelight
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
       LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
 
@@ -112,8 +116,13 @@ public class RobotContainer {
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
-    // LowerFrontPhotonCamera - AprilTag updates for odometry
-    // kLowerFrontPhotonCamera.setDefaultCommand(kLowerFrontPhotonCamera.pollForPoseUpdates(
+    // FrontRightPhotonCamera - AprilTag updates for odometry
+    // kFrontRightPhotonCamera.setDefaultCommand(kFrontRightPhotonCamera.pollForPoseUpdates(
+    //     (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
+    //         update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
+
+    // FrontLeftPhotonCamera - AprilTag updates for odometry
+    // kFrontLeftPhotonCamera.setDefaultCommand(kFrontLeftPhotonCamera.pollForPoseUpdates(
     //     (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
     //         update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
 
@@ -147,7 +156,7 @@ public class RobotContainer {
     // give driver ability to limit speeds for when elevator is high up to
     // help prevent tipping over - useful for slight alignment adjustments too
     kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
-
+  
     // TODO: test rotation button
     // kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
   }
