@@ -76,7 +76,7 @@ class Elevator extends SubsystemBase {
     if (ElevatorConfig.kElevatorPIDMode == ElevatorConfig.PIDMode.TRAPEZOID){
       pid = new ElevatorPIDTrapazoid();
     } else {
-      pid = new ElevatorPIDBase();
+      pid = new ElevatorPIDDefault();
     }
 
     SmartDashboard.putData(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName(), this);

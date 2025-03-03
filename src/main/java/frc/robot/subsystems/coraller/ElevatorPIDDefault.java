@@ -7,8 +7,8 @@ package frc.robot.subsystems.coraller;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.subsystems.coraller.CorallerConfig.ElevatorConfig;
 
-public class ElevatorPIDBase extends PIDController implements ElevatorPID {
-  public ElevatorPIDBase() {
+public class ElevatorPIDDefault extends PIDController implements ElevatorPID {
+  public ElevatorPIDDefault() {
     super(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD);
     this.setIZone(3);
   }
