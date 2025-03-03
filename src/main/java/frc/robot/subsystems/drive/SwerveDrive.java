@@ -7,7 +7,9 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -323,7 +325,7 @@ public class SwerveDrive extends SubsystemBase {
 
   public Command setCenterOfRotation(Translation2d rotationPoint) {
     Runnable setNewRotation = () -> {
-     centerOfRotation = rotationPoint;
+      centerOfRotation = rotationPoint;
     };
     Runnable setCenterRotation = () -> {
       centerOfRotation = Translation2d.kZero;
@@ -488,7 +490,7 @@ public class SwerveDrive extends SubsystemBase {
         rotationSpeed = HIDUtils.smoothInputWithCubic(rightXInput, joystickSensitivity)
             * maxAngularSpeedRadiansPerSecond;
       }
-      
+
       // flip drive input based on alliance since robot's movement is always
       // relative to the blue alliance (AKA facing towards red alliance)
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
@@ -496,6 +498,33 @@ public class SwerveDrive extends SubsystemBase {
       drive(sign * xSpeed, sign * ySpeed, rotationSpeed, fieldRelative.getAsBoolean());
     }, this::stop);
     return cmd.withName("DriveWithXboxController");
+  }
+
+  public Command goToPostion(Supplier<Optional<Translation2d>> distanceSupplier, CommandXboxController xboxController) {
+    // drive
+    final double targetDistanceMeters = 0.1;
+    final double maxSpeedMeters = 1;
+    final double DRIVE_P = 0.1;
+    
+    // rotate
+    final double targetAngle = 0;
+    final double maxTurnSpeedRadians = Math.toRadians(180);
+    final double TURN_P = 0.1;
+
+    var cmd = runEnd(() -> {
+      var distanceOptional = distanceSupplier.get();
+      if (distanceOptional.isEmpty())
+        return;
+      
+      var distance = distanceOptional.get();
+
+      var forward = (targetDistanceMeters - distance.getNorm()) * DRIVE_P * maxSpeedMeters;
+      var turn = (targetAngle - distance.getAngle().getDegrees()) * TURN_P * maxTurnSpeedRadians;
+      
+      drive(forward, xboxController.getLeftX(), turn, false);
+    }, this::stop);
+
+    return cmd.withName("SwerveGoToPosition");
   }
 
   /**

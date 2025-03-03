@@ -159,6 +159,10 @@ public class RobotContainer {
   
     // TODO: test rotation button
     // kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
+
+    // TODO: auto alignment
+    kDriverController.autoAlignLeftHalf().whileTrue(kSwerveDrive.goToPostion(() -> kFrontRightPhotonCamera.getDistanceToBestAprilTag(), kDriverController));
+    kDriverController.autoAlignRightHalf().whileTrue(kSwerveDrive.goToPostion(() -> kFrontLeftPhotonCamera.getDistanceToBestAprilTag(), kDriverController));
   }
 
   /** Binds commands to operator stick buttons. */

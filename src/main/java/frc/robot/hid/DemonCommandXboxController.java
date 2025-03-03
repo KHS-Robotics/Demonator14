@@ -35,4 +35,12 @@ public class DemonCommandXboxController extends CommandXboxController {
   public Trigger changeRotationForScoring() {
     return this.rightBumper();
   }
+
+  public Trigger autoAlignLeftHalf() {
+    return this.x();
+  }
+
+  public Trigger autoAlignRightHalf() {
+    return this.b();
+  }
 }

@@ -12,20 +12,25 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
 
 /**
@@ -227,6 +232,46 @@ public class DemonPhotonCamera extends SubsystemBase {
     this.enableAprilTagUpdates = enableAprilTagUpdates;
   }
 
+  public Optional<Translation2d> getDistanceToBestAprilTag() {
+    var results = getLatestAprilTagResults();
+    if (results.isEmpty())
+      return Optional.empty();
+    
+    var cameraResult = results.get().cameraResult;
+    var bestTarget = cameraResult.getBestTarget();
+    return Optional.of(getDistanceToAprilTag(bestTarget));
+  }
+
+  public Optional<Translation2d> getDistanceToAprilTagById(int id) {
+    var results = getLatestAprilTagResults();
+    if (results.isEmpty())
+      return Optional.empty();
+    
+    var cameraResult = results.get().cameraResult;
+    for (var result : cameraResult.getTargets()) {
+      if (result.fiducialId == id) {
+        return Optional.of(getDistanceToAprilTag(result));
+      }
+    }
+    return Optional.empty();
+  }
+
+  private Translation2d getDistanceToAprilTag(PhotonTrackedTarget target) {
+    var targetPositionOpt = PhotonVisionConfig.kTagLayout.getTagPose(target.getFiducialId());
+    if (targetPositionOpt.isEmpty())
+      return Translation2d.kZero;
+    
+    var targetPosition = targetPositionOpt.get();
+    var robotToCamera = poseEstimator.getRobotToCameraTransform();
+    var targetYaw = target.getYaw();
+    var targetRange = PhotonUtils.calculateDistanceToTargetMeters(
+        robotToCamera.getZ(),
+        targetPosition.getZ(),
+        robotToCamera.getRotation().getY(),
+        Units.degreesToRadians(target.getPitch()));
+    return new Translation2d(targetRange, Rotation2d.fromDegrees(targetYaw));
+  }
+
   /**
    * Processes all current unread results.
    */
@@ -234,7 +279,10 @@ public class DemonPhotonCamera extends SubsystemBase {
     // get unprocessed results from photon
     var unprocessedCameraResults = camera.getAllUnreadResults();
 
-    for (var cameraResult : unprocessedCameraResults) {
+    if (!unprocessedCameraResults.isEmpty()) {
+      // get latest result
+      var cameraResult = unprocessedCameraResults.get(unprocessedCameraResults.size() - 1);
+      
       // process based on selected pipeline mode
       switch (currentPipelineMode) {
         // same AprilTag process for both resolutions
