@@ -14,7 +14,7 @@ public class ElevatorPIDDefault extends PIDController implements ElevatorPID {
   }
 
   @Override
-  public void reset(double mesaurement) {
+  public void reset(double measurement) {
     this.reset();
   }
 }
