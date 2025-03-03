@@ -80,8 +80,8 @@ class Elevator extends SubsystemBase {
     }
     pid.setIZone(3);
 
-    SmartDashboard.putData(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName(), this);
-    SmartDashboard.putData(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName() + "/PID", pid);
+    SmartDashboard.putData(this);
+    SmartDashboard.putData(this.getName() + "/PID", pid);
 
     setpointHeightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
   }
