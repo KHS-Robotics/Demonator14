@@ -7,20 +7,14 @@ package frc.robot.subsystems.coraller;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.subsystems.coraller.CorallerConfig.ElevatorConfig;
 
-/** Add your docs here. */
-public class ElevatorPIDBase implements ElevatorPID {
-  private final PIDController pid;
-
+public class ElevatorPIDBase extends PIDController implements ElevatorPID {
   public ElevatorPIDBase() {
-    pid = new PIDController(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD);
-    pid.setIZone(3);
+    super(ElevatorConfig.kElevatorP, ElevatorConfig.kElevatorI, ElevatorConfig.kElevatorD);
+    this.setIZone(3);
   }
 
-  public double calculate(double measurement, double goal) {
-    return pid.calculate(measurement, goal);
-  }
-
+  @Override
   public void reset(double mesaurement) {
-    pid.reset();
+    this.reset();
   }
 }

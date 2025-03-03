@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems.coraller;
 
-public interface ElevatorPID {
+import edu.wpi.first.util.sendable.Sendable;
+
+public interface ElevatorPID extends Sendable {
   double calculate(double measurement, double goal);
   void reset(double measurement);
 }
