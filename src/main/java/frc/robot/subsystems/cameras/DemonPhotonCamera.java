@@ -102,6 +102,12 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void periodic() {
     // make sure to call once per loop to get consistent results
     updateLatestVisionResults();
+
+    // var result = getBestAprilTag();
+    // if (result.isPresent()) {
+    //   var target = result.get();
+    //   System.out.println(target);
+    // }
   }
 
   /**
@@ -227,6 +233,39 @@ public class DemonPhotonCamera extends SubsystemBase {
     this.enableAprilTagUpdates = enableAprilTagUpdates;
   }
 
+  public Optional<AprilTagTarget> getBestAprilTag() {
+    var results = getLatestAprilTagResults();
+    if (results.isEmpty())
+      return Optional.empty();
+    
+    var cameraResult = results.get().cameraResult;
+    var bestTarget = cameraResult.getBestTarget();
+    return getApriltagFromTarget(bestTarget);
+  }
+
+  public Optional<AprilTagTarget> getAprilTagById(int id) {
+    var results = getLatestAprilTagResults();
+    if (results.isEmpty())
+      return Optional.empty();
+    
+    var cameraResult = results.get().cameraResult;
+    for (var result : cameraResult.getTargets()) {
+      if (result.fiducialId == id) {
+        return getApriltagFromTarget(result);
+      }
+    }
+    return Optional.empty();
+  }
+
+  private Optional<AprilTagTarget> getApriltagFromTarget(PhotonTrackedTarget target) {
+    var targetPositionOpt = PhotonVisionConfig.kTagLayout.getTagPose(target.getFiducialId());
+    if (targetPositionOpt.isEmpty())
+      return Optional.empty();
+    
+    var targetPosition = targetPositionOpt.get();
+    return Optional.of(new AprilTagTarget(targetPosition, target, target.getFiducialId()));
+  }
+
   /**
    * Processes all current unread results.
    */
@@ -234,7 +273,10 @@ public class DemonPhotonCamera extends SubsystemBase {
     // get unprocessed results from photon
     var unprocessedCameraResults = camera.getAllUnreadResults();
 
-    for (var cameraResult : unprocessedCameraResults) {
+    if (!unprocessedCameraResults.isEmpty()) {
+      // get latest result
+      var cameraResult = unprocessedCameraResults.get(unprocessedCameraResults.size() - 1);
+      
       // process based on selected pipeline mode
       switch (currentPipelineMode) {
         // same AprilTag process for both resolutions

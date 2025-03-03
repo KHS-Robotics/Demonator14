@@ -9,6 +9,8 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -113,7 +115,7 @@ public class RobotContainer {
    */
   private void configureSubsystemDefaultCommands() {
     // control swerve drive with the xbox controller by default
-    kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> true,
+    kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // FrontRightPhotonCamera - AprilTag updates for odometry
@@ -159,6 +161,10 @@ public class RobotContainer {
   
     // TODO: test rotation button
     // kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
+
+    // vision alignment
+    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToTarget(() -> kFrontLeftPhotonCamera.getBestAprilTag()));
+    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToTarget(() -> kFrontRightPhotonCamera.getBestAprilTag()));
   }
 
   /** Binds commands to operator stick buttons. */
@@ -236,6 +242,28 @@ public class RobotContainer {
 
     // Algae
     NamedCommands.registerCommand("STOPAlgae", kAlgaeCollector.stopCommand());
+
+    // vision alignment
+    NamedCommands.registerCommand("AlignToD", kSwerveDrive.alignToTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 8 : 17;
+      return kFrontLeftPhotonCamera.getAprilTagById(id);
+    }));
+    NamedCommands.registerCommand("AlignToE", kSwerveDrive.alignToTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 9 : 22;
+      return kFrontRightPhotonCamera.getAprilTagById(id);
+    }));
+    NamedCommands.registerCommand("AlignToG", kSwerveDrive.alignToTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 10 : 18;
+      return kFrontRightPhotonCamera.getAprilTagById(id);
+    }));
+    NamedCommands.registerCommand("AlignToH", kSwerveDrive.alignToTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 10 : 18;
+      return kFrontLeftPhotonCamera.getAprilTagById(id);
+    }));
   }
 
   /** https://pathplanner.dev/pplib-custom-logging.html */

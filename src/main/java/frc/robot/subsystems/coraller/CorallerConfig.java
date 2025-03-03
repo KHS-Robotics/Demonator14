@@ -22,6 +22,6 @@ final class CorallerConfig {
     public static final double kAnglerKG = 0.25;
     /** Additional gravity term in volts for coral. */
     public static final double kAnglerCoralKG = 0.065;
-    public static final double kAnglerOffset = -180.0;
+    public static final double kAnglerOffset = -122.0;
   }
 }

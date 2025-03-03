@@ -7,7 +7,9 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -41,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.RobotMap;
 import frc.robot.hid.HIDUtils;
+import frc.robot.subsystems.cameras.AprilTagTarget;
 import frc.robot.RobotContainer;
 
 /**
@@ -498,6 +501,35 @@ public class SwerveDrive extends SubsystemBase {
     return cmd.withName("DriveWithXboxController");
   }
 
+  public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp) {
+    // forward/backwards
+    final double xP = 1.25;
+    final double desiredXDist = 0.15;
+    // left/right
+    final double yP = 2;
+    final double desiredYDist = 0;
+    var cmd = runEnd(() -> {
+      var targetOpt = targetSupp.get();
+      if (targetOpt.isEmpty()) {
+        this.stop();
+        return;
+      }
+      
+      var target = targetOpt.get();
+      
+      var errorX = desiredXDist - target.getDifferenceX();
+      var outputX = -(xP * errorX);
+
+      var errorY = desiredYDist - target.getDifferenceY();
+      var outputY = -(yP * errorY);
+
+      var targetAngle = target.getTargetAngle();
+
+      this.holdAngleWhileDriving(outputX, outputY, Rotation2d.fromDegrees(targetAngle), false);
+    }, this::stop);
+    return cmd.withName("SwerveDriveAlignToTarget");
+  }
+
   /**
    * Method to drive the robot using joystick info. (used for teleop)
    *
@@ -605,8 +637,8 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void holdAngleWhileDriving(double xSpeed, double ySpeed, Rotation2d setpointAngle, boolean fieldOriented) {
     var rotateOutput = MathUtil
-        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())), -1,
-            1)
+        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())), -0.5,
+            0.5)
         * maxAngularSpeedRadiansPerSecond;
     drive(xSpeed, ySpeed, rotateOutput, fieldOriented);
   }
