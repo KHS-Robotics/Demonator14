@@ -640,8 +640,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void holdAngleWhileDriving(double xSpeed, double ySpeed, Rotation2d setpointAngle, boolean fieldOriented) {
     var rotateOutput = MathUtil
-        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())),
-            -0.5,
+        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())), -0.5,
             0.5)
         * maxAngularSpeedRadiansPerSecond;
     drive(xSpeed, ySpeed, rotateOutput, fieldOriented);
