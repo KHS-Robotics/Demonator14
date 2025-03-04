@@ -25,6 +25,12 @@ public final class SwerveDriveConfig {
 
   public static final Translation2d kCorallerL2Positon = new Translation2d(11.25, 0);
 
+  // April Tags
+  public static final double VISION_X_P = 1.25;
+  public static final double VISION_Y_P = 2;
+  public static final double VISION_TARGET_X_DISTANCE_METERS = 0.15;
+  public static final double VISION_TARGET_Y_DISTANCE_METERS = 0.0;
+
   // individual offsets after calibrating each module
   public static final double kFrontLeftPivotOffsetDegrees = 225;
   public static final double kFrontRightPivotOffsetDegrees = 135;

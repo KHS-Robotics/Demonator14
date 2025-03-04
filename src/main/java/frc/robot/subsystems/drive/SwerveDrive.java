@@ -330,7 +330,7 @@ public class SwerveDrive extends SubsystemBase {
 
   public Command setCenterOfRotation(Translation2d rotationPoint) {
     Runnable setNewRotation = () -> {
-     centerOfRotation = rotationPoint;
+      centerOfRotation = rotationPoint;
     };
     Runnable setCenterRotation = () -> {
       centerOfRotation = Translation2d.kZero;
@@ -495,7 +495,7 @@ public class SwerveDrive extends SubsystemBase {
         rotationSpeed = HIDUtils.smoothInputWithCubic(rightXInput, joystickSensitivity)
             * maxAngularSpeedRadiansPerSecond;
       }
-      
+
       // flip drive input based on alliance since robot's movement is always
       // relative to the blue alliance (AKA facing towards red alliance)
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
@@ -506,34 +506,28 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp) {
-    // forward/backwards
-    final double xP = 1.25;
-    final double desiredXDist = 0.15;
-     // left/right
-    final double yP = 2;
-    final double desiredYDist = 0;
     var cmd = runEnd(() -> {
       targetOpt = targetSupp.get();
       if (targetOpt.isEmpty()) {
         this.stop();
         return;
       }
-      
-      var target = targetOpt.get();
-      
-      errorX = desiredXDist - target.getDifferenceX();
-      var outputX = -(xP * errorX);
 
-      errorY = desiredYDist - target.getDifferenceY();
-      var outputY = -(yP * errorY);
+      var target = targetOpt.get();
+
+      errorX = SwerveDriveConfig.VISION_TARGET_X_DISTANCE_METERS - target.getXOffset();
+      var outputX = -(SwerveDriveConfig.VISION_X_P * errorX);
+
+      errorY = SwerveDriveConfig.VISION_TARGET_Y_DISTANCE_METERS - target.getYOffset();
+      var outputY = -(SwerveDriveConfig.VISION_Y_P * errorY);
 
       var targetAngle = target.getTargetAngle();
 
       this.holdAngleWhileDriving(outputX, outputY, Rotation2d.fromDegrees(targetAngle), false);
     }, this::stop);
     return cmd
-      .until(() -> targetOpt.isEmpty() || (Math.abs(errorX) <= 0.01 && Math.abs(errorY) <= 0.01 && atAngleSetpoint()))
-      .withName("SwerveDriveAlignToTarget");
+        .until(() -> targetOpt.isEmpty() || (Math.abs(errorX) <= 0.01 && Math.abs(errorY) <= 0.01 && atAngleSetpoint()))
+        .withName("SwerveDriveAlignToTarget");
   }
 
   /**
@@ -643,7 +637,8 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void holdAngleWhileDriving(double xSpeed, double ySpeed, Rotation2d setpointAngle, boolean fieldOriented) {
     var rotateOutput = MathUtil
-        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())), -0.5,
+        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())),
+            -0.5,
             0.5)
         * maxAngularSpeedRadiansPerSecond;
     drive(xSpeed, ySpeed, rotateOutput, fieldOriented);
