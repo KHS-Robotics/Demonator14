@@ -506,7 +506,7 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp) {
-    var cmd = runEnd(() -> {
+    var alignCmd = runEnd(() -> {
       targetOpt = targetSupp.get();
       if (targetOpt.isEmpty()) {
         this.stop();
@@ -524,10 +524,13 @@ public class SwerveDrive extends SubsystemBase {
       var targetAngle = target.getTargetAngle();
 
       this.holdAngleWhileDriving(outputX, outputY, Rotation2d.fromDegrees(targetAngle), false);
-    }, this::stop);
-    return cmd
-        .until(() -> targetOpt.isEmpty() || (Math.abs(errorX) <= 0.01 && Math.abs(errorY) <= 0.01 && atAngleSetpoint()))
-        .withName("SwerveDriveAlignToTarget");
+    }, this::stop).until(() -> targetOpt.isEmpty() || (Math.abs(errorX) <= 0.01 && Math.abs(errorY) <= 0.01 && atAngleSetpoint()));
+
+    var finalAdjustment = runEnd(() -> this.drive(0.1, 0, 0, false), this::stop).withTimeout(0.5);
+
+    var cmd = Commands.sequence(alignCmd, finalAdjustment);
+
+    return cmd.withName("SwerveDriveAlignToTarget");
   }
 
   /**
