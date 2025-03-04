@@ -102,12 +102,6 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void periodic() {
     // make sure to call once per loop to get consistent results
     updateLatestVisionResults();
-
-    // var result = getBestAprilTag();
-    // if (result.isPresent()) {
-    //   var target = result.get();
-    //   System.out.println(target);
-    // }
   }
 
   /**
