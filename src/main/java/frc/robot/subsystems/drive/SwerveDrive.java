@@ -495,7 +495,6 @@ public class SwerveDrive extends SubsystemBase {
         rotationSpeed = HIDUtils.smoothInputWithCubic(rightXInput, joystickSensitivity)
             * maxAngularSpeedRadiansPerSecond;
       }
-
       // flip drive input based on alliance since robot's movement is always
       // relative to the blue alliance (AKA facing towards red alliance)
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
