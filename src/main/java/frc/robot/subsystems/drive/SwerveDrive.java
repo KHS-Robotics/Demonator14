@@ -168,6 +168,10 @@ public class SwerveDrive extends SubsystemBase {
   private final PIDController thetaPid = new PIDController(SwerveDriveConfig.DRIVE_ANGLE_P,
       SwerveDriveConfig.DRIVE_ANGLE_I, SwerveDriveConfig.DRIVE_ANGLE_D);
 
+  // for april tag alignment
+  private double errorX, errorY;
+  private Optional<AprilTagTarget> targetOpt = Optional.empty();
+
   /**
    * Constructs the Swerve Drive.
    */
@@ -505,11 +509,11 @@ public class SwerveDrive extends SubsystemBase {
     // forward/backwards
     final double xP = 1.25;
     final double desiredXDist = 0.15;
-    // left/right
+     // left/right
     final double yP = 2;
     final double desiredYDist = 0;
     var cmd = runEnd(() -> {
-      var targetOpt = targetSupp.get();
+      targetOpt = targetSupp.get();
       if (targetOpt.isEmpty()) {
         this.stop();
         return;
@@ -517,17 +521,19 @@ public class SwerveDrive extends SubsystemBase {
       
       var target = targetOpt.get();
       
-      var errorX = desiredXDist - target.getDifferenceX();
+      errorX = desiredXDist - target.getDifferenceX();
       var outputX = -(xP * errorX);
 
-      var errorY = desiredYDist - target.getDifferenceY();
+      errorY = desiredYDist - target.getDifferenceY();
       var outputY = -(yP * errorY);
 
       var targetAngle = target.getTargetAngle();
 
       this.holdAngleWhileDriving(outputX, outputY, Rotation2d.fromDegrees(targetAngle), false);
     }, this::stop);
-    return cmd.withName("SwerveDriveAlignToTarget");
+    return cmd
+      .until(() -> targetOpt.isEmpty() || (Math.abs(errorX) <= 0.01 && Math.abs(errorY) <= 0.01 && atAngleSetpoint()))
+      .withName("SwerveDriveAlignToTarget");
   }
 
   /**
