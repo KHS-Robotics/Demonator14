@@ -102,12 +102,6 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void periodic() {
     // make sure to call once per loop to get consistent results
     updateLatestVisionResults();
-
-    // var result = getBestAprilTag();
-    // if (result.isPresent()) {
-    //   var target = result.get();
-    //   System.out.println(target);
-    // }
   }
 
   /**
@@ -238,9 +232,14 @@ public class DemonPhotonCamera extends SubsystemBase {
     if (results.isEmpty())
       return Optional.empty();
     
+    var targetWithLargestArea = new PhotonTrackedTarget();
     var cameraResult = results.get().cameraResult;
-    var bestTarget = cameraResult.getBestTarget();
-    return getApriltagFromTarget(bestTarget);
+    for (var result : cameraResult.getTargets()) {
+      if (result.area > targetWithLargestArea.area) {
+        targetWithLargestArea = result;
+      }
+    }
+    return getApriltagFromTarget(targetWithLargestArea);
   }
 
   public Optional<AprilTagTarget> getAprilTagById(int id) {

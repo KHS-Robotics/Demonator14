@@ -168,6 +168,10 @@ public class SwerveDrive extends SubsystemBase {
   private final PIDController thetaPid = new PIDController(SwerveDriveConfig.DRIVE_ANGLE_P,
       SwerveDriveConfig.DRIVE_ANGLE_I, SwerveDriveConfig.DRIVE_ANGLE_D);
 
+  // for april tag alignment
+  private double errorX, errorY;
+  private Optional<AprilTagTarget> targetOpt = Optional.empty();
+
   /**
    * Constructs the Swerve Drive.
    */
@@ -178,7 +182,7 @@ public class SwerveDrive extends SubsystemBase {
 
     // degrees
     thetaPid.enableContinuousInput(-180.0, 180.0);
-    thetaPid.setTolerance(1);
+    thetaPid.setTolerance(3);
 
     configurePathPlannerAutoBuilder();
 
@@ -491,7 +495,6 @@ public class SwerveDrive extends SubsystemBase {
         rotationSpeed = HIDUtils.smoothInputWithCubic(rightXInput, joystickSensitivity)
             * maxAngularSpeedRadiansPerSecond;
       }
-      
       // flip drive input based on alliance since robot's movement is always
       // relative to the blue alliance (AKA facing towards red alliance)
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
@@ -502,31 +505,32 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp) {
-    // forward/backwards
-    final double xP = 1.25;
-    final double desiredXDist = 0.15;
-    // left/right
-    final double yP = 2;
-    final double desiredYDist = 0;
-    var cmd = runEnd(() -> {
-      var targetOpt = targetSupp.get();
+    var alignCmd = runEnd(() -> {
+      targetOpt = targetSupp.get();
       if (targetOpt.isEmpty()) {
         this.stop();
         return;
       }
-      
-      var target = targetOpt.get();
-      
-      var errorX = desiredXDist - target.getDifferenceX();
-      var outputX = -(xP * errorX);
 
-      var errorY = desiredYDist - target.getDifferenceY();
-      var outputY = -(yP * errorY);
+      var target = targetOpt.get();
+
+      errorX = SwerveDriveConfig.VISION_TARGET_X_DISTANCE_METERS - target.getOffetX();
+      var outputX = -(SwerveDriveConfig.VISION_X_P * errorX);
+
+      errorY = SwerveDriveConfig.VISION_TARGET_Y_DISTANCE_METERS - target.getOffsetY();
+      var outputY = -(SwerveDriveConfig.VISION_Y_P * errorY);
 
       var targetAngle = target.getTargetAngle();
 
       this.holdAngleWhileDriving(outputX, outputY, Rotation2d.fromDegrees(targetAngle), false);
-    }, this::stop);
+    }, this::stop)
+    .until(() -> targetOpt.isEmpty() || (Math.abs(errorX) <= 0.01 && Math.abs(errorY) <= 0.01 && atAngleSetpoint()));
+
+    var finalAdjustment = runEnd(() -> this.drive(0.2, 0, 0, false), this::stop)
+      .withTimeout(0.5);
+
+    var cmd = Commands.sequence(alignCmd, finalAdjustment);
+
     return cmd.withName("SwerveDriveAlignToTarget");
   }
 

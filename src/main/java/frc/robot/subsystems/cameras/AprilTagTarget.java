@@ -3,7 +3,6 @@ package frc.robot.subsystems.cameras;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
 
 public class AprilTagTarget {
   public final Pose3d position;
@@ -16,27 +15,25 @@ public class AprilTagTarget {
     this.id = id;
   }
 
-  public double getDifferenceX() {
+  public double getOffetX() {
     var dist = tag.getBestCameraToTarget();
     return dist.getX();
   }
 
-  public double getDifferenceY() {
+  public double getOffsetY() {
     var dist = tag.getBestCameraToTarget();
     return dist.getY();
   }
 
   public double getTargetAngle() {
-    var targetPositionOpt = PhotonVisionConfig.kTagLayout.getTagPose(tag.getFiducialId());
-    if (targetPositionOpt.isEmpty())
-      return 0;
-
-    return normalizeAngle(Math.toDegrees(targetPositionOpt.get().getRotation().getAngle()) + 180);
+    // add 180 degrees to get blue side relative angles instead of red side relative
+    var angle = normalizeAngle(Math.toDegrees(position.getRotation().getAngle()) + 180);
+    return angle;
   }
 
   @Override
   public String toString() {
-    return "X = " + getDifferenceX() + " :: Y = " + getDifferenceY() + " :: Theta = " + getTargetAngle();
+    return "ID = " + id + " :: X = " + getOffetX() + " :: Y = " + getOffsetY() + " :: Theta = " + getTargetAngle();
   }
 
   /**
