@@ -182,7 +182,7 @@ public class SwerveDrive extends SubsystemBase {
 
     // degrees
     thetaPid.enableContinuousInput(-180.0, 180.0);
-    thetaPid.setTolerance(1);
+    thetaPid.setTolerance(3);
 
     configurePathPlannerAutoBuilder();
 
