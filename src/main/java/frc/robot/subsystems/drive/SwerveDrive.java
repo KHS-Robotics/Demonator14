@@ -330,7 +330,7 @@ public class SwerveDrive extends SubsystemBase {
 
   public Command setCenterOfRotation(Translation2d rotationPoint) {
     Runnable setNewRotation = () -> {
-      centerOfRotation = rotationPoint;
+     centerOfRotation = rotationPoint;
     };
     Runnable setCenterRotation = () -> {
       centerOfRotation = Translation2d.kZero;
@@ -515,10 +515,10 @@ public class SwerveDrive extends SubsystemBase {
 
       var target = targetOpt.get();
 
-      errorX = SwerveDriveConfig.VISION_TARGET_X_DISTANCE_METERS - target.getXOffset();
+      errorX = SwerveDriveConfig.VISION_TARGET_X_DISTANCE_METERS - target.getOffetX();
       var outputX = -(SwerveDriveConfig.VISION_X_P * errorX);
 
-      errorY = SwerveDriveConfig.VISION_TARGET_Y_DISTANCE_METERS - target.getYOffset();
+      errorY = SwerveDriveConfig.VISION_TARGET_Y_DISTANCE_METERS - target.getOffsetY();
       var outputY = -(SwerveDriveConfig.VISION_Y_P * errorY);
 
       var targetAngle = target.getTargetAngle();

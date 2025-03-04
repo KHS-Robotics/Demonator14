@@ -15,12 +15,12 @@ public class AprilTagTarget {
     this.id = id;
   }
 
-  public double getXOffset() {
+  public double getOffetX() {
     var dist = tag.getBestCameraToTarget();
     return dist.getX();
   }
 
-  public double getYOffset() {
+  public double getOffsetY() {
     var dist = tag.getBestCameraToTarget();
     return dist.getY();
   }
@@ -33,7 +33,7 @@ public class AprilTagTarget {
 
   @Override
   public String toString() {
-    return "ID = " + id + " :: X = " + getXOffset() + " :: Y = " + getYOffset() + " :: Theta = " + getTargetAngle();
+    return "ID = " + id + " :: X = " + getOffetX() + " :: Y = " + getOffsetY() + " :: Theta = " + getTargetAngle();
   }
 
   /**
