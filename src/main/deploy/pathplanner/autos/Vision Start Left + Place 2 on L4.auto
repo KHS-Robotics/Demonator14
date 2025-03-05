@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": " Start Right Go To F AATA"
+                  "pathName": "Start Left Go To K AATA"
                 }
               },
               {
@@ -30,7 +30,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToF"
+                  "name": "AlignToK"
                 }
               },
               {
@@ -55,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "F to Coral Station"
+                  "pathName": "K to Coral Station"
                 }
               },
               {
@@ -80,7 +80,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Coral Station to E AATA"
+                  "pathName": "Coral Station to L AATA"
                 }
               },
               {
@@ -99,7 +99,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToE"
+                  "name": "AlignToL"
                 }
               },
               {
@@ -124,7 +124,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Off E"
+                  "pathName": "Back Off L"
                 }
               },
               {

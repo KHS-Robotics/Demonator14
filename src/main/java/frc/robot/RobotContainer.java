@@ -269,6 +269,16 @@ public class RobotContainer {
       var id = alliance == Alliance.Red ? 10 : 18;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
     }));
+    NamedCommands.registerCommand("AlignToK", kSwerveDrive.alignToTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 9 : 19;
+      return kFrontRightPhotonCamera.getAprilTagById(id);
+    }));
+    NamedCommands.registerCommand("AlignToL", kSwerveDrive.alignToTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 9 : 19;
+      return kFrontLeftPhotonCamera.getAprilTagById(id);
+    }));
   }
 
   /** https://pathplanner.dev/pplib-custom-logging.html */
