@@ -92,6 +92,8 @@ public class RobotContainer {
        PhotonVisionConfig.kFrontRightCameraName, PhotonVisionConfig.kRobotToFrontRightCamera);
   public static final DemonPhotonCamera kFrontLeftPhotonCamera = new DemonPhotonCamera(
         PhotonVisionConfig.kFrontLeftCameraName, PhotonVisionConfig.kRobotToFrontLeftCamera);
+  public static final DemonPhotonCamera kFrontTopPhotonCamera = new DemonPhotonCamera(
+        PhotonVisionConfig.kFrontTopCameraName, PhotonVisionConfig.kRobotToFrontTopCamera);
   // limelight
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
       LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
@@ -165,6 +167,7 @@ public class RobotContainer {
     // vision alignment
     kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToTarget(() -> kFrontLeftPhotonCamera.getBestAprilTag()));
     kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToTarget(() -> kFrontRightPhotonCamera.getBestAprilTag()));
+    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToTarget(() -> kFrontTopPhotonCamera.getBestAprilTag(), 0.2, 0.05, false));
   }
 
   /** Binds commands to operator stick buttons. */

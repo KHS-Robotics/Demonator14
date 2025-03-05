@@ -12,6 +12,7 @@ public final class CameraConfig {
     /** The nickname of the camera (found in the PhotonVision UI). */
     public static final String kFrontRightCameraName = "Right";
     public static final String kFrontLeftCameraName = "Left";
+    public static final String kFrontTopCameraName = "Top";
     /**
      * Transform3d from the center of the robot to the camera mount position (ie,
      * robot ➔ camera) in the <a href=
@@ -23,6 +24,8 @@ public final class CameraConfig {
     public static final Transform3d kRobotToFrontRightCamera = new Transform3d(Units.inchesToMeters(10.5),
         Units.inchesToMeters(-7), Units.inchesToMeters(16.5), new Rotation3d(0, Math.toRadians(20), 0));
     public static final Transform3d kRobotToFrontLeftCamera = new Transform3d(Units.inchesToMeters(10.5),
+        Units.inchesToMeters(7), Units.inchesToMeters(16.5), new Rotation3d(0, Math.toRadians(20), 0));
+      public static final Transform3d kRobotToFrontTopCamera = new Transform3d(Units.inchesToMeters(10.5),
         Units.inchesToMeters(7), Units.inchesToMeters(16.5), new Rotation3d(0, Math.toRadians(20), 0));
     /**
      * The layout of the AprilTags on the field.

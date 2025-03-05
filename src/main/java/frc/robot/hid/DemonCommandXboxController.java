@@ -47,4 +47,8 @@ public class DemonCommandXboxController extends CommandXboxController {
   public Trigger alignToScoreLeft() {
     return this.x();
   }
+
+  public Trigger alignToCoralStation() {
+    return this.y();
+  }
 }

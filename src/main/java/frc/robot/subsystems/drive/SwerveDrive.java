@@ -504,7 +504,7 @@ public class SwerveDrive extends SubsystemBase {
     return cmd.withName("DriveWithXboxController");
   }
 
-  public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp) {
+  public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp, double XDist, double YDist, boolean wantsFinalAdjustment) {
     var alignCmd = runEnd(() -> {
       targetOpt = targetSupp.get();
       if (targetOpt.isEmpty()) {
@@ -514,10 +514,10 @@ public class SwerveDrive extends SubsystemBase {
 
       var target = targetOpt.get();
 
-      errorX = SwerveDriveConfig.VISION_TARGET_X_DISTANCE_METERS - target.getOffetX();
+      errorX = XDist - target.getOffetX();
       var outputX = -(SwerveDriveConfig.VISION_X_P * errorX);
 
-      errorY = SwerveDriveConfig.VISION_TARGET_Y_DISTANCE_METERS - target.getOffsetY();
+      errorY = YDist - target.getOffsetY();
       var outputY = -(SwerveDriveConfig.VISION_Y_P * errorY);
 
       var targetAngle = target.getTargetAngle();
@@ -525,13 +525,19 @@ public class SwerveDrive extends SubsystemBase {
       this.holdAngleWhileDriving(outputX, outputY, Rotation2d.fromDegrees(targetAngle), false);
     }, this::stop)
     .until(() -> targetOpt.isEmpty() || (Math.abs(errorX) <= 0.01 && Math.abs(errorY) <= 0.01 && atAngleSetpoint()));
-
-    var finalAdjustment = runEnd(() -> this.drive(0.2, 0, 0, false), this::stop)
+    var finalAdjustment = Commands.none();
+    if (wantsFinalAdjustment){
+      finalAdjustment = runEnd(() -> this.drive(0.2, 0, 0, false), this::stop)
       .withTimeout(0.5);
+    }
 
     var cmd = Commands.sequence(alignCmd, finalAdjustment);
 
     return cmd.withName("SwerveDriveAlignToTarget");
+  }
+
+  public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp) {
+   return alignToTarget(targetSupp, SwerveDriveConfig.VISION_TARGET_X_DISTANCE_METERS, SwerveDriveConfig.VISION_TARGET_Y_DISTANCE_METERS, true);
   }
 
   /**
