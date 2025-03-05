@@ -12,6 +12,16 @@ final class CorallerConfig {
     public static final double kElevatorEncoderPositionConversionFactor = (4*(Math.PI)*kElevatorSprocketRadiusInches)/kElevatorGearing;
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
+
+    // Profiled PID Controller Config
+    public static final double kElevatorMaxVelocity = 5;
+    public static final double kElevatorMaxAcceleration = 10;
+
+    public enum PIDMode {
+      DEFAULT,
+      TRAPEZOID;
+    }
+    public static final PIDMode kElevatorPIDMode = PIDMode.DEFAULT;
   }
 
   protected final class AnglerConfig {
