@@ -28,8 +28,11 @@ public final class SwerveDriveConfig {
   // April Tags
   public static final double VISION_X_P = 1.25;
   public static final double VISION_Y_P = 2;
-  public static final double VISION_TARGET_X_DISTANCE_METERS = 0.15;
-  public static final double VISION_TARGET_Y_DISTANCE_METERS = 0.0;
+  public static final double VISION_REEF_TARGET_X_DISTANCE_METERS = 0.15;
+  public static final double VISION_REEF_TARGET_Y_DISTANCE_METERS = 0.0;
+  // TODO: test and get good values
+  public static final double VISION_CORAL_STATION_TARGET_X_DISTANCE_METERS = 0.2;
+  public static final double VISION_CORAL_STATION_TARGET_Y_DISTANCE_METERS = 0.05;
 
   // individual offsets after calibrating each module
   public static final double kFrontLeftPivotOffsetDegrees = 225;

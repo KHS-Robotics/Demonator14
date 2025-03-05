@@ -33,7 +33,7 @@
     {
       "name": "slowm away from reef",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.19532374100718677,
+      "maxWaypointRelativePos": 0.15395003376097363,
       "constraints": {
         "maxVelocity": 0.5,
         "maxAcceleration": 0.5,
@@ -48,7 +48,7 @@
   "eventMarkers": [
     {
       "name": "PrepareReceive",
-      "waypointRelativePos": 0.1967625899280575,
+      "waypointRelativePos": 0.05131667792032823,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

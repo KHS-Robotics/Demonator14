@@ -165,9 +165,9 @@ public class RobotContainer {
     // kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
 
     // vision alignment
-    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToTarget(() -> kFrontLeftPhotonCamera.getBestAprilTag()));
-    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToTarget(() -> kFrontRightPhotonCamera.getBestAprilTag()));
-    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToTarget(() -> kFrontTopPhotonCamera.getBestAprilTag(), 0.2, 0.05, false));
+    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> kFrontLeftPhotonCamera.getBestAprilTag()));
+    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToReef(() -> kFrontRightPhotonCamera.getBestAprilTag()));
+    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToCoralStation(() -> kFrontTopPhotonCamera.getBestAprilTag()));
   }
 
   /** Binds commands to operator stick buttons. */
@@ -247,39 +247,50 @@ public class RobotContainer {
     NamedCommands.registerCommand("STOPAlgae", kAlgaeCollector.stopCommand());
 
     // vision alignment
-    NamedCommands.registerCommand("AlignToD", kSwerveDrive.alignToTarget(() -> {
+    NamedCommands.registerCommand("AlignToTopCoralStation", kSwerveDrive.alignToCoralStation(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 2 : 13;
+      return kFrontTopPhotonCamera.getAprilTagById(id);
+    }));
+    NamedCommands.registerCommand("AlignToBottomCoralStation", kSwerveDrive.alignToCoralStation(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 1 : 12;
+      return kFrontTopPhotonCamera.getAprilTagById(id);
+    }));
+
+    NamedCommands.registerCommand("AlignToD", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 8 : 17;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToE", kSwerveDrive.alignToTarget(() -> {
+    NamedCommands.registerCommand("AlignToE", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 9 : 22;
       return kFrontRightPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToF", kSwerveDrive.alignToTarget(() -> {
+    NamedCommands.registerCommand("AlignToF", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 9 : 22;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToG", kSwerveDrive.alignToTarget(() -> {
+    NamedCommands.registerCommand("AlignToG", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 10 : 18;
       return kFrontRightPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToH", kSwerveDrive.alignToTarget(() -> {
+    NamedCommands.registerCommand("AlignToH", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 10 : 18;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToK", kSwerveDrive.alignToTarget(() -> {
+    NamedCommands.registerCommand("AlignToK", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var id = alliance == Alliance.Red ? 9 : 19;
+      var id = alliance == Alliance.Red ? 6 : 19;
       return kFrontRightPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToL", kSwerveDrive.alignToTarget(() -> {
+    NamedCommands.registerCommand("AlignToL", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var id = alliance == Alliance.Red ? 9 : 19;
+      var id = alliance == Alliance.Red ? 6 : 19;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
     }));
   }

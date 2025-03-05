@@ -504,7 +504,7 @@ public class SwerveDrive extends SubsystemBase {
     return cmd.withName("DriveWithXboxController");
   }
 
-  public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp, double XDist, double YDist, boolean wantsFinalAdjustment) {
+  private Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp, double XDist, double YDist, boolean wantsFinalAdjustment) {
     var alignCmd = runEnd(() -> {
       targetOpt = targetSupp.get();
       if (targetOpt.isEmpty()) {
@@ -536,8 +536,12 @@ public class SwerveDrive extends SubsystemBase {
     return cmd.withName("SwerveDriveAlignToTarget");
   }
 
-  public Command alignToTarget(Supplier<Optional<AprilTagTarget>> targetSupp) {
-   return alignToTarget(targetSupp, SwerveDriveConfig.VISION_TARGET_X_DISTANCE_METERS, SwerveDriveConfig.VISION_TARGET_Y_DISTANCE_METERS, true);
+  public Command alignToReef(Supplier<Optional<AprilTagTarget>> targetSupp) {
+    return alignToTarget(targetSupp, SwerveDriveConfig.VISION_REEF_TARGET_X_DISTANCE_METERS, SwerveDriveConfig.VISION_REEF_TARGET_Y_DISTANCE_METERS, true);
+   }
+
+  public Command alignToCoralStation(Supplier<Optional<AprilTagTarget>> targetSupp) {
+   return alignToTarget(targetSupp, SwerveDriveConfig.VISION_CORAL_STATION_TARGET_X_DISTANCE_METERS, SwerveDriveConfig.VISION_CORAL_STATION_TARGET_Y_DISTANCE_METERS, false);
   }
 
   /**
