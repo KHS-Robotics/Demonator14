@@ -70,6 +70,12 @@
         {
           "type": "named",
           "data": {
+            "name": "AlignToRightCoralStation"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "IntakeCoral"
           }
         },
