@@ -247,14 +247,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("STOPAlgae", kAlgaeCollector.stopCommand());
 
     // vision alignment
-    NamedCommands.registerCommand("AlignToTopCoralStation", kSwerveDrive.alignToCoralStation(() -> {
+    NamedCommands.registerCommand("AlignToRightCoralStation", kSwerveDrive.alignToCoralStation(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var id = alliance == Alliance.Red ? 2 : 13;
+      var id = alliance == Alliance.Red ? 2 : 12;
       return kFrontTopPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToBottomCoralStation", kSwerveDrive.alignToCoralStation(() -> {
+    NamedCommands.registerCommand("AlignToLeftCoralStation", kSwerveDrive.alignToCoralStation(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var id = alliance == Alliance.Red ? 1 : 12;
+      var id = alliance == Alliance.Red ? 1 : 13;
       return kFrontTopPhotonCamera.getAprilTagById(id);
     }));
 
