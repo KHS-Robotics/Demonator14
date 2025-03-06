@@ -275,12 +275,12 @@ public class RobotContainer {
     }));
     NamedCommands.registerCommand("AlignToG", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var id = alliance == Alliance.Red ? 10 : 18;
+      var id = alliance == Alliance.Red ? 10 : 21;
       return kFrontRightPhotonCamera.getAprilTagById(id);
     }));
     NamedCommands.registerCommand("AlignToH", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var id = alliance == Alliance.Red ? 10 : 18;
+      var id = alliance == Alliance.Red ? 10 : 21;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
     }));
     NamedCommands.registerCommand("AlignToK", kSwerveDrive.alignToReef(() -> {
