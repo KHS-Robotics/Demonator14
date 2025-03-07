@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.coraller.CorallerSetpoints.AnglerSetpoints;
 
 public class Coraller extends SubsystemBase {
   private final Elevator elevator = new Elevator();
