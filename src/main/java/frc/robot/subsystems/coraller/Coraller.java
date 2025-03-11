@@ -20,6 +20,10 @@ public class Coraller extends SubsystemBase {
   public void periodic() {
   }
 
+  public boolean hasCoral() {
+    return angler.hasCoral();
+  }
+
   public Command stow() {
     var cmd = setState(CorallerState.STOW);
     return cmd;

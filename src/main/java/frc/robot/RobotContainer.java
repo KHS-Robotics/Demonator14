@@ -103,7 +103,8 @@ public class RobotContainer {
   public static final LEDStrip kLedStrip = new LEDStrip(
     () -> kFrontRightPhotonCamera.getBestAprilTag().isPresent(),
     () -> kFrontLeftPhotonCamera.getBestAprilTag().isPresent(),
-    () -> kFrontTopPhotonCamera.getBestAprilTag().isPresent()
+    () -> kFrontTopPhotonCamera.getBestAprilTag().isPresent(),
+    () -> kCoraller.hasCoral()
   );
 
   /**

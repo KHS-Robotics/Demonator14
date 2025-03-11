@@ -26,12 +26,13 @@ public class LEDStrip {
   float currentPosition = 0f;
   Color[] pixelArray;
 
-  private final BooleanSupplier isAbleToAlignLeft, isAbleToAlignRight, isAbleToAlignCoralStation;
+  private final BooleanSupplier isAbleToAlignLeft, isAbleToAlignRight, isAbleToAlignCoralStation, hasCoral;
 
-  public LEDStrip(BooleanSupplier isAbleToAlignLeft, BooleanSupplier isAbleToAlignRight, BooleanSupplier isAbleToAlignCoralStation) {
+  public LEDStrip(BooleanSupplier isAbleToAlignLeft, BooleanSupplier isAbleToAlignRight, BooleanSupplier isAbleToAlignCoralStation, BooleanSupplier hasCoral) {
     this.isAbleToAlignLeft = isAbleToAlignLeft;
     this.isAbleToAlignRight = isAbleToAlignRight;
     this.isAbleToAlignCoralStation = isAbleToAlignCoralStation;
+    this.hasCoral = hasCoral;
 
     pixelArray = new Color[LEDConfig.LED_LENGTH];
     for (int i = 0; i < pixelArray.length; i++) {
@@ -136,14 +137,14 @@ public class LEDStrip {
   public void setAllRed() {
     ticksPerSecond = 5;
     for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, 255, 0, 0);
+      runSquareWave(Color.RED, -0.4f, 8f);
     }
   }
 
   public void setAllBlue() {
     ticksPerSecond = 5;
     for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, 0, 0, 255);
+      runSquareWave(Color.BLUE, -0.4f, 8f);
     }
   }
 
@@ -178,6 +179,21 @@ public class LEDStrip {
     }
   }
 
+  public void runPurple() {
+    ticksPerSecond = 20;
+    for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
+      setRGB((i + counter) % LEDConfig.LED_LENGTH,
+          (int) ((-Math.cos((2 * Math.PI * 2 * i) / LEDConfig.LED_LENGTH)) + 1) * 128, 255, 128);
+    }
+  }
+
+  public void runOrange() {
+    ticksPerSecond = 20;
+    for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
+      setRGB((i + counter) % LEDConfig.LED_LENGTH,
+          (int) ((-Math.cos((2 * Math.PI * 2 * i) / LEDConfig.LED_LENGTH)) + 1) * 255, 68, 51);
+    }
+  }
   public void runAllianceColor() {
     var alliance = DriverStation.getAlliance();
     if (alliance.isEmpty()) {
@@ -213,9 +229,10 @@ public class LEDStrip {
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       if (alliance.get() == Alliance.Blue) {
-        runSquareWave(Color.BLUE, -0.4f, 8f);
+
+        runBlue();
       } else if (alliance.get() == Alliance.Red) {
-        runSquareWave(Color.RED, -0.4f, 8f);
+        runRed();
       } else {
         runSquareWave(Color.WHITE, -0.4f, 8f);
       }
@@ -228,7 +245,7 @@ public class LEDStrip {
   public void runCanAlignLeftReef() {
     ticksPerSecond = 20;
     if (isAbleToAlignLeft.getAsBoolean()) {
-      runBlue();
+      setAllBlue();
     } else {
       runDisabled();
     }
@@ -238,7 +255,7 @@ public class LEDStrip {
   public void runCanAlignRightReef() {
     ticksPerSecond = 20;
     if (isAbleToAlignRight.getAsBoolean()) {
-      runRed();
+      setAllRed();
     } else {
       runDisabled();
     }
@@ -253,6 +270,25 @@ public class LEDStrip {
       runDisabled();
     }
   }
+
+  // Orange
+  public void runHasCoral() {
+    ticksPerSecond = 20;
+    if (hasCoral.getAsBoolean()) {
+      runOrange();
+    } else {
+      runOrange();
+    }
+  }
+
+  public void runIgnorCoralStationIfCoral() {
+    ticksPerSecond = 20;
+  if (hasCoral.getAsBoolean() == true && (isAbleToAlignCoralStation.getAsBoolean() == true)){
+    runOrange();
+  } else {
+    runYellow();
+  }
+}
 
   public void runSquareWave(Color c, float speed, float sections) {
     float[] hsb = getHSB(c);
@@ -284,9 +320,24 @@ public class LEDStrip {
       runAllianceColor();
     }
     else if(RobotState.isEnabled()) {
-      runCanAlignLeftReef();
-      runCanAlignRightReef();
-      runCanAlignCoralStation();
+      if (hasCoral.getAsBoolean()) {
+        if (isAbleToAlignLeft.getAsBoolean() && isAbleToAlignRight.getAsBoolean()) {
+          runPurple();
+        }
+        else if(isAbleToAlignLeft.getAsBoolean()) {
+          runBlue();
+        }
+        else if(isAbleToAlignRight.getAsBoolean()) {
+          runRed();
+        }
+        else {
+          runRainbow();
+        }
+      } else {
+        if(isAbleToAlignCoralStation.getAsBoolean()) {
+          runYellow();
+        }
+      }
     }
     else {
       runRainbow();
