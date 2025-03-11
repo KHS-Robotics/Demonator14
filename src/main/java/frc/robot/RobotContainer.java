@@ -173,9 +173,9 @@ public class RobotContainer {
     // kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
 
     // vision alignment
-    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> kFrontLeftPhotonCamera.getBestAprilTag()));
-    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToReef(() -> kFrontRightPhotonCamera.getBestAprilTag()));
-    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToCoralStation(() -> kFrontTopPhotonCamera.getBestAprilTag()));
+    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> kFrontLeftPhotonCamera.getBestAprilTag()).repeatedly());
+    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToReef(() -> kFrontRightPhotonCamera.getBestAprilTag()).repeatedly());
+    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToCoralStation(() -> kFrontTopPhotonCamera.getBestAprilTag()).repeatedly());
   }
 
   /** Binds commands to operator stick buttons. */
