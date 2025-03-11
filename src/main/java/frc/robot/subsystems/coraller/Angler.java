@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -40,7 +41,7 @@ class Angler extends SubsystemBase {
     var anglerConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
-      .inverted(true)
+      .inverted(false)
       .apply(limitSwitchConfig)
       .apply(encoderConfig);
     motor = new SparkMax(RobotMap.CORALLER_ANGLE_ID, MotorType.kBrushless);
@@ -51,7 +52,7 @@ class Angler extends SubsystemBase {
     sensor = motor.getForwardLimitSwitch();
 
     pid = new PIDController(AnglerConfig.kAnglerP, AnglerConfig.kAnglerI, AnglerConfig.kAnglerD);
-    pid.setIZone(5);
+    pid.setIZone(7);
 
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
@@ -94,7 +95,7 @@ class Angler extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointAngleDegrees - getAngle());
-    return (error < 1);
+    return (error < 2);
   }
 
   public boolean hasCoral() {
@@ -109,6 +110,7 @@ class Angler extends SubsystemBase {
     var ffCoral = hasCoral() ? AnglerConfig.kAnglerCoralKG * angle : 0;
 
     var output = pidOutput + ffGravity + ffCoral;
+    output = MathUtil.clamp(output, -3, 4);
     motor.setVoltage(output);
   }
 

@@ -51,4 +51,7 @@ public final class RobotMap {
   // Climber
   public static final int CLIMBER_REEL_ID = 16;
   public static final int CLIMBER_ANCHOR_ID = 0;
+
+  // LEDs over PWM
+  public static final int LED_PORT = 0;
 }

@@ -28,6 +28,7 @@ import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.drive.SwerveDriveConfig;
+import frc.robot.subsystems.led.LEDStrip;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -97,6 +98,13 @@ public class RobotContainer {
   // limelight
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
       LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+
+  // Subsystems - LED indicators
+  public static final LEDStrip kLedStrip = new LEDStrip(
+    () -> kFrontRightPhotonCamera.getBestAprilTag().isPresent(),
+    () -> kFrontLeftPhotonCamera.getBestAprilTag().isPresent(),
+    () -> kFrontTopPhotonCamera.getBestAprilTag().isPresent()
+  );
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,
@@ -247,6 +255,18 @@ public class RobotContainer {
     NamedCommands.registerCommand("STOPAlgae", kAlgaeCollector.stopCommand());
 
     // vision alignment
+
+    NamedCommands.registerCommand("SeesRightCoralStation", Commands.waitUntil(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 2 : 12;
+      return kFrontTopPhotonCamera.getAprilTagById(id).isPresent();
+    }));
+    NamedCommands.registerCommand("SeesLeftCoralStation", Commands.waitUntil(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 1 : 13;
+      return kFrontTopPhotonCamera.getAprilTagById(id).isPresent();
+    }));
+    
     NamedCommands.registerCommand("AlignToRightCoralStation", kSwerveDrive.alignToCoralStation(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 2 : 12;
