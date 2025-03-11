@@ -146,7 +146,7 @@ public class LEDStrip {
       setRGB(i, 0, 0, 255);
     }
   }
-
+//hi
   public void setAllOff() {
     ticksPerSecond = 5;
     for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
