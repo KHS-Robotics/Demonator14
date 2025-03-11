@@ -106,12 +106,6 @@ class Angler extends SubsystemBase {
     var pidOutput = pid.calculate(getAngle(), setpointAngleDegrees);
 
     var angle = Math.cos(Math.toRadians(getAngle()));
-    // let cosine of the angle be zero when outside out bounds to maintain
-    // a sign that is in phase with the motor
-    if (angle > 90 || angle < -90) {
-      angle = 90 * Math.signum(angle);
-    }
-
     var ffGravity = AnglerConfig.kAnglerKG * angle;
     var ffCoral = hasCoral() ? AnglerConfig.kAnglerCoralKG * angle : 0;
 

@@ -5,44 +5,19 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "PrepareScoreL4"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Calibrate"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OuttakeCoral"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "test path 2"
+                  "pathName": " Start Right Go To F AATA"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "PrepareReceive"
+                  "name": "STOPSwerve"
                 }
               }
             ]
@@ -53,9 +28,9 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "test path 3"
+                  "name": "AlignToF"
                 }
               },
               {
@@ -70,23 +45,67 @@
         {
           "type": "named",
           "data": {
-            "name": "OuttakeCoral"
+            "name": "L4OuttakeCoral"
           }
         },
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "test path 4"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Close Swing to Coral Station"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "STOPSwerve"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "PrepareReceive"
+                  "name": "SeesRightCoralStation"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToRightCoralStation"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeCoral"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Coral Station to E AATA"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOPSwerve"
                 }
               }
             ]
@@ -97,9 +116,9 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "test path 5"
+                  "name": "AlignToE"
                 }
               },
               {
@@ -114,7 +133,26 @@
         {
           "type": "named",
           "data": {
-            "name": "OuttakeCoral"
+            "name": "L4OuttakeCoral"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Back Off E"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOPSwerve"
+                }
+              }
+            ]
           }
         }
       ]

@@ -1,5 +1,5 @@
 package frc.robot.subsystems.led;
 
-public class LEDConfig {
+class LEDConfig {
   public static final int LED_LENGTH = 80;
 }

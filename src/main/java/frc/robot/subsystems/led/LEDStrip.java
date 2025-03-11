@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotMap;
 
+/**
+ * Originally from 2024: https://github.com/KHS-Robotics/Demonator13/blob/main/src/main/java/frc/robot/subsystems/LEDStrip.java
+ */
 public class LEDStrip {
   Thread t;
   AddressableLED strip;
@@ -167,6 +170,14 @@ public class LEDStrip {
     }
   }
 
+  public void runYellow() {
+    ticksPerSecond = 20;
+    for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
+      setRGB((i + counter) % LEDConfig.LED_LENGTH,
+          (int) ((-Math.cos((2 * Math.PI * 2 * i) / LEDConfig.LED_LENGTH)) + 1) * 255, 255, 0);
+    }
+  }
+
   public void runAllianceColor() {
     var alliance = DriverStation.getAlliance();
     if (alliance.isEmpty()) {
@@ -217,9 +228,9 @@ public class LEDStrip {
   public void runCanAlignLeftReef() {
     ticksPerSecond = 20;
     if (isAbleToAlignLeft.getAsBoolean()) {
-      // let there be blue
+      runBlue();
     } else {
-      // turn off blue
+      runDisabled();
     }
   }
 
@@ -227,9 +238,9 @@ public class LEDStrip {
   public void runCanAlignRightReef() {
     ticksPerSecond = 20;
     if (isAbleToAlignRight.getAsBoolean()) {
-      // let there be red
+      runRed();
     } else {
-      // turn off red
+      runDisabled();
     }
   }
 
@@ -237,9 +248,9 @@ public class LEDStrip {
   public void runCanAlignCoralStation() {
     ticksPerSecond = 20;
     if (isAbleToAlignCoralStation.getAsBoolean()) {
-      // let there be yellow
+      runYellow();
     } else {
-      // turn off yellow
+      runDisabled();
     }
   }
 

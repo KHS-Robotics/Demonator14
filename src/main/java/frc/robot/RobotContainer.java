@@ -173,9 +173,9 @@ public class RobotContainer {
     // kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
 
     // vision alignment
-    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> kFrontLeftPhotonCamera.getBestAprilTag()));
-    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToReef(() -> kFrontRightPhotonCamera.getBestAprilTag()));
-    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToCoralStation(() -> kFrontTopPhotonCamera.getBestAprilTag()));
+    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> kFrontLeftPhotonCamera.getBestAprilTag()).repeatedly());
+    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToReef(() -> kFrontRightPhotonCamera.getBestAprilTag()).repeatedly());
+    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToCoralStation(() -> kFrontTopPhotonCamera.getBestAprilTag()).repeatedly());
   }
 
   /** Binds commands to operator stick buttons. */
@@ -255,6 +255,18 @@ public class RobotContainer {
     NamedCommands.registerCommand("STOPAlgae", kAlgaeCollector.stopCommand());
 
     // vision alignment
+
+    NamedCommands.registerCommand("SeesRightCoralStation", Commands.waitUntil(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 2 : 12;
+      return kFrontTopPhotonCamera.getAprilTagById(id).isPresent();
+    }));
+    NamedCommands.registerCommand("SeesLeftCoralStation", Commands.waitUntil(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 1 : 13;
+      return kFrontTopPhotonCamera.getAprilTagById(id).isPresent();
+    }));
+    
     NamedCommands.registerCommand("AlignToRightCoralStation", kSwerveDrive.alignToCoralStation(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 2 : 12;
