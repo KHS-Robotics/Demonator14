@@ -15,13 +15,13 @@ final class CorallerConfig {
   }
 
   protected final class AnglerConfig {
-    public static final double kAnglerP = 0.12;
-    public static final double kAnglerI = 0.0;
-    public static final double kAnglerD = 0.0;
+    public static final double kAnglerP = 0.06;
+    public static final double kAnglerI = 0.01;
+    public static final double kAnglerD = 0.0015;
     /** Gravity term in volts. */
     public static final double kAnglerKG = 0.25;
     /** Additional gravity term in volts for coral. */
     public static final double kAnglerCoralKG = 0.065;
-    public static final double kAnglerOffset = -122.0;
+    public static final double kAnglerOffset = -137;
   }
 }

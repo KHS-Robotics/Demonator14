@@ -28,6 +28,7 @@ import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.drive.SwerveDrive;
 import frc.robot.subsystems.drive.SwerveDriveConfig;
+import frc.robot.subsystems.led.LEDStrip;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -97,6 +98,13 @@ public class RobotContainer {
   // limelight
   public static final DemonLimelightCamera kRearLimelightCamera = new DemonLimelightCamera(
       LimelightConfig.kRearCameraName, LimelightConfig.kPoseAlgorithm, kSwerveDrive::getPose, kNavx::getRate);
+
+  // Subsystems - LED indicators
+  public static final LEDStrip kLedStrip = new LEDStrip(
+    () -> kFrontRightPhotonCamera.getBestAprilTag().isPresent(),
+    () -> kFrontLeftPhotonCamera.getBestAprilTag().isPresent(),
+    () -> kFrontTopPhotonCamera.getBestAprilTag().isPresent()
+  );
 
   /**
    * The container for the robot. Contains subsystems, operator interface devices,
