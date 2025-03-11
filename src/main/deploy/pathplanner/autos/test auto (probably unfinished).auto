@@ -80,7 +80,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "test path 4"
+                  "pathName": null
                 }
               },
               {
@@ -99,7 +99,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "test path 5"
+                  "pathName": null
                 }
               },
               {
