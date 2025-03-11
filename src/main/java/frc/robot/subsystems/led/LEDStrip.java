@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotMap;
 
+/**
+ * Originally from 2024: https://github.com/KHS-Robotics/Demonator13/blob/main/src/main/java/frc/robot/subsystems/LEDStrip.java
+ */
 public class LEDStrip {
   Thread t;
   AddressableLED strip;
