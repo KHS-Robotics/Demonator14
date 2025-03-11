@@ -8,27 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.4447991522569055,
-        "y": 1.6269663709858524
+        "x": 3.8014982876712327,
+        "y": 0.5991438356164389
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6828767123287671,
-        "y": 2.4773544520547945
+        "x": 1.4274400684931507,
+        "y": 2.0115582191780823
       },
       "prevControl": {
-        "x": 2.945034246575342,
-        "y": 1.5758133561643832
+        "x": 2.599443493150685,
+        "y": 0.8996575342465758
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -129.34329243798635
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -47,14 +52,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "AlignToLeftCoralStation",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
       "name": "PrepareReceive",
-      "waypointRelativePos": 0.051316677920320776,
+      "waypointRelativePos": 0.10169491525423732,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

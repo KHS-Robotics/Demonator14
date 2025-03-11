@@ -28,7 +28,12 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.574866310160428,
+      "rotationDegrees": -130.0
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
