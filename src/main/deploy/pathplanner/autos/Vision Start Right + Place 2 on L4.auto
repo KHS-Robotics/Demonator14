@@ -49,19 +49,32 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "F to Coral Station"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "F to Coral Station"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "STOPSwerve"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "STOPSwerve"
+                  "name": "SeesRightCoralStation"
                 }
               }
             ]

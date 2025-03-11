@@ -8,32 +8,41 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.25061475409836,
-        "y": 1.5974897540983601
+        "x": 6.052755681818183,
+        "y": 1.88609375
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.697902397260274,
-        "y": 1.6359160958904113
+        "x": 0.7478693181818181,
+        "y": 1.3775426136363638
       },
       "prevControl": {
-        "x": 2.5730048562766683,
-        "y": 2.2353013417920513
+        "x": 1.435909090909091,
+        "y": 0.6695596590909088
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.697193500738554,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.799113737075334,
+      "rotationDegrees": -130.0
+    }
+  ],
   "constraintZones": [
     {
-      "name": "Constraints Zone",
+      "name": "SlowForLowerElevator",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.09993247805537117,
+      "maxWaypointRelativePos": 0.2,
       "constraints": {
         "maxVelocity": 1.0,
         "maxAcceleration": 1.0,
@@ -44,14 +53,14 @@
       }
     },
     {
-      "name": "SlowForApproach",
-      "minWaypointRelativePos": 0.8021607022282253,
+      "name": "SlowForAprilTag",
+      "minWaypointRelativePos": 0.7000895255147718,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 1.0,
         "maxAcceleration": 2.0,
-        "maxAngularVelocity": 90.0,
-        "maxAngularAcceleration": 180.0,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 360.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -61,7 +70,7 @@
   "eventMarkers": [
     {
       "name": "PrepareReceive",
-      "waypointRelativePos": 0.051316677920320776,
+      "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -72,7 +81,7 @@
     },
     {
       "name": "StartCoralIntake",
-      "waypointRelativePos": 0.802160702228209,
+      "waypointRelativePos": 0.8,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -92,7 +101,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -135.00000000000003
+    "rotation": -126.11934084947974
   },
   "reversed": false,
   "folder": null,
