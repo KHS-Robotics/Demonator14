@@ -323,14 +323,11 @@ public class LEDStrip {
       if (hasCoral.getAsBoolean()) {
         if (isAbleToAlignLeft.getAsBoolean() && isAbleToAlignRight.getAsBoolean()) {
           runPurple();
-        }
-        else if(isAbleToAlignLeft.getAsBoolean()) {
+        } else if(isAbleToAlignLeft.getAsBoolean()) {
           runBlue();
-        }
-        else if(isAbleToAlignRight.getAsBoolean()) {
+        } else if(isAbleToAlignRight.getAsBoolean()) {
           runRed();
-        }
-        else {
+        } else {
           runRainbow();
         }
       } else {
@@ -340,10 +337,11 @@ public class LEDStrip {
       }
     }
     else {
-      runRainbow();
+      runAllianceColor(); {
     }
 
     strip.setData(buffer);
     counter++;
   }
+}
 }
