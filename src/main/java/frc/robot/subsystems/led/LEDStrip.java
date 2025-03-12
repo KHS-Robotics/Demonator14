@@ -134,18 +134,6 @@ public class LEDStrip {
     return new float[] { h, s, b };
   }
 
-  public void setAllRed() {
-    setAllColor(255, 0, 0);
-  }
-
-  public void setAllBlue() {
-    setAllColor(0, 0, 255);
-  }
-
-  public void setAllOff() {
-    setAllColor(0, 0, 0);
-  }
-
   public void runBlue() {
     ticksPerSecond = 20;
     for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
@@ -162,22 +150,19 @@ public class LEDStrip {
     }
   }
 
-  public void setAllYellow() {
-    setAllColor(255, 255, 0);
-  }
-
-  public void setAllPurple() {
-    setAllColor(160, 32, 240);
-  }
-
-  public void setAllKellyGreen() {
-    setAllColor(76, 187, 23);
-  }
-
-  public void setAllColor(int r, int g, int b) {
+  /**
+   * Get the current alliance from the FMS.
+   *
+   * Sets a solid color for the entire LED strip
+   * 
+   * Examples:
+   *  setSolidColor(Color.blue);
+   *  setSolidColor(new Color(76, 187, 23)); // Kelly Green, GO BIRDS!
+   */
+  public void setSolidColor(Color c) {
     ticksPerSecond = 5;
     for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, r, g, b);
+      setRGB(i, c.getRed(), c.getGreen(), c.getBlue());
     } 
   }
 
@@ -219,14 +204,36 @@ public class LEDStrip {
       } else if (alliance.get() == Alliance.Red) {
         runRed();
       } else {
-        runSquareWave(Color.WHITE, -0.4f, 8f);
+        runSquareWave(Color.white, -0.4f, 8f);
       }
     } else {
-      setAllOff();
+      setSolidColor(Color.white);
     }
   }
 
-  public void   runSquareWave(Color c, float speed, float sections) {
+  public void runEnabled() {
+    Color defaultColor = Color.green;
+
+    if (hasCoral.getAsBoolean()) {
+      if (isAbleToAlignLeft.getAsBoolean() && isAbleToAlignRight.getAsBoolean()) {
+        setSolidColor(Color.magenta);
+      } else if(isAbleToAlignLeft.getAsBoolean()) {
+        setSolidColor(Color.blue);
+      } else if(isAbleToAlignRight.getAsBoolean()) {
+        setSolidColor(Color.red);
+      } else {
+        setSolidColor(defaultColor);
+      }
+    } else {
+      if(isAbleToAlignCoralStation.getAsBoolean()) {
+        setSolidColor(Color.yellow);
+      } else {
+        setSolidColor(defaultColor);
+      }
+    }
+  }
+
+  public void runSquareWave(Color c, float speed, float sections) {
     float[] hsb = getHSB(c);
     this.speedFactor = speed;
     this.sections = sections;
@@ -255,21 +262,7 @@ public class LEDStrip {
     if (RobotState.isDisabled()) {
       runDisabled();
     } else {
-      if (hasCoral.getAsBoolean()) {
-        if (isAbleToAlignLeft.getAsBoolean() && isAbleToAlignRight.getAsBoolean()) {
-          setAllPurple();
-        } else if(isAbleToAlignLeft.getAsBoolean()) {
-          setAllBlue();
-        } else if(isAbleToAlignRight.getAsBoolean()) {
-          setAllRed();
-        } else {
-          setAllKellyGreen();
-        }
-      } else {
-        if(isAbleToAlignCoralStation.getAsBoolean()) {
-          setAllYellow();
-        }
-      }
+      runEnabled();
     }
 
     strip.setData(buffer);
