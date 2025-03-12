@@ -50,13 +50,23 @@
       "name": "PrepareStow",
       "waypointRelativePos": 0.15,
       "endWaypointRelativePos": null,
-      "command": null
+      "command":  {
+        "type": "named",
+        "data": {
+          "name": "PrepareStow"
+        }
+      }
     },
     {
       "name": "StartCoralIntake",
       "waypointRelativePos": 0.9050847457627108,
       "endWaypointRelativePos": null,
-      "command": null
+      "command":  {
+        "type": "named",
+        "data": {
+          "name": "StartCoralIntake"
+        }
+      }
     }
   ],
   "globalConstraints": {
