@@ -104,7 +104,7 @@ public class RobotContainer {
     () -> kFrontRightPhotonCamera.getBestAprilTag().isPresent(),
     () -> kFrontLeftPhotonCamera.getBestAprilTag().isPresent(),
     () -> kFrontTopPhotonCamera.getBestAprilTag().isPresent(),
-    () -> kCoraller.hasCoral()
+    () -> kCoraller.runCanAlignCoralStation(),
   );
 
   /**
