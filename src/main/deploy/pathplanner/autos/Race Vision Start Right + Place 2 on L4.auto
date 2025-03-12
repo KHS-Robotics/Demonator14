@@ -5,19 +5,32 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": " Start Right Go To F AATA"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Swing Start Right Go To F AATA"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "STOPSwerve"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "STOPSwerve"
+                  "name": "SeesF"
                 }
               }
             ]
@@ -49,6 +62,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "1 Far Swerve F to Coral Station"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -59,7 +78,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Swing Far to Coral Station"
+                        "pathName": "2 Far Swerve F to Coral Station"
                       }
                     },
                     {

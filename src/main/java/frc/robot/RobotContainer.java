@@ -279,6 +279,12 @@ public class RobotContainer {
       return kFrontTopPhotonCamera.getAprilTagById(id);
     }));
 
+    NamedCommands.registerCommand("SeesF", Commands.waitUntil(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 9 : 22;
+      return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
+    }));
+
     NamedCommands.registerCommand("AlignToD", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 8 : 17;
