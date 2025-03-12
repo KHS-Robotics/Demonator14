@@ -54,7 +54,7 @@ class Intake extends SubsystemBase {
 
   public void start() {
     intakeState = IntakeState.INTAKING;
-    motor.setVoltage(3.0);
+    motor.setVoltage(2.25);
   }
 
   public Command intakeCommand() {

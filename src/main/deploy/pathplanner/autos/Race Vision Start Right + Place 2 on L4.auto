@@ -108,6 +108,18 @@
         {
           "type": "named",
           "data": {
+            "name": "PrepareReceive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToRightCoralStation"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "IntakeCoral"
           }
         },
