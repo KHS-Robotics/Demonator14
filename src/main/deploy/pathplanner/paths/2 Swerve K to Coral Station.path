@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.829,
-        "y": 2.149
+        "x": 2.795,
+        "y": 6.459
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0498674911676034,
-        "y": 2.316813985354425
+        "x": 2.0735445205479452,
+        "y": 5.888184931506849
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.354610655737705,
-        "y": 1.1299692622950817
+        "x": 1.0517979452054795,
+        "y": 6.819777397260274
       },
       "prevControl": {
-        "x": 2.0618852459016392,
-        "y": 2.041034836065575
+        "x": 1.7279537671232876,
+        "y": 6.50423801369863
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,14 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [
     {
-      "name": "SlowForApproach",
-      "minWaypointRelativePos": 0.1694915254237287,
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.2169491525423728,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 1.0,
         "maxAcceleration": 1.0,
-        "maxAngularVelocity": 90.0,
-        "maxAngularAcceleration": 180.0,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 360.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -48,25 +48,9 @@
   "eventMarkers": [
     {
       "name": "PrepareReceive",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareReceive"
-        }
-      }
-    },
-    {
-      "name": "StartCoralIntake",
-      "waypointRelativePos": 0.55,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StartCoralIntake"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -78,14 +62,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -126.32682595212032
+    "velocity": 0.0,
+    "rotation": 130.0
   },
   "reversed": false,
   "folder": "__ To Coral Station",
   "idealStartingState": {
     "velocity": 1.5,
-    "rotation": -130.022
+    "rotation": 130.0
   },
   "useDefaultConstraints": true
 }

@@ -5,19 +5,32 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": " Start Right Go To F AATA"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Start Swing Left Go To K AATA"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "STOPSwerve"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "STOPSwerve"
+                  "name": "SeesK"
                 }
               }
             ]
@@ -30,7 +43,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToF"
+                  "name": "AlignToK"
                 }
               },
               {
@@ -49,19 +62,38 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "path",
+          "data": {
+            "pathName": "1 Swerve K to Coral Station"
+          }
+        },
+        {
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "F to Coral Station"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "2 Swerve K to Coral Station"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "STOPSwerve"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "STOPSwerve"
+                  "name": "SeesLeftCoralStation"
                 }
               }
             ]
@@ -70,7 +102,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignToRightCoralStation"
+            "name": "AlignToLeftCoralStation"
           }
         },
         {
@@ -86,7 +118,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Coral Station to E AATA"
+                  "pathName": "Coral Station to L AATA"
                 }
               },
               {
@@ -105,7 +137,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToE"
+                  "name": "AlignToL"
                 }
               },
               {
@@ -130,7 +162,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Off E"
+                  "pathName": "Back Off L"
                 }
               },
               {
@@ -146,6 +178,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Start Right",
+  "folder": "Start Left",
   "choreoAuto": false
 }

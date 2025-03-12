@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start Left Go To K AATA"
+                  "pathName": "Start Swing Left Go To K AATA"
                 }
               },
               {
@@ -146,6 +146,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "VISION",
+  "folder": "Start Left",
   "choreoAuto": false
 }

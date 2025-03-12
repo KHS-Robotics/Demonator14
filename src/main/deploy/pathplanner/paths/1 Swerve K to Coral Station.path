@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.829,
-        "y": 2.149
+        "x": 3.936729452054794,
+        "y": 5.257106164383561
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0498674911676034,
-        "y": 2.316813985354425
+        "x": 3.3657534246575342,
+        "y": 5.93326198630137
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.354610655737705,
-        "y": 1.1299692622950817
+        "x": 2.794777397260274,
+        "y": 6.45916095890411
       },
       "prevControl": {
-        "x": 2.0618852459016392,
-        "y": 2.041034836065575
+        "x": 3.0652397260273974,
+        "y": 6.549315068493151
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,14 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [
     {
-      "name": "SlowForApproach",
-      "minWaypointRelativePos": 0.1694915254237287,
-      "maxWaypointRelativePos": 1.0,
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.2,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 0.5,
         "maxAcceleration": 1.0,
-        "maxAngularVelocity": 90.0,
-        "maxAngularAcceleration": 180.0,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 360.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -47,26 +47,16 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "PrepareReceive",
-      "waypointRelativePos": 0.0,
+      "name": "PrepareStow",
+      "waypointRelativePos": 0.15,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareReceive"
-        }
-      }
+      "command": null
     },
     {
       "name": "StartCoralIntake",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.9050847457627108,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StartCoralIntake"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -78,14 +68,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -126.32682595212032
+    "velocity": 1.5,
+    "rotation": 130.0
   },
   "reversed": false,
   "folder": "__ To Coral Station",
   "idealStartingState": {
-    "velocity": 1.5,
-    "rotation": -130.022
+    "velocity": 0,
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

@@ -3,16 +3,13 @@
   "robotLength": 0.93,
   "holonomicMode": true,
   "pathFolders": [
-    "D",
-    "E",
-    "F",
-    "K",
-    "L",
-    "End Center",
-    "Start Center"
+    "Back Off",
+    "Coral Station To __",
+    "Start",
+    "__ To Coral Station"
   ],
   "autoFolders": [
-    "VISION",
+    "Start Left",
     "Start Center",
     "Start Right"
   ],
