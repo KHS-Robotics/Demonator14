@@ -50,7 +50,12 @@
       "name": "PrepareReceive",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareStow"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -68,8 +73,8 @@
   "reversed": false,
   "folder": "__ To Coral Station",
   "idealStartingState": {
-    "velocity": 1.25,
-    "rotation": 130.0
+    "velocity": 0.75,
+    "rotation": 125.00000000000001
   },
   "useDefaultConstraints": true
 }
