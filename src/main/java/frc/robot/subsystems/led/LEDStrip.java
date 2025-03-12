@@ -135,24 +135,15 @@ public class LEDStrip {
   }
 
   public void setAllRed() {
-    ticksPerSecond = 5;
-    for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, 255, 0, 0);
-    }
+    setAllColor(255, 0, 0);
   }
 
   public void setAllBlue() {
-    ticksPerSecond = 5;
-    for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, 0, 0, 255);
-    }
+    setAllColor(0, 0, 255);
   }
 
   public void setAllOff() {
-    ticksPerSecond = 5;
-    for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, 0, 0, 0);
-    }
+    setAllColor(0, 0, 0);
   }
 
   public void runBlue() {
@@ -172,24 +163,22 @@ public class LEDStrip {
   }
 
   public void setAllYellow() {
-    ticksPerSecond = 5;
-    for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, 255, 255, 0);
-    }
+    setAllColor(255, 255, 0);
   }
 
   public void setAllPurple() {
-    ticksPerSecond = 5;
-    for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, 160, 32, 240);
-    }
+    setAllColor(160, 32, 240);
   }
 
   public void setAllKellyGreen() {
+    setAllColor(76, 187, 23);
+  }
+
+  public void setAllColor(int r, int g, int b) {
     ticksPerSecond = 5;
     for (int i = 0; i < LEDConfig.LED_LENGTH; i++) {
-      setRGB(i, 76, 187, 23);
-    }
+      setRGB(i, r, g, b);
+    } 
   }
 
   public void runAllianceColor() {
