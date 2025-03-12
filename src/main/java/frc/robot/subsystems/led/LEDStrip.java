@@ -212,7 +212,7 @@ public class LEDStrip {
   }
 
   public void runEnabled() {
-    Color defaultColor = Color.green;
+    Color defaultColor = Color.white;
 
     if (hasCoral.getAsBoolean()) {
       if (isAbleToAlignLeft.getAsBoolean() && isAbleToAlignRight.getAsBoolean()) {
@@ -222,11 +222,11 @@ public class LEDStrip {
       } else if(isAbleToAlignRight.getAsBoolean()) {
         setSolidColor(Color.red);
       } else {
-        setSolidColor(defaultColor);
+        setSolidColor(Color.green);
       }
     } else {
       if(isAbleToAlignCoralStation.getAsBoolean()) {
-        setSolidColor(Color.yellow);
+        setSolidColor(Color.orange);
       } else {
         setSolidColor(defaultColor);
       }
