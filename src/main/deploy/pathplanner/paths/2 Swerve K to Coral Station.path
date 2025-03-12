@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.795,
-        "y": 6.459
+        "x": 3.095,
+        "y": 5.558
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0735445205479452,
-        "y": 5.888184931506849
+        "x": 2.222248825519939,
+        "y": 5.267082075674413
       },
       "isLocked": false,
       "linkedName": null
@@ -50,12 +50,7 @@
       "name": "PrepareReceive",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command":  {
-        "type": "named",
-        "data": {
-          "name": "PrepareReceive"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -73,7 +68,7 @@
   "reversed": false,
   "folder": "__ To Coral Station",
   "idealStartingState": {
-    "velocity": 1.5,
+    "velocity": 1.25,
     "rotation": 130.0
   },
   "useDefaultConstraints": true
