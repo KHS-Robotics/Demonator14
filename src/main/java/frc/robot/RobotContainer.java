@@ -9,6 +9,7 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -273,11 +274,7 @@ public class RobotContainer {
       var id = alliance == Alliance.Red ? 2 : 12;
       return kFrontTopPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToLeftCoralStation", kSwerveDrive.alignToCoralStation(() -> {
-      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var id = alliance == Alliance.Red ? 1 : 13;
-      return kFrontTopPhotonCamera.getAprilTagById(id);
-    }));
+    NamedCommands.registerCommand("TurnToLeftCoralStationAngle", kSwerveDrive.rotateToAngleInPlaceCmd(Rotation2d.fromDegrees(130)));
 
     NamedCommands.registerCommand("SeesF", Commands.waitUntil(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;

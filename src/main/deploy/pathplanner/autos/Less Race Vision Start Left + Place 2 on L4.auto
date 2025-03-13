@@ -1,0 +1,158 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Start Swing Left Go To K AATA"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "STOPSwerve"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SeesK"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToK"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepareScoreL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4OuttakeCoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 Less Swerve K to Coral Station"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartCoralIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToLeftCoralStation"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Coral Station to L AATA"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOPSwerve"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToL"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepareScoreL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4OuttakeCoral"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Back Off L"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOPSwerve"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Start Left",
+  "choreoAuto": false
+}

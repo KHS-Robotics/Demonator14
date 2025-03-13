@@ -667,6 +667,17 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
+   * Rotate to a desired angle about the robot's center.
+   * 
+   * @param setpointAngle
+   */
+  public Command rotateToAngleInPlaceCmd(Rotation2d setpointAngle) {
+    var cmd = runEnd(() -> rotateToAngleInPlace(setpointAngle), this::stop)
+      .until(() -> this.atAngleSetpoint());
+    return cmd.withName("SwerveRotateToAngleInPlace");
+  }
+
+  /**
    * Sets the drive to go to the desired pose given the robot's current pose vs
    * target
    * 

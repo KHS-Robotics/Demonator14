@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Coraller extends SubsystemBase {
   private final Elevator elevator = new Elevator();
   private final Angler angler = new Angler();
-  private final Intake intake = new Intake(angler::hasCoral);
+  private final Intake intake = new Intake(() -> angler.hasCoral());
 
   public Coraller() {
     SmartDashboard.putData(this);
