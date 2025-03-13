@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.cameras;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -227,17 +228,22 @@ public class DemonPhotonCamera extends SubsystemBase {
     this.enableAprilTagUpdates = enableAprilTagUpdates;
   }
 
-  public Optional<AprilTagTarget> getBestAprilTag() {
+  public Optional<AprilTagTarget> getBestAprilTag(ArrayList<Integer> fiducialIds) {
     var results = getLatestAprilTagResults();
     if (results.isEmpty())
       return Optional.empty();
     
     var targetWithLargestArea = new PhotonTrackedTarget();
     var cameraResult = results.get().cameraResult;
+    boolean hasTarget = false;
     for (var result : cameraResult.getTargets()) {
-      if (result.area > targetWithLargestArea.area) {
+      if (result.area > targetWithLargestArea.area && (fiducialIds.isEmpty() || fiducialIds.contains(result.fiducialId))) {
         targetWithLargestArea = result;
+        hasTarget = true;
       }
+    }
+    if(!hasTarget){
+      return Optional.empty();
     }
     return getApriltagFromTarget(targetWithLargestArea);
   }
