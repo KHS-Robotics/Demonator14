@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.095,
-        "y": 5.558
+        "x": 3.395,
+        "y": 6.111
       },
       "prevControl": {
-        "x": 3.365462248240598,
-        "y": 5.64815435116826
+        "x": 3.506926020408163,
+        "y": 5.864762755102041
       },
       "nextControl": null,
       "isLocked": false,
@@ -79,7 +79,7 @@
   },
   "goalEndState": {
     "velocity": 0.75,
-    "rotation": 125.00000000000001
+    "rotation": 130.0
   },
   "reversed": false,
   "folder": "__ To Coral Station",
