@@ -96,6 +96,7 @@ public class DemonPhotonCamera extends SubsystemBase {
         () -> aprilTagUpdate.isPresent() ? aprilTagUpdate.get().cameraResult.getTargets().size() : 0, null);
     builder.addIntegerProperty("NumAlgae", () -> algaeTargets.isPresent() ? algaeTargets.get().size() : 0, null);
     builder.addStringProperty("PipelineMode", () -> currentPipelineMode.toString(), null);
+    builder.addBooleanProperty("Connected", () -> camera.isConnected(), null);
   }
 
   /** {@inheritDoc} */

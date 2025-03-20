@@ -302,17 +302,22 @@ public class RobotContainer {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 9 : 22;
       return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
-    }));
+    }).withTimeout(0.5));
     NamedCommands.registerCommand("SeesK", Commands.waitUntil(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 6 : 19;
       return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
-    }));
+    }).withTimeout(0.5));
 
     NamedCommands.registerCommand("AlignToD", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 8 : 17;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
+    }));
+    NamedCommands.registerCommand("AlignToC", kSwerveDrive.alignToReef(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 8 : 17;
+      return kFrontRightPhotonCamera.getAprilTagById(id); 
     }));
     NamedCommands.registerCommand("AlignToE", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;

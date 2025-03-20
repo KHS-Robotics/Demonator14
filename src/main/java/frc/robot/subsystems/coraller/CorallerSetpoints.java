@@ -26,6 +26,6 @@ final class CorallerSetpoints {
     public static final double L2_ALGAE_HEIGHT = 35;
     public static final double L3_HEIGHT = 58.5;
     public static final double L3_ALGAE_HEIGHT = 48;
-    public static final double L4_HEIGHT = 77;
+    public static final double L4_HEIGHT = 75;
   }
 }
