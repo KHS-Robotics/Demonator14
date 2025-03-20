@@ -180,9 +180,9 @@ public class RobotContainer {
     // give driver ability to limit speeds for when elevator is high up to
     // help prevent tipping over - useful for slight alignment adjustments too
     kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
-  
-    // TODO: test rotation button
-    // kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
+
+    // "X" pattern for defense to make robot harder to move
+    kDriverController.lockDriveForDefense().whileTrue(kSwerveDrive.lockCmd());
 
     // vision alignment
     kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> {
@@ -199,7 +199,6 @@ public class RobotContainer {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       return kFrontTopPhotonCamera.getBestAprilTag(alliance == Alliance.Red ? CameraConfig.kRedAllianceCoralFiducialIds : CameraConfig.kBlueAllianceCoralFiducialIds);
     }).repeatedly());
-  
   }
 
   /** Binds commands to operator stick buttons. */

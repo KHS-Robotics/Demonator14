@@ -32,7 +32,7 @@ public class DemonCommandXboxController extends CommandXboxController {
     return this.leftBumper();
   }
 
-  public Trigger changeRotationForScoring() {
+  public Trigger lockDriveForDefense() {
     return this.rightBumper();
   }
 

@@ -630,14 +630,24 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Sets swerve modules to be all angled - useful when trying to stay still on an
+   * Sets swerve modules to be all angled in an "X" pattern - useful when trying to stay still on an
    * incline or to help prevent getting pushed by defense.
    */
   public void lock() {
-    kFrontRight.setDesiredState(0, 45);
-    kFrontLeft.setDesiredState(0, -45);
-    kRearRight.setDesiredState(0, -45);
-    kRearLeft.setDesiredState(0, 45);
+    kFrontRight.setDesiredState(0, -45);
+    kFrontLeft.setDesiredState(0, 45);
+    kRearRight.setDesiredState(0, 45);
+    kRearLeft.setDesiredState(0, -45);
+  }
+  
+  /**
+   * Command for lock.
+   * @see #lock()
+   * @return command to lock the drive train for defense
+   */
+  public Command lockCmd() {
+    var cmd = runEnd(this::lock, this::stop);
+    return cmd.withName("SwerveDriveLock");
   }
 
   /**
