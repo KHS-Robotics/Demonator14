@@ -9,6 +9,7 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -23,11 +24,11 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.algae.collector.AlgaeCollector;
 import frc.robot.subsystems.cameras.CameraConfig.PhotonVisionConfig;
 import frc.robot.subsystems.cameras.CameraConfig.LimelightConfig;
+import frc.robot.subsystems.cameras.CameraConfig;
 import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.drive.SwerveDrive;
-import frc.robot.subsystems.drive.SwerveDriveConfig;
 import frc.robot.subsystems.led.LEDStrip;
 
 /**
@@ -101,9 +102,18 @@ public class RobotContainer {
 
   // Subsystems - LED indicators
   public static final LEDStrip kLedStrip = new LEDStrip(
-    () -> kFrontRightPhotonCamera.getBestAprilTag().isPresent(),
-    () -> kFrontLeftPhotonCamera.getBestAprilTag().isPresent(),
-    () -> kFrontTopPhotonCamera.getBestAprilTag().isPresent(),
+    () -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      return kFrontRightPhotonCamera.getBestAprilTag(alliance == Alliance.Red ? CameraConfig.kRedAllianceReefFiducialIds : CameraConfig.kBlueAllianceReefFiducialIds).isPresent();
+    },   
+    () -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      return kFrontLeftPhotonCamera.getBestAprilTag(alliance == Alliance.Red ? CameraConfig.kRedAllianceReefFiducialIds : CameraConfig.kBlueAllianceReefFiducialIds).isPresent();
+    },   
+    () -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      return kFrontTopPhotonCamera.getBestAprilTag(alliance == Alliance.Red ? CameraConfig.kRedAllianceCoralFiducialIds : CameraConfig.kBlueAllianceCoralFiducialIds).isPresent();
+    },   
     () -> kCoraller.hasCoral()
   );
 
@@ -129,16 +139,6 @@ public class RobotContainer {
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
-    // FrontRightPhotonCamera - AprilTag updates for odometry
-    // kFrontRightPhotonCamera.setDefaultCommand(kFrontRightPhotonCamera.pollForPoseUpdates(
-    //     (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
-    //         update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
-
-    // FrontLeftPhotonCamera - AprilTag updates for odometry
-    // kFrontLeftPhotonCamera.setDefaultCommand(kFrontLeftPhotonCamera.pollForPoseUpdates(
-    //     (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
-    //         update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
-
     // RearLimelightCamera - AprilTag updates for odometry
     kRearLimelightCamera.setDefaultCommand(
         kRearLimelightCamera
@@ -161,22 +161,33 @@ public class RobotContainer {
 
   /** Binds commands to xbox controller buttons. */
   private void configureXboxControllerBindings() {
-    // reset robot heading to face away from the driver - this is useful during
-    // driver practice to reset for field oriented driving direction or a rare odd
-    // scenario on the field during a match
+    // reset robot heading - ALWAYS FACE RED ALLIANCE WHEN DOING THIS - this is
+    // useful during driver practice to reset for field oriented driving direction
+    // or a rare odd scenario on the field during a match
     kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading());
 
     // give driver ability to limit speeds for when elevator is high up to
     // help prevent tipping over - useful for slight alignment adjustments too
     kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
-  
-    // TODO: test rotation button
-    // kDriverController.changeRotationForScoring().whileTrue(kSwerveDrive.setCenterOfRotation(SwerveDriveConfig.kCorallerL2Positon));
+
+    // For defense / to make the robot harder to move
+    kDriverController.lockDriveForDefense().whileTrue(kSwerveDrive.lockCmd());
 
     // vision alignment
-    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> kFrontLeftPhotonCamera.getBestAprilTag()).repeatedly());
-    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToReef(() -> kFrontRightPhotonCamera.getBestAprilTag()).repeatedly());
-    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToCoralStation(() -> kFrontTopPhotonCamera.getBestAprilTag()).repeatedly());
+    kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      return kFrontLeftPhotonCamera.getBestAprilTag(alliance == Alliance.Red ? CameraConfig.kRedAllianceReefFiducialIds : CameraConfig.kBlueAllianceReefFiducialIds);
+    }).repeatedly());
+
+    kDriverController.alignToScoreLeft().whileTrue(kSwerveDrive.alignToReef(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      return kFrontRightPhotonCamera.getBestAprilTag(alliance == Alliance.Red ? CameraConfig.kRedAllianceReefFiducialIds : CameraConfig.kBlueAllianceReefFiducialIds);
+    }).repeatedly());
+
+    kDriverController.alignToCoralStation().whileTrue(kSwerveDrive.alignToCoralStation(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      return kFrontTopPhotonCamera.getBestAprilTag(alliance == Alliance.Red ? CameraConfig.kRedAllianceCoralFiducialIds : CameraConfig.kBlueAllianceCoralFiducialIds);
+    }).repeatedly());
   }
 
   /** Binds commands to operator stick buttons. */
@@ -273,27 +284,28 @@ public class RobotContainer {
       var id = alliance == Alliance.Red ? 2 : 12;
       return kFrontTopPhotonCamera.getAprilTagById(id);
     }));
-    NamedCommands.registerCommand("AlignToLeftCoralStation", kSwerveDrive.alignToCoralStation(() -> {
-      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
-      var id = alliance == Alliance.Red ? 1 : 13;
-      return kFrontTopPhotonCamera.getAprilTagById(id);
-    }));
+    NamedCommands.registerCommand("TurnToLeftCoralStationAngle", kSwerveDrive.rotateToAngleInPlaceCmd(Rotation2d.fromDegrees(130)));
 
     NamedCommands.registerCommand("SeesF", Commands.waitUntil(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 9 : 22;
       return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
-    }));
+    }).withTimeout(0.5));
     NamedCommands.registerCommand("SeesK", Commands.waitUntil(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 6 : 19;
       return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
-    }));
+    }).withTimeout(0.5));
 
     NamedCommands.registerCommand("AlignToD", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 8 : 17;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
+    }));
+    NamedCommands.registerCommand("AlignToC", kSwerveDrive.alignToReef(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 8 : 17;
+      return kFrontRightPhotonCamera.getAprilTagById(id); 
     }));
     NamedCommands.registerCommand("AlignToE", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;

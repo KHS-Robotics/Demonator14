@@ -15,7 +15,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Start Swing Left Go To K AATA"
+                        "pathName": "Swing Start Right Go To F AATA"
                       }
                     },
                     {
@@ -30,7 +30,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SeesK"
+                  "name": "SeesF"
                 }
               }
             ]
@@ -43,7 +43,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToK"
+                  "name": "AlignToF"
                 }
               },
               {
@@ -64,13 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1 Swerve K to Coral Station"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PrepareReceive"
+            "pathName": "1 Far Swerve F to Coral Station"
           }
         },
         {
@@ -84,7 +78,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "2 Swerve K to Coral Station"
+                        "pathName": "2 Far Swerve F to Coral Station"
                       }
                     },
                     {
@@ -99,7 +93,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SeesLeftCoralStation"
+                  "name": "SeesRightCoralStation"
                 }
               }
             ]
@@ -108,7 +102,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignToLeftCoralStation"
+            "name": "AlignToRightCoralStation"
           }
         },
         {
@@ -124,7 +118,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Coral Station to L AATA"
+                  "pathName": "Coral Station to E AATA"
                 }
               },
               {
@@ -143,7 +137,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToL"
+                  "name": "AlignToE"
                 }
               },
               {
@@ -168,7 +162,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Off L"
+                  "pathName": "Back Off E"
                 }
               },
               {
@@ -184,6 +178,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Start Left",
+  "folder": "Start Right",
   "choreoAuto": false
 }

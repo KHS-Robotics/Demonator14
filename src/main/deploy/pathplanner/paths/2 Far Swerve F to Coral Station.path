@@ -47,17 +47,6 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "PrepareReceive",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "PrepareReceive"
-        }
-      }
-    },
-    {
       "name": "StartCoralIntake",
       "waypointRelativePos": 0.55,
       "endWaypointRelativePos": null,

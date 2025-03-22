@@ -65,6 +65,7 @@ public class SwerveDrive extends SubsystemBase {
   public static double maxAngularSpeedRadiansPerSecond = Math.toRadians(540);
 
   private Translation2d centerOfRotation = Translation2d.kZero;
+  private Rotation2d headingToHold = Rotation2d.fromDegrees(0);
 
   private final SwerveModule kFrontLeft = new SwerveModule(
       "FrontLeft",
@@ -321,7 +322,7 @@ public class SwerveDrive extends SubsystemBase {
   public Command resetHeading() {
     var cmd = runOnce(() -> {
       var currentPose = getPose();
-      // always reset with elevator facing RED alliance
+      // always reset facing RED alliance
       var awayAngle = 0;
       resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(awayAngle)));
     });
@@ -452,6 +453,17 @@ public class SwerveDrive extends SubsystemBase {
     };
     var cmd = Commands.startEnd(setSlowSpeed, setNormalSpeed);
     return cmd.withName("SwerveGoSlow");
+  }
+
+  /**
+   * Command to hold the current heading of the robot without translating.
+   * 
+   * @return command to have the robot sit still at its current heading
+   */
+  public Command holdCurrentHeading() {
+    var setHeading = runOnce(() -> headingToHold = getPose().getRotation());
+    var holdHeading = runEnd(() -> rotateToAngleInPlace(headingToHold), this::stop);
+    return Commands.sequence(setHeading, holdHeading);
   }
 
   /**
@@ -630,14 +642,24 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Sets swerve modules to be all angled - useful when trying to stay still on an
+   * Sets swerve modules to be all angled in an "X" pattern - useful when trying to stay still on an
    * incline or to help prevent getting pushed by defense.
    */
   public void lock() {
-    kFrontRight.setDesiredState(0, 45);
-    kFrontLeft.setDesiredState(0, -45);
-    kRearRight.setDesiredState(0, -45);
-    kRearLeft.setDesiredState(0, 45);
+    kFrontRight.setDesiredState(0, -45);
+    kFrontLeft.setDesiredState(0, 45);
+    kRearRight.setDesiredState(0, 45);
+    kRearLeft.setDesiredState(0, -45);
+  }
+  
+  /**
+   * Command for lock.
+   * @see #lock()
+   * @return command to lock the drive train for defense
+   */
+  public Command lockCmd() {
+    var cmd = runEnd(this::lock, this::stop);
+    return cmd.withName("SwerveDriveLock");
   }
 
   /**
@@ -664,6 +686,17 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void rotateToAngleInPlace(Rotation2d setpointAngle) {
     holdAngleWhileDriving(0, 0, setpointAngle, false);
+  }
+
+  /**
+   * Rotate to a desired angle about the robot's center.
+   * 
+   * @param setpointAngle
+   */
+  public Command rotateToAngleInPlaceCmd(Rotation2d setpointAngle) {
+    var cmd = runEnd(() -> rotateToAngleInPlace(setpointAngle), this::stop)
+      .until(() -> this.atAngleSetpoint());
+    return cmd.withName("SwerveRotateToAngleInPlace");
   }
 
   /**

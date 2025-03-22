@@ -86,7 +86,6 @@ public class Anchor extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    // TODO Auto-generated method stub
     super.initSendable(builder);
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);

@@ -3,39 +3,44 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.395,
-        "y": 6.111
+        "x": 3.936729452054794,
+        "y": 5.257106164383561
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.522248825519939,
-        "y": 5.820082075674413
+        "x": 3.3657534246575342,
+        "y": 5.93326198630137
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0517979452054795,
-        "y": 6.819777397260274
+        "x": 3.404508196721311,
+        "y": 6.056915983606557
       },
       "prevControl": {
-        "x": 1.7279537671232876,
-        "y": 6.50423801369863
+        "x": 3.9175000000000004,
+        "y": 5.21164344262295
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.1,
+      "rotationDegrees": -59.99999999999999
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.2169491525423728,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.1,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 0.5,
         "maxAcceleration": 1.0,
         "maxAngularVelocity": 180.0,
         "maxAngularAcceleration": 360.0,
@@ -47,8 +52,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "PrepareReceive",
-      "waypointRelativePos": 0,
+      "name": "PrepareStow",
+      "waypointRelativePos": 0.05,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -56,6 +61,12 @@
           "name": "PrepareStow"
         }
       }
+    },
+    {
+      "name": "PrepareReceive",
+      "waypointRelativePos": 0.9,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -73,8 +84,8 @@
   "reversed": false,
   "folder": "__ To Coral Station",
   "idealStartingState": {
-    "velocity": 0.75,
-    "rotation": 130.0
+    "velocity": 0,
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

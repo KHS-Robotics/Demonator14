@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-    RobotContainer.kRearLimelightCamera.setEnableAprilTagUpdates(false);
+    RobotContainer.kRearLimelightCamera.setEnableAprilTagUpdates(true);
   }
 
   /** This method is called periodically during autonomous mode. */

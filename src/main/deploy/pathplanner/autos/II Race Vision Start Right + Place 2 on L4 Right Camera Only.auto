@@ -43,7 +43,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToF"
+                  "name": "AlignToE"
                 }
               },
               {
@@ -64,7 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1 Far Swerve F to Coral Station"
+            "pathName": "1 Far Swerve E to Coral Station"
           }
         },
         {
@@ -114,12 +114,6 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignToRightCoralStation"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "IntakeCoral"
           }
         },
@@ -130,7 +124,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Coral Station to E AATA"
+                  "pathName": "Coral Station to C AATA"
                 }
               },
               {
@@ -149,7 +143,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AlignToE"
+                  "name": "AlignToC"
                 }
               },
               {
@@ -174,7 +168,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Back Off E"
+                  "pathName": "Back Off C"
                 }
               },
               {

@@ -64,57 +64,26 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1 Swerve K to Coral Station"
+            "pathName": "1 Less Swerve K to Coral Station"
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "PrepareReceive"
-          }
-        },
-        {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "2 Swerve K to Coral Station"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "STOPSwerve"
-                      }
-                    }
-                  ]
+                  "name": "StartCoralIntake"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SeesLeftCoralStation"
+                  "name": "AlignToLeftCoralStation"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToLeftCoralStation"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
           }
         },
         {
