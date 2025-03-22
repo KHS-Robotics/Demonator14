@@ -21,6 +21,18 @@ public class OperatorStick extends Joystick {
 
   // Elevator + Angler
 
+  public Trigger useElevatorLimitSwitch() {
+    return new Trigger(() -> this.getThrottle() > 0.9);
+  }
+
+  public Trigger overrideElevatorLimitSwitch() {
+    return new Trigger(() -> this.getThrottle() < -0.9);
+  }
+
+  public Trigger overrideMoveElevatorDown() {
+    return new Trigger(() -> this.getPOV() == ButtonMap.POV.OVERRIDE_MOVE_ELEVATOR_DOWN);
+  }
+
   public Trigger stowCoraller() {
     return new Trigger(() -> this.getRawButton(ButtonMap.STOW_BUTTON));
   }

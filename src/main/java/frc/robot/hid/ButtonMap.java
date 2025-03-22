@@ -7,6 +7,7 @@ package frc.robot.hid;
 public class ButtonMap {
   public static class POV {
     public static final int OUTTAKE_L4 = 0;
+    public static final int OVERRIDE_MOVE_ELEVATOR_DOWN = 180;
   }
 
   // Elevator + Angler

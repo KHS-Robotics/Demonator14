@@ -44,18 +44,8 @@ public class Coraller extends SubsystemBase {
     return cmd;
   }
 
-  public Command algaeL2() {
-    var cmd = setState(CorallerState.L2_ALGAE);
-    return cmd;
-  }
-
   public Command scoreL3() {
     var cmd = setState(CorallerState.L3);
-    return cmd;
-  }
-
-  public Command algaeL3() {
-    var cmd = setState(CorallerState.L3_ALGAE);
     return cmd;
   }
 
@@ -71,6 +61,16 @@ public class Coraller extends SubsystemBase {
     );
     cmd.addRequirements(this);
     return cmd.withName("SetCorallerState(\"" + state.toString() + "\")");
+  }
+
+  public Command setElevatorOverride(boolean override) {
+    return elevator.setOverride(override);
+  }
+
+  public Command overrideMoveElevatorDown() {
+    var overrideCmd = startEnd(() -> elevator.setVoltageForOverride(-2), elevator::stop);
+    var cmd = Commands.either(overrideCmd, Commands.none(), () -> elevator.isOverriding());
+    return cmd.withName("CorallerOverrideMoveElevatorDown");
   }
 
   public Command intakeCoral(boolean ignoreSensor) {

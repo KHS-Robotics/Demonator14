@@ -171,7 +171,7 @@ public class RobotContainer {
     kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
 
     // For defense / to make the robot harder to move
-    kDriverController.lockDriveForDefense().whileTrue(kSwerveDrive.lockCmd());
+    kDriverController.lockDriveForDefense().whileTrue(kSwerveDrive.holdCurrentHeading());
 
     // vision alignment
     kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> {
@@ -202,6 +202,9 @@ public class RobotContainer {
     kOperatorStick.outtakeCoral().whileTrue(kCoraller.outtakeCoral());
     kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral(false));
     kOperatorStick.outtakeForL4().whileTrue(kCoraller.intakeCoral(true));
+    kOperatorStick.overrideElevatorLimitSwitch().onTrue(kCoraller.setElevatorOverride(true));
+    kOperatorStick.useElevatorLimitSwitch().onTrue(kCoraller.setElevatorOverride(false));
+    kOperatorStick.overrideMoveElevatorDown().whileTrue(kCoraller.overrideMoveElevatorDown());
 
     // Algae Collector
     kOperatorStick.stowAlgaeCollector().onTrue(kAlgaeCollector.stow());

@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
@@ -19,6 +20,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.RobotMap;
@@ -31,10 +33,12 @@ class Elevator extends SubsystemBase {
   private final SparkAnalogSensor absEncoder;
   private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
-  // TODO: Absolute encoder / potentiometer for position?
 
   /** The current setpoint measured from the ground. */
   private double setpointHeightFromGroundInches;
+  private SparkBaseConfig config = new SparkMaxConfig();
+  private boolean overrideLimitSwitch = false;
+  private double currentManualOutput = 0;
 
   public Elevator() {
     super(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName());
@@ -48,14 +52,14 @@ class Elevator extends SubsystemBase {
         .reverseLimitSwitchEnabled(true)
         .reverseLimitSwitchType(Type.kNormallyClosed);
 
-    var leaderConfig = new SparkMaxConfig()
+    config = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
         .inverted(false)
         .apply(relativeEncoderConfig)
         .apply(limitSwitchConfig);
     leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);
-    leader.configure(leaderConfig, SparkBase.ResetMode.kResetSafeParameters,
+    leader.configure(config, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
     var followerConfig = new SparkMaxConfig()
@@ -88,6 +92,29 @@ class Elevator extends SubsystemBase {
   public void periodic() {
     setMotorOutputForSetpoint();
     updateSetpointsForDisabledMode();
+  }
+
+  public Command setOverride(boolean override) {
+    var cmd = Commands.runOnce(() -> {
+      this.overrideLimitSwitch = override;
+  
+      var limitSwitchConfig = new LimitSwitchConfig()
+        .forwardLimitSwitchEnabled(false)
+        .reverseLimitSwitchEnabled(!override)
+        .reverseLimitSwitchType(Type.kNormallyClosed);
+      config = config.apply(limitSwitchConfig);
+      leader.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    });
+    return cmd.withName("SetElevatorOverride(\"" + override + " \")");
+  }
+
+  public boolean isOverriding() {
+    return overrideLimitSwitch;
+  }
+
+  public void setVoltageForOverride(double output) {
+    currentManualOutput = output;
+    leader.setVoltage(output);
   }
 
   public Command stopCommand() {
@@ -135,7 +162,7 @@ class Elevator extends SubsystemBase {
   }
 
   public boolean isAtBottom() {
-    return bottomLimitSwitch.isPressed();
+    return !overrideLimitSwitch && bottomLimitSwitch.isPressed();
   }
 
   public boolean isAtSetpoint() {
@@ -148,6 +175,10 @@ class Elevator extends SubsystemBase {
   }
 
   private void setMotorOutputForSetpoint() {
+    if (currentManualOutput != 0) {
+      setSetpointHeight(getHeightFromGroundInches());
+      return;
+    }
     var pidOutput = pid.calculate(getHeightFromGroundInches(), setpointHeightFromGroundInches);
     var output = pidOutput + ElevatorConfig.kElevatorKG;
 
@@ -176,6 +207,7 @@ class Elevator extends SubsystemBase {
     leader.stopMotor();
     pid.reset();
     setSetpointHeight(getHeightFromGroundInches());
+    currentManualOutput = 0;
   }
 
   /** {@inheritDoc} */
@@ -190,5 +222,6 @@ class Elevator extends SubsystemBase {
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
     builder.addBooleanProperty("IsAtBottom", this::isAtBottom, null);
     builder.addDoubleProperty("PotVoltage", this::getVoltage, null);
+    builder.addBooleanProperty("Override", () -> overrideLimitSwitch, this::setOverride);
   }
 }
