@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -24,6 +25,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,7 +55,6 @@ public class DemonPhotonCamera extends SubsystemBase {
   private Optional<PhotonTrackedTarget> bestAlgaeTarget = Optional.empty();
   private boolean enableAprilTagUpdates = true;
   
-
   private final PhotonCamera camera;
   private final PhotonPoseEstimator poseEstimator;
 
@@ -104,6 +105,45 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void periodic() {
     // make sure to call once per loop to get consistent results
     updateLatestVisionResults();
+  }
+
+  public Command hasVisibleTarget(Supplier<Integer> fiducialId) {
+    return hasVisibleTarget(fiducialId, 0.25);
+  }
+
+  public Command hasVisibleTarget(Supplier<Integer> fiducialId, double debounceTime) {
+    var cmd = new Command() {
+      private Timer timer = new Timer();
+      private int targetId = 0;
+      private boolean seesTarget = false;
+      
+      @Override
+      public void initialize() {
+        targetId = fiducialId.get();
+        timer.reset();
+        timer.start();
+      }
+
+      @Override
+      public void execute() {
+        seesTarget = getAprilTagById(targetId).isPresent();
+      }
+
+      @Override
+      public boolean isFinished() {
+        if (!seesTarget) {
+          timer.reset();
+        }
+        return timer.hasElapsed(debounceTime);
+      }
+
+      @Override
+      public void end(boolean interrupted) {
+        timer.stop();
+      }
+    };
+
+    return cmd.withName("DemonPhotonCameraHasVisibleTarget");
   }
 
   /**
