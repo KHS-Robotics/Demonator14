@@ -29,7 +29,6 @@ import frc.robot.subsystems.cameras.DemonLimelightCamera;
 import frc.robot.subsystems.cameras.DemonPhotonCamera;
 import frc.robot.subsystems.coraller.Coraller;
 import frc.robot.subsystems.drive.SwerveDrive;
-import frc.robot.subsystems.drive.SwerveDriveConfig;
 import frc.robot.subsystems.led.LEDStrip;
 
 /**
@@ -140,16 +139,6 @@ public class RobotContainer {
     kSwerveDrive.setDefaultCommand(kSwerveDrive.driveWithXboxController(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
         DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
-    // FrontRightPhotonCamera - AprilTag updates for odometry
-    // kFrontRightPhotonCamera.setDefaultCommand(kFrontRightPhotonCamera.pollForPoseUpdates(
-    //     (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
-    //         update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
-
-    // FrontLeftPhotonCamera - AprilTag updates for odometry
-    // kFrontLeftPhotonCamera.setDefaultCommand(kFrontLeftPhotonCamera.pollForPoseUpdates(
-    //     (update) -> kSwerveDrive.addVisionMeasurementForOdometry(update.estimatedRobotPose.estimatedPose.toPose2d(),
-    //         update.estimatedRobotPose.timestampSeconds, update.stdDevs)));
-
     // RearLimelightCamera - AprilTag updates for odometry
     kRearLimelightCamera.setDefaultCommand(
         kRearLimelightCamera
@@ -172,16 +161,16 @@ public class RobotContainer {
 
   /** Binds commands to xbox controller buttons. */
   private void configureXboxControllerBindings() {
-    // reset robot heading to face away from the driver - this is useful during
-    // driver practice to reset for field oriented driving direction or a rare odd
-    // scenario on the field during a match
+    // reset robot heading - ALWAYS FACE RED ALLIANCE WHEN DOING THIS - this is
+    // useful during driver practice to reset for field oriented driving direction
+    // or a rare odd scenario on the field during a match
     kDriverController.resetRobotHeading().onTrue(kSwerveDrive.resetHeading());
 
     // give driver ability to limit speeds for when elevator is high up to
     // help prevent tipping over - useful for slight alignment adjustments too
     kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
 
-    // "X" pattern for defense to make robot harder to move
+    // For defense / to make the robot harder to move
     kDriverController.lockDriveForDefense().whileTrue(kSwerveDrive.lockCmd());
 
     // vision alignment

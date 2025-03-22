@@ -65,7 +65,7 @@ public class Reel extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addStringProperty("ReelState", reelState::toString, null);
+    builder.addStringProperty("ReelState", () -> reelState.toString(), null);
   }
 
   private enum ReelState {
