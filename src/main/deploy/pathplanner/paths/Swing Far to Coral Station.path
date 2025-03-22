@@ -52,12 +52,6 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "AlignToLeftCoralStation",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
       "name": "PrepareReceive",
       "waypointRelativePos": 0.051316677920320776,
       "endWaypointRelativePos": null,
