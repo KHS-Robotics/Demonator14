@@ -1,0 +1,196 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 Swing Start Left Go To I AATA"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "2 Swing Start Left Go To I AATA"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "STOPSwerve"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SeesF"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToF"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepareScoreL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4OuttakeCoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 Far Swerve I to Coral Station"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "2 Far Swerve I to Coral Station"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "STOPSwerve"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SeesLeftCoralStation"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToLeftCoralStation"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Coral Station to J AATA"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOPSwerve"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToE"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PrepareScoreL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4OuttakeCoral"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Back Off J"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "STOPSwerve"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Start Left",
+  "choreoAuto": false
+}
