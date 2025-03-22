@@ -296,11 +296,17 @@ public class RobotContainer {
       var id = alliance == Alliance.Red ? 6 : 19;
       return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
     }));
-    NamedCommands.registerCommand("SeesKButLikeBetter", Commands.waitUntil(() -> {
+    NamedCommands.registerCommand("SeesKButLikeBetter", kFrontLeftPhotonCamera.hasVisibleTarget(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 6 : 19;
+      return id;
+    }));
+
+    NamedCommands.registerCommand("SeesI", Commands.waitUntil(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 11 : 20;
       return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
-    }).repeatedly().withTimeout(0.15));
+    }));
 
     NamedCommands.registerCommand("AlignToD", kSwerveDrive.alignToReef(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
@@ -341,6 +347,17 @@ public class RobotContainer {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 6 : 19;
       return kFrontLeftPhotonCamera.getAprilTagById(id);
+    }));
+
+    NamedCommands.registerCommand("AlignToJ", kSwerveDrive.alignToReef(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 11 : 20;
+      return kFrontLeftPhotonCamera.getAprilTagById(id);
+    }));
+    NamedCommands.registerCommand("AlignToI", kSwerveDrive.alignToReef(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 11 : 20;
+      return kFrontRightPhotonCamera.getAprilTagById(id);
     }));
   }
 
