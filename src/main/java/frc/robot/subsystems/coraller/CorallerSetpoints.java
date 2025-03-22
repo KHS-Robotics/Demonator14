@@ -14,7 +14,7 @@ final class CorallerSetpoints {
     public static final double L3_ANGLE = -35;
     public static final double L3_ALGAE_ANGLE = -65;
     public static final double L4_ANGLE = 110;
-    public static final double RECEIVE_ANGLE = 37;
+    public static final double RECEIVE_ANGLE = 39;
   }
 
   protected final class ElevatorSetpoints {
