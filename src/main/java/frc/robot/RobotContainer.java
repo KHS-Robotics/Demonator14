@@ -171,7 +171,7 @@ public class RobotContainer {
     kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
 
     // For defense / to make the robot harder to move
-    kDriverController.lockDriveForDefense().whileTrue(kSwerveDrive.lockCmd());
+    kDriverController.lockDriveForDefense().whileTrue(kSwerveDrive.holdCurrentHeading());
 
     // vision alignment
     kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> {
