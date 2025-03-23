@@ -286,6 +286,18 @@ public class RobotContainer {
     }));
     NamedCommands.registerCommand("TurnToLeftCoralStationAngle", kSwerveDrive.rotateToAngleInPlaceCmd(Rotation2d.fromDegrees(130)));
 
+    NamedCommands.registerCommand("SeesLeftCoralStationButLikeBetter", kFrontLeftPhotonCamera.hasVisibleTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 1 : 13;
+      return id;
+    }));
+
+    NamedCommands.registerCommand("SeesRightCoralStationButLikeBetter", kFrontLeftPhotonCamera.hasVisibleTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 2 : 12;
+      return id;
+    }));
+    
     NamedCommands.registerCommand("SeesF", Commands.waitUntil(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 9 : 22;
