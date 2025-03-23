@@ -76,7 +76,6 @@ class Elevator extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters);
 
     relativeEncoder = leader.getEncoder();
-    relativeEncoder.setPosition(0);
     
     absoluteEncoder = leader.getAnalog();
 
