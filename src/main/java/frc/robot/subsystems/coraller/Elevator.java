@@ -178,16 +178,18 @@ class Elevator extends SubsystemBase {
   }
 
   public double getHeightFromGroundInchesUsingRelativeEncoder() {
-    var heightFromStow = relativeEncoder.getPosition();
-    return heightFromStow + ElevatorSetpoints.STOW_HEIGHT;
+    var heightFromStowInches = relativeEncoder.getPosition();
+    var heightFromGroundInches = heightFromStowInches + ElevatorSetpoints.STOW_HEIGHT;
+    return heightFromGroundInches;
   }
 
   public double getHeightFromGroundInchesUsingAbsoluteEncoder() {
-    var deltaHeight = ElevatorSetpoints.L4_HEIGHT - ElevatorSetpoints.STOW_HEIGHT;
-    var deltaVoltage = ElevatorConfig.kElevatorAbsoluteEncoderMaxVoltage - ElevatorConfig.kElevatorAbsoluteEncoderMinVoltage;
+    var deltaHeightInches = ElevatorSetpoints.L4_HEIGHT - ElevatorSetpoints.STOW_HEIGHT;
     var relativeVoltage = getPotentiometerVoltage() - ElevatorConfig.kElevatorAbsoluteEncoderMinVoltage;
-    var heightFromStow = (deltaHeight * relativeVoltage) / deltaVoltage;
-    return heightFromStow + ElevatorSetpoints.STOW_HEIGHT;
+    var deltaVoltage = ElevatorConfig.kElevatorAbsoluteEncoderMaxVoltage - ElevatorConfig.kElevatorAbsoluteEncoderMinVoltage;
+    var heightFromStowInches = (deltaHeightInches * relativeVoltage) / deltaVoltage;
+    var heightFromGroundInches = heightFromStowInches + ElevatorSetpoints.STOW_HEIGHT;
+    return heightFromGroundInches;
   }
 
   private void setMotorOutputForSetpoint() {
