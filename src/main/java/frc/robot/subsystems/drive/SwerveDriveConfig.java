@@ -23,8 +23,6 @@ public final class SwerveDriveConfig {
   public static final Translation2d kRearRightModuleOffset = new Translation2d(Units.inchesToMeters(-11.25),
       Units.inchesToMeters(-11.75));
 
-  public static final Translation2d kCorallerL2Positon = new Translation2d(11.25, 0);
-
   // April Tags
   public static final double VISION_X_P = 1.25;
   public static final double VISION_Y_P = 2;
