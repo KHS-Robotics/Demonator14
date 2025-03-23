@@ -4,6 +4,8 @@
 
 package frc.robot.hid;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -18,10 +20,17 @@ public class OperatorStick extends Joystick {
   // Elevator + Angler
 
   public Trigger disableElevatorOverride() {
-    return (stowCoraller().and(() -> getPOV() == ButtonMap.POV.DISABLE_ELEVATOR_OVERRIDE)).debounce(0.5);
+    var stow = stowCoraller();
+    BooleanSupplier disableOverride = () -> getPOV() == ButtonMap.POV.DISABLE_ELEVATOR_OVERRIDE;
+    var disableElevatorOverride = stow.and(disableOverride);
+    return disableElevatorOverride.debounce(0.5);
   }
+
   public Trigger enableElevatorOverride() {
-    return (stowCoraller().and(() -> getPOV() == ButtonMap.POV.ENABLE_ELEVATOR_OVERRIDE)).debounce(0.5);
+    var stow = stowCoraller();
+    BooleanSupplier enableOverride = () -> getPOV() == ButtonMap.POV.ENABLE_ELEVATOR_OVERRIDE;
+    var enableElevatorOverride = stow.and(enableOverride);
+    return enableElevatorOverride.debounce(0.5);
   }
 
   public Trigger stowCoraller() {
