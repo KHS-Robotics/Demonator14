@@ -196,17 +196,6 @@ class Elevator extends SubsystemBase {
     var pidOutput = pid.calculate(getHeightFromGroundInches(), setpointHeightFromGroundInches);
     var output = pidOutput + ElevatorConfig.kElevatorKG;
 
-    // prevent trying to move past the bottom or setting motor outputs while limit
-    // switch is pressed when the setpoint is the stow height
-    if ((output < 0 || setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT) && isAtBottomForRelativeEncoder()) {
-      output = 0;
-    }
-
-    // reset elevator when stowed and reaches the bottom
-    if (setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT && isAtSetpoint() && isAtBottomForRelativeEncoder()) {
-      relativeEncoder.setPosition(0);
-    }
-
     // limit down voltage
     output = MathUtil.clamp(output, -5, 12);
 
