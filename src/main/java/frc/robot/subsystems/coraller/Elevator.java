@@ -202,7 +202,7 @@ class Elevator extends SubsystemBase {
     }
 
     // reset elevator when stowed and reaches the bottom
-    if (setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT && isAtBottomForRelativeEncoder()) {
+    if (setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT && pid.getError() < 1 && isAtBottomForRelativeEncoder()) {
       relativeEncoder.setPosition(0);
     }
 
