@@ -12,6 +12,10 @@ final class CorallerConfig {
     public static final double kElevatorEncoderPositionConversionFactor = (4*(Math.PI)*kElevatorSprocketRadiusInches)/kElevatorGearing;
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
+
+    // TODO: find these values when at STOW (min voltage) and at L4 (max voltage) heights
+    public static final double kElevatorAbsoluteEncoderMinVoltage = 0.40;
+    public static final double kElevatorAbsoluteEncoderMaxVoltage = 2.24;
   }
 
   protected final class AnglerConfig {

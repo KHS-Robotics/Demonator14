@@ -15,11 +15,14 @@ public class OperatorStick extends Joystick {
     super(port);
   }
 
-  public Trigger outtakeForL4() {
-    return new Trigger(() -> this.getPOV() == ButtonMap.POV.OUTTAKE_L4);
-  }
-
   // Elevator + Angler
+
+  public Trigger disableElevatorOverride() {
+    return (stowCoraller().and(() -> getPOV() == ButtonMap.POV.DISABLE_ELEVATOR_OVERRIDE)).debounce(0.5);
+  }
+  public Trigger enableElevatorOverride() {
+    return (stowCoraller().and(() -> getPOV() == ButtonMap.POV.ENABLE_ELEVATOR_OVERRIDE)).debounce(0.5);
+  }
 
   public Trigger stowCoraller() {
     return new Trigger(() -> this.getRawButton(ButtonMap.STOW_BUTTON));
@@ -46,6 +49,10 @@ public class OperatorStick extends Joystick {
   }
 
   // Coral Intake
+
+  public Trigger outtakeForL4() {
+    return new Trigger(() -> this.getPOV() == ButtonMap.POV.OUTTAKE_L4);
+  }
 
   public Trigger outtakeCoral() {
     return new Trigger(() -> this.getRawButton(ButtonMap.CORAL_OUTTAKE_BUTTON));

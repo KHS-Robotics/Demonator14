@@ -12,10 +12,12 @@ import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
+import com.revrobotics.spark.config.SparkBaseConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,15 +28,21 @@ import frc.robot.subsystems.coraller.CorallerConfig.ElevatorConfig;
 import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 
 class Elevator extends SubsystemBase {
+  private final ElevatorHeightMode kHeightMode = ElevatorHeightMode.kRelative;
+  private enum ElevatorHeightMode {
+    kRelative, kAbsolute;
+  }
+
   private final SparkMax leader, follower;
-  private final RelativeEncoder encoder;
-  private final SparkAnalogSensor absEncoder;
+  private final RelativeEncoder relativeEncoder;
+  private final SparkAnalogSensor absoluteEncoder;
   private final SparkLimitSwitch bottomLimitSwitch;
   private final PIDController pid;
-  // TODO: Absolute encoder / potentiometer for position?
 
   /** The current setpoint measured from the ground. */
-  private double setpointHeightFromGroundInches;
+  private double setpointHeightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
+  private SparkBaseConfig motorConfig = new SparkMaxConfig();
+  private boolean overrideLimitSwitch = false;
 
   public Elevator() {
     super(Coraller.class.getSimpleName() + "/" + Elevator.class.getSimpleName());
@@ -48,14 +56,14 @@ class Elevator extends SubsystemBase {
         .reverseLimitSwitchEnabled(true)
         .reverseLimitSwitchType(Type.kNormallyClosed);
 
-    var leaderConfig = new SparkMaxConfig()
+    motorConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
         .inverted(false)
         .apply(relativeEncoderConfig)
         .apply(limitSwitchConfig);
     leader = new SparkMax(RobotMap.ELEVATOR_DRIVE_LEADER_ID, MotorType.kBrushless);
-    leader.configure(leaderConfig, SparkBase.ResetMode.kResetSafeParameters,
+    leader.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
     var followerConfig = new SparkMaxConfig()
@@ -67,10 +75,10 @@ class Elevator extends SubsystemBase {
     follower.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
-    encoder = leader.getEncoder();
-    encoder.setPosition(0);
+    relativeEncoder = leader.getEncoder();
+    relativeEncoder.setPosition(0);
     
-    absEncoder = leader.getAnalog();
+    absoluteEncoder = leader.getAnalog();
 
     bottomLimitSwitch = leader.getReverseLimitSwitch();
 
@@ -80,7 +88,7 @@ class Elevator extends SubsystemBase {
     SmartDashboard.putData(getName(), this);
     SmartDashboard.putData(getName() + "/" + PIDController.class.getSimpleName(), pid);
 
-    setpointHeightFromGroundInches = ElevatorSetpoints.STOW_HEIGHT;
+    setSetpointHeight(getHeightFromGroundInches());
   }
 
   /** {@inheritDoc} */
@@ -98,6 +106,20 @@ class Elevator extends SubsystemBase {
   public Command setHeightCommand(double heightFromGround) {
     var cmd = this.run(() -> setSetpointHeight(heightFromGround)).until(this::isAtSetpoint);
     return cmd.withName("SetElevatorSetpoint");
+  }
+
+  public Command setOverride(boolean override) {
+    var cmd = runOnce(() -> {
+      overrideLimitSwitch = override;
+  
+      var limitSwitchConfig = new LimitSwitchConfig()
+        .forwardLimitSwitchEnabled(false)
+        .reverseLimitSwitchEnabled(!override)
+        .reverseLimitSwitchType(Type.kNormallyClosed);
+      motorConfig = motorConfig.apply(limitSwitchConfig);
+      leader.configure(motorConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters);
+    });
+    return cmd.withName("SetElevatorOverride(\"" + override + "\")");
   }
 
   /**
@@ -128,14 +150,14 @@ class Elevator extends SubsystemBase {
     if (RobotState.isDisabled()) {
       setSetpointHeight(getHeightFromGroundInches());
       // reset RelativeEncoder when sitting at bottom in disabled
-      if (isAtBottom()) {
-        encoder.setPosition(0);
+      if (isAtBottomForRelativeEncoder()) {
+        relativeEncoder.setPosition(0);
       }
     }
   }
 
-  public boolean isAtBottom() {
-    return bottomLimitSwitch.isPressed();
+  public boolean isAtBottomForRelativeEncoder() {
+    return !overrideLimitSwitch && kHeightMode == ElevatorHeightMode.kRelative && bottomLimitSwitch.isPressed();
   }
 
   public boolean isAtSetpoint() {
@@ -144,7 +166,29 @@ class Elevator extends SubsystemBase {
   }
 
   public double getHeightFromGroundInches() {
-    return encoder.getPosition() + ElevatorSetpoints.STOW_HEIGHT;
+    switch(kHeightMode) {
+      case kRelative:
+        return getHeightFromGroundInchesUsingRelativeEncoder();
+      case kAbsolute:
+        return getHeightFromGroundInchesUsingAbsoluteEncoder();
+      default:
+        DriverStation.reportError("ELEVATOR: Invalid mode for measuring height.", false);
+        pid.reset();
+        return setpointHeightFromGroundInches;
+    }
+  }
+
+  public double getHeightFromGroundInchesUsingRelativeEncoder() {
+    var heightFromStow = relativeEncoder.getPosition();
+    return heightFromStow + ElevatorSetpoints.STOW_HEIGHT;
+  }
+
+  public double getHeightFromGroundInchesUsingAbsoluteEncoder() {
+    var deltaHeight = ElevatorSetpoints.L4_HEIGHT - ElevatorSetpoints.STOW_HEIGHT;
+    var deltaVoltage = ElevatorConfig.kElevatorAbsoluteEncoderMaxVoltage - ElevatorConfig.kElevatorAbsoluteEncoderMinVoltage;
+    var relativeVoltage = getPotentiometerVoltage() - ElevatorConfig.kElevatorAbsoluteEncoderMinVoltage;
+    var heightFromStow = (deltaHeight * relativeVoltage) / deltaVoltage;
+    return heightFromStow + ElevatorSetpoints.STOW_HEIGHT;
   }
 
   private void setMotorOutputForSetpoint() {
@@ -153,13 +197,13 @@ class Elevator extends SubsystemBase {
 
     // prevent trying to move past the bottom or setting motor outputs while limit
     // switch is pressed when the setpoint is the stow height
-    if ((output < 0 || setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT) && isAtBottom()) {
+    if ((output < 0 || setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT) && isAtBottomForRelativeEncoder()) {
       output = 0;
     }
 
     // reset elevator when stowed and reaches the bottom
-    if (setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT && isAtBottom()) {
-      encoder.setPosition(0);
+    if (setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT && isAtBottomForRelativeEncoder()) {
+      relativeEncoder.setPosition(0);
     }
 
     // limit down voltage
@@ -168,8 +212,8 @@ class Elevator extends SubsystemBase {
     leader.setVoltage(output);
   }
 
-  private double getVoltage() {
-    return absEncoder.getPosition();
+  private double getPotentiometerVoltage() {
+    return absoluteEncoder.getVoltage();
   }
 
   public void stop() {
@@ -186,9 +230,13 @@ class Elevator extends SubsystemBase {
     builder.setSafeState(this::stop);
     builder.setActuator(true);
     builder.addDoubleProperty("SetPointFromGround", () -> setpointHeightFromGroundInches, this::setSetpointHeight);
-    builder.addDoubleProperty("HeightFromGround", this::getHeightFromGroundInches, null);
+    builder.addDoubleProperty("RelativeEncoderHeightFromGround", this::getHeightFromGroundInchesUsingRelativeEncoder, null);
+    builder.addDoubleProperty("AbsoluteEncoderHeightFromGround", this::getHeightFromGroundInchesUsingAbsoluteEncoder, null);
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
-    builder.addBooleanProperty("IsAtBottom", this::isAtBottom, null);
-    builder.addDoubleProperty("PotVoltage", this::getVoltage, null);
+    builder.addBooleanProperty("IsAtBottomForRelativeEncoder", this::isAtBottomForRelativeEncoder, null);
+    builder.addDoubleProperty("PotVoltage", this::getPotentiometerVoltage, null);
+    builder.addStringProperty("ElevatorHeightMode", () -> kHeightMode.toString(), null);
+    builder.addBooleanProperty("Override", () -> overrideLimitSwitch, null);
+    builder.addBooleanProperty("TalonTach", () -> bottomLimitSwitch.isPressed(), null);
   }
 }

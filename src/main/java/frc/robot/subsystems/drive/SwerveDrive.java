@@ -462,8 +462,9 @@ public class SwerveDrive extends SubsystemBase {
    */
   public Command holdCurrentHeading() {
     var setHeading = runOnce(() -> headingToHold = getPose().getRotation());
-    var holdHeading = runEnd(() -> rotateToAngleInPlace(headingToHold), this::stop);
-    return Commands.sequence(setHeading, holdHeading);
+    var holdHeading = runEnd(() -> rotateToAngleInPlace(headingToHold, 1), this::stop);
+    var cmd = Commands.sequence(setHeading, holdHeading);
+    return cmd.withName("SwerveHoldCurrentHeading");
   }
 
   /**
@@ -668,22 +669,29 @@ public class SwerveDrive extends SubsystemBase {
    * @param xSpeed        x speed in m/s
    * @param ySpeed        y speed in m/s
    * @param setpointAngle the desired robot angle to hold about the robot's center
+   * @param maxSpeed      desired percent of max speed (0.0 to 1.0)
    * @param fieldOriented field relative speeds (true) or robot relative speeds
    *                      (false)
    */
-  public void holdAngleWhileDriving(double xSpeed, double ySpeed, Rotation2d setpointAngle, boolean fieldOriented) {
+  public void holdAngleWhileDriving(double xSpeed, double ySpeed, Rotation2d setpointAngle, double maxSpeed, boolean fieldOriented) {
     var rotateOutput = MathUtil
-        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())), -0.5,
-            0.5)
+        .clamp(thetaPid.calculate(getPose().getRotation().getDegrees(), normalizeAngle(setpointAngle.getDegrees())), -maxSpeed,
+          maxSpeed)
         * maxAngularSpeedRadiansPerSecond;
     drive(xSpeed, ySpeed, rotateOutput, fieldOriented);
+  }
+  
+  public void holdAngleWhileDriving(double xSpeed, double ySpeed, Rotation2d setpointAngle, boolean fieldOriented) {
+    holdAngleWhileDriving(xSpeed, ySpeed, setpointAngle, 0.5, fieldOriented);
   }
 
   /**
    * Rotate to a desired angle about the robot's center.
-   * 
-   * @param setpointAngle
    */
+  public void rotateToAngleInPlace(Rotation2d setpointAngle, double maxSpeed) {
+    holdAngleWhileDriving(0, 0, setpointAngle, maxSpeed, false);
+  }
+
   public void rotateToAngleInPlace(Rotation2d setpointAngle) {
     holdAngleWhileDriving(0, 0, setpointAngle, false);
   }
