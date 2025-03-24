@@ -60,27 +60,13 @@ class Wrist extends SubsystemBase {
   }
 
   public Command deploy() {
-    var setCoast = Commands.runOnce(() -> {
-      motorConfig = new SparkMaxConfig()
-          .idleMode(IdleMode.kCoast);
-      motor.configure(motorConfig, SparkBase.ResetMode.kNoResetSafeParameters,
-          SparkBase.PersistMode.kNoPersistParameters);
-    });
-    var setWrist = setSetpointCmd(WristSetpoints.DEPLOY);
-    var cmd = Commands.sequence(setCoast, setWrist);
-    return cmd.withName("DeplpyWrist");
+    var cmd = setSetpointCmd(WristSetpoints.DEPLOY);
+    return cmd.withName("DeployAlgaeWrist");
   }
 
   public Command stow() {
-    var setBrake = Commands.runOnce(() -> {
-      motorConfig = new SparkMaxConfig()
-          .idleMode(IdleMode.kBrake);
-      motor.configure(motorConfig, SparkBase.ResetMode.kNoResetSafeParameters,
-          SparkBase.PersistMode.kNoPersistParameters);
-    });
-    var setWrist = setSetpointCmd(WristSetpoints.STOW);
-    var cmd = Commands.sequence(setBrake, setWrist);
-    return cmd.withName("StowWrist");
+    var cmd = setSetpointCmd(WristSetpoints.STOW);
+    return cmd.withName("StowAlgaeWrist");
   }
 
   private Command setSetpointCmd(double setpoint) {

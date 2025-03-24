@@ -15,7 +15,6 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
 public class Reel extends SubsystemBase {
-
   private final SparkMax reel;
   private ReelState reelState = ReelState.OFF;
 
@@ -25,7 +24,6 @@ public class Reel extends SubsystemBase {
     var reelConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)
-        // TODO: invert for our desired sign (positive to reelIn)
         .inverted(false);
     reel = new SparkMax(RobotMap.CLIMBER_REEL_ID, MotorType.kBrushless);
     reel.configure(reelConfig, SparkBase.ResetMode.kResetSafeParameters,
@@ -36,16 +34,14 @@ public class Reel extends SubsystemBase {
 
   public Command reelIn() {
     var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
-    // TODO: full speed once we know direction???
-    var reelIn = startEnd(() -> setReel(6), this::stop);
+    var reelIn = startEnd(() -> setReel(12), this::stop);
     var cmd = Commands.sequence(deployAlgae, reelIn);
     return cmd.withName("ClimberReelIn");
   }
 
   public Command reelOut() {
     var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
-    // TODO: full speed once we know direction???
-    var reelOut = startEnd(() -> setReel(-6), this::stop);
+    var reelOut = startEnd(() -> setReel(-12), this::stop);
     var cmd = Commands.sequence(deployAlgae, reelOut);
     return cmd.withName("ClimberReelOut");
   }
@@ -83,5 +79,4 @@ public class Reel extends SubsystemBase {
       return this.state;
     }
   }
-
 }

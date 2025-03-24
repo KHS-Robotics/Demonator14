@@ -13,9 +13,7 @@ enum CorallerState {
   RECEIVE(ElevatorSetpoints.RECEIVE_HEIGHT, AnglerSetpoints.RECEIVE_ANGLE),
   L1(ElevatorSetpoints.L1_HEIGHT, AnglerSetpoints.L1_ANGLE),
   L2(ElevatorSetpoints.L2_HEIGHT, AnglerSetpoints.L2_ANGLE),
-  L2_ALGAE(ElevatorSetpoints.L2_ALGAE_HEIGHT, AnglerSetpoints.L2_ALGAE_ANGLE),
   L3(ElevatorSetpoints.L3_HEIGHT, AnglerSetpoints.L3_ANGLE),
-  L3_ALGAE(ElevatorSetpoints.L3_ALGAE_HEIGHT, AnglerSetpoints.L3_ALGAE_ANGLE),
   L4(ElevatorSetpoints.L4_HEIGHT, AnglerSetpoints.L4_ANGLE);
 
   /** Inches */

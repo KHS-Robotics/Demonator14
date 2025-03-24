@@ -4,6 +4,8 @@
 
 package frc.robot.hid;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -15,11 +17,21 @@ public class OperatorStick extends Joystick {
     super(port);
   }
 
-  public Trigger outtakeForL4() {
-    return new Trigger(() -> this.getPOV() == ButtonMap.POV.OUTTAKE_L4);
+  // Elevator + Angler
+
+  public Trigger disableElevatorOverride() {
+    var stow = stowCoraller();
+    BooleanSupplier disableOverride = () -> getPOV() == ButtonMap.POV.DISABLE_ELEVATOR_OVERRIDE;
+    var disableElevatorOverride = stow.and(disableOverride);
+    return disableElevatorOverride.debounce(0.5);
   }
 
-  // Elevator + Angler
+  public Trigger enableElevatorOverride() {
+    var stow = stowCoraller();
+    BooleanSupplier enableOverride = () -> getPOV() == ButtonMap.POV.ENABLE_ELEVATOR_OVERRIDE;
+    var enableElevatorOverride = stow.and(enableOverride);
+    return enableElevatorOverride.debounce(0.5);
+  }
 
   public Trigger stowCoraller() {
     return new Trigger(() -> this.getRawButton(ButtonMap.STOW_BUTTON));
@@ -46,6 +58,10 @@ public class OperatorStick extends Joystick {
   }
 
   // Coral Intake
+
+  public Trigger outtakeForL4() {
+    return new Trigger(() -> this.getPOV() == ButtonMap.POV.OUTTAKE_L4);
+  }
 
   public Trigger outtakeCoral() {
     return new Trigger(() -> this.getRawButton(ButtonMap.CORAL_OUTTAKE_BUTTON));

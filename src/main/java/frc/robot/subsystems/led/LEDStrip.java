@@ -39,11 +39,9 @@ public class LEDStrip {
       pixelArray[i] = new Color(0);
     }
 
-    // multithreading this has got to be genius
     t = new Thread(() -> {
       long lastTime = System.nanoTime();
       double delta = 0;
-      // very accurate loop, is this bad for performance?
       while (!Thread.interrupted()) {
         double ns = 1000000000 / (double) ticksPerSecond;
         long now = System.nanoTime();
@@ -207,7 +205,7 @@ public class LEDStrip {
         runSquareWave(Color.white, -0.4f, 8f);
       }
     } else {
-      setSolidColor(Color.white);
+      runRainbow();
     }
   }
 

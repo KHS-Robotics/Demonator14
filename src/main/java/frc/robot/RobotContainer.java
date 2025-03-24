@@ -86,7 +86,7 @@ public class RobotContainer {
   public static final SwerveDrive kSwerveDrive = new SwerveDrive();
   public static final Coraller kCoraller = new Coraller();
   public static final AlgaeCollector kAlgaeCollector = new AlgaeCollector();
-  // public static final Climber kClimber = new Climber();
+  public static final Climber kClimber = new Climber();
 
   // Subsystems - Cameras
   // photon
@@ -202,6 +202,8 @@ public class RobotContainer {
     kOperatorStick.outtakeCoral().whileTrue(kCoraller.outtakeCoral());
     kOperatorStick.intakeCoral().whileTrue(kCoraller.intakeCoral(false));
     kOperatorStick.outtakeForL4().whileTrue(kCoraller.intakeCoral(true));
+    kOperatorStick.disableElevatorOverride().onTrue(kCoraller.setElevatorOverride(false));
+    kOperatorStick.enableElevatorOverride().onTrue(kCoraller.setElevatorOverride(true));
 
     // Algae Collector
     kOperatorStick.stowAlgaeCollector().onTrue(kAlgaeCollector.stow());
@@ -210,10 +212,10 @@ public class RobotContainer {
     kOperatorStick.intakeAlgae().whileTrue(kAlgaeCollector.intakeAlgae());
 
     // Climber
-    // kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
-    // kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
-    // kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
-    // kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());
+    kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
+    kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
+    kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
+    kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());
   }
 
   /** https://pathplanner.dev/home.html */
