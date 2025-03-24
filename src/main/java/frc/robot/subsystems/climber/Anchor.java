@@ -4,7 +4,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
@@ -24,7 +24,7 @@ import frc.robot.subsystems.climber.ClimberSetpoints.AnchorSetpoints;
 public class Anchor extends SubsystemBase {
   private double currentSetpoint;
 
-  private final SparkMax anchor;
+  private final SparkFlex anchor;
   private final RelativeEncoder encoder;
   private final SparkClosedLoopController pid;
 
@@ -47,7 +47,7 @@ public class Anchor extends SubsystemBase {
       .apply(encoderConfig)
       .apply(pidConfig)
       .inverted(false);
-    anchor = new SparkMax(RobotMap.CLIMBER_ANCHOR_ID, MotorType.kBrushless);
+    anchor = new SparkFlex(RobotMap.CLIMBER_ANCHOR_ID, MotorType.kBrushless);
     anchor.configure(anchorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
     encoder = anchor.getEncoder();
