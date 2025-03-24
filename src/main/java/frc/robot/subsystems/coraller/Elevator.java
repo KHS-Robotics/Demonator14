@@ -27,7 +27,7 @@ import frc.robot.subsystems.coraller.CorallerConfig.ElevatorConfig;
 import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 
 class Elevator extends SubsystemBase {
-  private final ElevatorHeightMode kHeightMode = ElevatorHeightMode.kAbsolute;
+  private ElevatorHeightMode heightMode = ElevatorHeightMode.kRelative;
   private enum ElevatorHeightMode {
     kRelative, kAbsolute;
   }
@@ -109,6 +109,8 @@ class Elevator extends SubsystemBase {
   public Command setOverride(boolean override) {
     var cmd = runOnce(() -> {
       overrideLimitSwitch = override;
+      heightMode = override ? ElevatorHeightMode.kAbsolute : ElevatorHeightMode.kRelative;
+      pid.reset();
   
       var limitSwitchConfig = new LimitSwitchConfig()
         .forwardLimitSwitchEnabled(false)
@@ -155,7 +157,7 @@ class Elevator extends SubsystemBase {
   }
 
   public boolean isAtBottomForRelativeEncoder() {
-    return !overrideLimitSwitch && kHeightMode == ElevatorHeightMode.kRelative && bottomLimitSwitch.isPressed();
+    return !overrideLimitSwitch && heightMode == ElevatorHeightMode.kRelative && bottomLimitSwitch.isPressed();
   }
 
   public boolean isAtSetpoint() {
@@ -164,7 +166,7 @@ class Elevator extends SubsystemBase {
   }
 
   public double getHeightFromGroundInches() {
-    switch(kHeightMode) {
+    switch(heightMode) {
       case kRelative:
         return getHeightFromGroundInchesUsingRelativeEncoder();
       case kAbsolute:
@@ -195,7 +197,7 @@ class Elevator extends SubsystemBase {
     var pidOutput = pid.calculate(getHeightFromGroundInches(), setpointHeightFromGroundInches);
     var output = pidOutput + ElevatorConfig.kElevatorKG;
 
-    if(isAtSetpoint() && kHeightMode == ElevatorHeightMode.kAbsolute) {
+    if(isAtSetpoint() && heightMode == ElevatorHeightMode.kAbsolute) {
       pid.reset();
       output = ElevatorConfig.kElevatorKG;
     }
@@ -240,7 +242,7 @@ class Elevator extends SubsystemBase {
     builder.addBooleanProperty("IsAtSetpoint", this::isAtSetpoint, null);
     builder.addBooleanProperty("IsAtBottomForRelativeEncoder", this::isAtBottomForRelativeEncoder, null);
     builder.addDoubleProperty("PotVoltage", this::getPotentiometerVoltage, null);
-    builder.addStringProperty("ElevatorHeightMode", () -> kHeightMode.toString(), null);
+    builder.addStringProperty("ElevatorHeightMode", () -> heightMode.toString(), null);
     builder.addBooleanProperty("Override", () -> overrideLimitSwitch, null);
     builder.addBooleanProperty("TalonTach", () -> bottomLimitSwitch.isPressed(), null);
   }
