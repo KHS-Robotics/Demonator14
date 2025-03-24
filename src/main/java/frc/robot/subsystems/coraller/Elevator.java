@@ -1,6 +1,5 @@
 package frc.robot.subsystems.coraller;
 
-//import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkAnalogSensor;
@@ -28,7 +27,7 @@ import frc.robot.subsystems.coraller.CorallerConfig.ElevatorConfig;
 import frc.robot.subsystems.coraller.CorallerSetpoints.ElevatorSetpoints;
 
 class Elevator extends SubsystemBase {
-  private final ElevatorHeightMode kHeightMode = ElevatorHeightMode.kRelative;
+  private final ElevatorHeightMode kHeightMode = ElevatorHeightMode.kAbsolute;
   private enum ElevatorHeightMode {
     kRelative, kAbsolute;
   }
@@ -161,7 +160,7 @@ class Elevator extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     var error = Math.abs(setpointHeightFromGroundInches - getHeightFromGroundInches());
-    return (error < 0.25);
+    return (error < 0.5);
   }
 
   public double getHeightFromGroundInches() {
@@ -195,6 +194,22 @@ class Elevator extends SubsystemBase {
   private void setMotorOutputForSetpoint() {
     var pidOutput = pid.calculate(getHeightFromGroundInches(), setpointHeightFromGroundInches);
     var output = pidOutput + ElevatorConfig.kElevatorKG;
+
+    if(isAtSetpoint() && kHeightMode == ElevatorHeightMode.kAbsolute) {
+      pid.reset();
+      output = ElevatorConfig.kElevatorKG;
+    }
+
+    // prevent trying to move past the bottom or setting motor outputs while limit
+    // switch is pressed when the setpoint is the stow height
+    if ((output < 0 || setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT) && isAtBottomForRelativeEncoder()) {
+      output = 0;
+    }
+
+    // reset elevator when stowed and reaches the bottom
+    if (setpointHeightFromGroundInches == ElevatorSetpoints.STOW_HEIGHT && isAtBottomForRelativeEncoder()) {
+      relativeEncoder.setPosition(0);
+    }
 
     // limit down voltage
     output = MathUtil.clamp(output, -5, 12);

@@ -15,11 +15,11 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.climber.ClimberConfig.AnchorConfig;
 import frc.robot.subsystems.climber.ClimberSetpoints.AnchorSetpoints;
-
 
 public class Anchor extends SubsystemBase {
   private double currentSetpoint;
@@ -33,15 +33,17 @@ public class Anchor extends SubsystemBase {
 
     var encoderConfig = new EncoderConfig()
       .positionConversionFactor(AnchorConfig.kDriveEncoderPositionConversionFactor);
+    
+    var maxOutputPercentage = 0.05;
     var pidConfig = new ClosedLoopConfig()
-      .pid(AnchorConfig.kAnchorP, 0, 0, ClosedLoopSlot.kSlot0);
+      .pid(AnchorConfig.kAnchorP, 0, 0, ClosedLoopSlot.kSlot0)
+      .outputRange(-maxOutputPercentage, maxOutputPercentage)
+      .positionWrappingEnabled(true);
     var anchorConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(40)
+      .smartCurrentLimit(30)
       .apply(encoderConfig)
       .apply(pidConfig)
-      // TODO: set inverted based on our desired sign of direction (positive up /
-      // negative down)
       .inverted(false);
     anchor = new SparkMax(RobotMap.CLIMBER_ANCHOR_ID, MotorType.kBrushless);
     anchor.configure(anchorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
@@ -56,13 +58,17 @@ public class Anchor extends SubsystemBase {
   }
 
   public Command engageAnchor() {
-    var cmd = run(() -> setSetpoint(AnchorSetpoints.kAnchorEngaged)).until(this::isAtSetpoint);
+    var setSetpoint = run(() -> setSetpoint(AnchorSetpoints.kAnchorEngage)).until(this::isAtSetpoint);
+    var stop = runOnce(this::stop);
+    var cmd = Commands.sequence(setSetpoint, stop);
     return cmd.withName("EngageAnchor");
   }
 
   public Command disengageAnchor() {
-    var cmd = run(() -> setSetpoint(AnchorSetpoints.kAnchorUnengaged)).until(this::isAtSetpoint);
-    return cmd.withName("UnengageAnchor");
+    var setSetpoint = run(() -> setSetpoint(AnchorSetpoints.kAnchorDisengage)).until(this::isAtSetpoint);
+    var stop = runOnce(this::stop);
+    var cmd = Commands.sequence(setSetpoint, stop);
+    return cmd.withName("DisengageAnchor");
   }
 
   public double getAngle() {
@@ -81,7 +87,6 @@ public class Anchor extends SubsystemBase {
 
   public void stop(){
     anchor.stopMotor();
-    setSetpoint(getAngle());
   }
 
   @Override
@@ -90,8 +95,8 @@ public class Anchor extends SubsystemBase {
     builder.setSmartDashboardType(getName());
     builder.setSafeState(this::stop);
     builder.setActuator(true);
-    builder.addBooleanProperty("isAtSetpoint", this::isAtSetpoint, null);
-    builder.addDoubleProperty("Angle", this::getAngle, null);
+    builder.addBooleanProperty("isAtSetpoint", () -> this.isAtSetpoint(), null);
+    builder.addDoubleProperty("Angle", () -> this.getAngle(), null);
     builder.addDoubleProperty("Setpoint", () -> currentSetpoint, this::setSetpoint);
   }
 }

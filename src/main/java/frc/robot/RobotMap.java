@@ -49,8 +49,8 @@ public final class RobotMap {
   public static final int ALGAE_WRIST_MOTOR_ID = 2;
 
   // Climber
-  public static final int CLIMBER_REEL_ID = 16;
-  public static final int CLIMBER_ANCHOR_ID = 0;
+  public static final int CLIMBER_REEL_ID = 5;
+  public static final int CLIMBER_ANCHOR_ID = 4;
 
   // LEDs over PWM
   public static final int LED_PORT = 0;
