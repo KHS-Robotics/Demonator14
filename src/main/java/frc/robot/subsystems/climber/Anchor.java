@@ -37,13 +37,13 @@ public class Anchor extends SubsystemBase {
     
     var maxOutputPercentage = 0.05;
     var pidConfig = new ClosedLoopConfig()
-      .pid(AnchorConfig.kAnchorP, 0, 0, ClosedLoopSlot.kSlot0)
+      .pid(AnchorConfig.kAnchorP, 0, AnchorConfig.kAnchorD, ClosedLoopSlot.kSlot0)
       .positionWrappingEnabled(true)
       .positionWrappingInputRange(0, 360)
       .outputRange(-maxOutputPercentage, maxOutputPercentage);
     var anchorConfig = new SparkFlexConfig()
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(30)
+      .smartCurrentLimit(10)
       .inverted(false)
       .apply(encoderConfig)
       .apply(pidConfig);
@@ -56,20 +56,16 @@ public class Anchor extends SubsystemBase {
     SmartDashboard.putData(this);
   }
 
-  public void periodic(){
+  public void periodic() {
   }
 
   public Command engageAnchor() {
-    var setSetpoint = run(() -> setSetpoint(AnchorSetpoints.kEngage)).until(this::isAtSetpoint);
-    var stop = runOnce(this::stop);
-    var cmd = Commands.sequence(setSetpoint, stop);
+    var cmd = run(() -> setSetpoint(AnchorSetpoints.kEngage));
     return cmd.withName("EngageAnchor");
   }
 
   public Command disengageAnchor() {
-    var setSetpoint = run(() -> setSetpoint(AnchorSetpoints.kDisengage)).until(this::isAtSetpoint);
-    var stop = runOnce(this::stop);
-    var cmd = Commands.sequence(setSetpoint, stop);
+    var cmd = run(() -> setSetpoint(AnchorSetpoints.kDisengage));
     return cmd.withName("DisengageAnchor");
   }
 

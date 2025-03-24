@@ -1,6 +1,6 @@
 //LimelightHelpers v1.11 (REQUIRES LLOS 2025.0 OR LATER)
 
-package frc.robot.vision;
+package frc.robot.subsystems.cameras;
 
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.NetworkTable;

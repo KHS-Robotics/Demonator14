@@ -1830,7 +1830,7 @@
       }
     },
     {
-      "name": "Anchor",
+      "name": "Climber",
       "grid_layout": {
         "layouts": [],
         "containers": [
@@ -1863,6 +1863,34 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Angle",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climber/Anchor/Angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "ReelState",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climber/Reel/ReelState",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
             }
           }
         ]
@@ -1994,42 +2022,6 @@
               "topic": "/SmartDashboard/Cameras/Top/NumAprilTags",
               "period": 0.06,
               "data_type": "int",
-              "show_submit_button": false
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Reel",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "title": ".command",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Climber/Reel/.command",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "ReelState",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Climber/Reel/ReelState",
-              "period": 0.06,
-              "data_type": "string",
               "show_submit_button": false
             }
           }
