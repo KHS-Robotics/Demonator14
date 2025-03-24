@@ -32,13 +32,15 @@ public class Anchor extends SubsystemBase {
     super(Climber.class.getSimpleName() + "/" + Anchor.class.getSimpleName());
 
     var encoderConfig = new EncoderConfig()
-      .positionConversionFactor(AnchorConfig.kDriveEncoderPositionConversionFactor);
+      .positionConversionFactor(AnchorConfig.kAnchorEncoderPositionConversionFactor)
+      .velocityConversionFactor(AnchorConfig.kAnchorEncoderVelocityConversionFactor);
     
     var maxOutputPercentage = 0.05;
     var pidConfig = new ClosedLoopConfig()
       .pid(AnchorConfig.kAnchorP, 0, 0, ClosedLoopSlot.kSlot0)
-      .outputRange(-maxOutputPercentage, maxOutputPercentage)
-      .positionWrappingEnabled(true);
+      .positionWrappingEnabled(true)
+      .positionWrappingInputRange(0, 360)
+      .outputRange(-maxOutputPercentage, maxOutputPercentage);
     var anchorConfig = new SparkMaxConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
@@ -58,14 +60,14 @@ public class Anchor extends SubsystemBase {
   }
 
   public Command engageAnchor() {
-    var setSetpoint = run(() -> setSetpoint(AnchorSetpoints.kAnchorEngage)).until(this::isAtSetpoint);
+    var setSetpoint = run(() -> setSetpoint(AnchorSetpoints.kEngage)).until(this::isAtSetpoint);
     var stop = runOnce(this::stop);
     var cmd = Commands.sequence(setSetpoint, stop);
     return cmd.withName("EngageAnchor");
   }
 
   public Command disengageAnchor() {
-    var setSetpoint = run(() -> setSetpoint(AnchorSetpoints.kAnchorDisengage)).until(this::isAtSetpoint);
+    var setSetpoint = run(() -> setSetpoint(AnchorSetpoints.kDisengage)).until(this::isAtSetpoint);
     var stop = runOnce(this::stop);
     var cmd = Commands.sequence(setSetpoint, stop);
     return cmd.withName("DisengageAnchor");
