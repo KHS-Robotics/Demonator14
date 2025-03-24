@@ -9,8 +9,8 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,12 +41,12 @@ public class Anchor extends SubsystemBase {
       .positionWrappingEnabled(true)
       .positionWrappingInputRange(0, 360)
       .outputRange(-maxOutputPercentage, maxOutputPercentage);
-    var anchorConfig = new SparkMaxConfig()
+    var anchorConfig = new SparkFlexConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30)
+      .inverted(false)
       .apply(encoderConfig)
-      .apply(pidConfig)
-      .inverted(false);
+      .apply(pidConfig);
     anchor = new SparkFlex(RobotMap.CLIMBER_ANCHOR_ID, MotorType.kBrushless);
     anchor.configure(anchorConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
@@ -79,7 +79,7 @@ public class Anchor extends SubsystemBase {
 
   public boolean isAtSetpoint() {
     var error = Math.abs(currentSetpoint - getAngle());
-    return (error < 3);
+    return (error < 1);
   }
 
   private void setSetpoint(double setpoint) {
@@ -87,7 +87,7 @@ public class Anchor extends SubsystemBase {
     pid.setReference(setpoint, ControlType.kPosition);
   }
 
-  public void stop(){
+  public void stop() {
     anchor.stopMotor();
   }
 
