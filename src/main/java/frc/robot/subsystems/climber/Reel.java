@@ -24,7 +24,9 @@ public class Reel extends SubsystemBase {
     var reelConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)
-        .inverted(true);
+        .inverted(true)
+        .closedLoopRampRate(0.5)
+        .openLoopRampRate(0.5);
     reel = new SparkMax(RobotMap.CLIMBER_REEL_ID, MotorType.kBrushless);
     reel.configure(reelConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
