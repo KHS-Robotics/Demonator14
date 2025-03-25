@@ -21,6 +21,11 @@ import frc.robot.subsystems.climber.ClimberConfig.AnchorConfig;
 import frc.robot.subsystems.climber.ClimberSetpoints.AnchorSetpoints;
 
 public class Anchor extends SubsystemBase {
+  private AnchorState state = AnchorState.Disengaged;
+  private enum AnchorState {
+    Engaged, Disengaged;
+  }
+  
   private double currentSetpoint;
 
   private final SparkFlex anchor;
@@ -59,17 +64,27 @@ public class Anchor extends SubsystemBase {
   }
 
   public Command engageAnchor() {
-    var cmd = run(() -> setSetpoint(AnchorSetpoints.kEngage));
+    var cmd = run(() -> {
+      setSetpoint(AnchorSetpoints.kEngage);
+      state = AnchorState.Engaged;
+    });
     return cmd.withName("EngageAnchor");
   }
 
   public Command disengageAnchor() {
-    var cmd = run(() -> setSetpoint(AnchorSetpoints.kDisengage));
+    var cmd = run(() -> {
+      setSetpoint(AnchorSetpoints.kDisengage);
+      state = AnchorState.Disengaged;
+    });
     return cmd.withName("DisengageAnchor");
   }
 
   public double getAngle() {
     return encoder.getPosition();
+  }
+
+  public boolean isEngaged() {
+    return state == AnchorState.Engaged;
   }
 
   public boolean isAtSetpoint() {
@@ -95,6 +110,7 @@ public class Anchor extends SubsystemBase {
     builder.addBooleanProperty("isAtSetpoint", () -> this.isAtSetpoint(), null);
     builder.addDoubleProperty("Angle", () -> this.getAngle(), null);
     builder.addDoubleProperty("Setpoint", () -> currentSetpoint, this::setSetpoint);
+    builder.addStringProperty("State", () -> state.toString(), null);
   }
 }
 

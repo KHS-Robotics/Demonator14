@@ -26,13 +26,14 @@ public class LEDStrip {
   float currentPosition = 0f;
   Color[] pixelArray;
 
-  private final BooleanSupplier isAbleToAlignLeft, isAbleToAlignRight, isAbleToAlignCoralStation, hasCoral;
+  private final BooleanSupplier isAbleToAlignLeft, isAbleToAlignRight, isAbleToAlignCoralStation, hasCoral, isClimberEngaged;
 
-  public LEDStrip(BooleanSupplier isAbleToAlignLeft, BooleanSupplier isAbleToAlignRight, BooleanSupplier isAbleToAlignCoralStation, BooleanSupplier hasCoral) {
+  public LEDStrip(BooleanSupplier isAbleToAlignLeft, BooleanSupplier isAbleToAlignRight, BooleanSupplier isAbleToAlignCoralStation, BooleanSupplier hasCoral, BooleanSupplier isClimberEngaged) {
     this.isAbleToAlignLeft = isAbleToAlignLeft;
     this.isAbleToAlignRight = isAbleToAlignRight;
     this.isAbleToAlignCoralStation = isAbleToAlignCoralStation;
     this.hasCoral = hasCoral;
+    this.isClimberEngaged = isClimberEngaged;
 
     pixelArray = new Color[LEDConfig.LED_LENGTH];
     for (int i = 0; i < pixelArray.length; i++) {
@@ -212,7 +213,10 @@ public class LEDStrip {
   public void runEnabled() {
     Color defaultColor = Color.white;
 
-    if (hasCoral.getAsBoolean()) {
+    if (isClimberEngaged.getAsBoolean()) {
+      runRainbow();
+    }
+    else if (hasCoral.getAsBoolean()) {
       if (isAbleToAlignLeft.getAsBoolean() && isAbleToAlignRight.getAsBoolean()) {
         setSolidColor(Color.magenta);
       } else if(isAbleToAlignLeft.getAsBoolean()) {

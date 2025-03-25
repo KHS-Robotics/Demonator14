@@ -114,7 +114,8 @@ public class RobotContainer {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       return kFrontTopPhotonCamera.getBestAprilTag(alliance == Alliance.Red ? CameraConfig.kRedAllianceCoralFiducialIds : CameraConfig.kBlueAllianceCoralFiducialIds).isPresent();
     },   
-    () -> kCoraller.hasCoral()
+    () -> kCoraller.hasCoral(),
+    () -> kClimber.kAnchor.isEngaged()
   );
 
   /**
@@ -279,6 +280,11 @@ public class RobotContainer {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 1 : 13;
       return kFrontTopPhotonCamera.getAprilTagById(id).isPresent();
+    }));
+    NamedCommands.registerCommand("AlignToLeftCoralStation", kSwerveDrive.alignToCoralStation(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 1 : 13;
+      return kFrontTopPhotonCamera.getAprilTagById(id);
     }));
     
     NamedCommands.registerCommand("AlignToRightCoralStation", kSwerveDrive.alignToCoralStation(() -> {

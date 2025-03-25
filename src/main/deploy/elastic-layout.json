@@ -1892,6 +1892,20 @@
               "data_type": "string",
               "show_submit_button": false
             }
+          },
+          {
+            "title": "AnchorState",
+            "x": 256.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Climber/Anchor/State",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
           }
         ]
       }
