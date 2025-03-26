@@ -172,7 +172,9 @@ public class RobotContainer {
     kDriverController.goSlow().whileTrue(kSwerveDrive.goSlow());
 
     // For defense / to make the robot harder to move
-    kDriverController.lockDriveForDefense().whileTrue(kSwerveDrive.holdCurrentHeading());
+    kDriverController.lockHeadingForDefense()
+      .whileTrue(kSwerveDrive.holdCurrentHeadingWhileDriving(kDriverController, () -> !kDriverController.robotRelative().getAsBoolean(),
+        DemonCommandXboxController.kJoystickDeadband, DemonCommandXboxController.kJoystickSensitivity));
 
     // vision alignment
     kDriverController.alignToScoreRight().whileTrue(kSwerveDrive.alignToReef(() -> {

@@ -456,15 +456,38 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Command to hold the current heading of the robot without translating.
+   * Command to hold the current heading of the robot while driving.
    * 
-   * @return command to have the robot sit still at its current heading
+   * @return command to hold the current heading of the robot while driving
    */
-  public Command holdCurrentHeading() {
+  public Command holdCurrentHeadingWhileDriving(CommandXboxController hid, BooleanSupplier fieldRelative, double joystickDeadband, double joystickSensitivity) {
     var setHeading = runOnce(() -> headingToHold = getPose().getRotation());
-    var holdHeading = runEnd(() -> rotateToAngleInPlace(headingToHold, 1), this::stop);
+    var holdHeading = runEnd(() -> {
+      // Get the x speed. We are inverting this because Xbox controllers return
+      // negative values when we push forward.
+      var xSpeed = 0.0;
+      var leftYInput = -hid.getLeftY();
+      if (Math.abs(leftYInput) > joystickDeadband) {
+        xSpeed = HIDUtils.smoothInputWithCubic(leftYInput, joystickSensitivity) * maxTranslationalSpeedMetersPerSecond;
+      }
+
+      // Get the y speed or sideways/strafe speed. We are inverting this because
+      // we want a positive value when we pull to the left. Xbox controllers
+      // return positive values when you pull to the right by default.
+      var ySpeed = 0.0;
+      var leftXInput = -hid.getLeftX();
+      if (Math.abs(leftXInput) > joystickDeadband) {
+        ySpeed = HIDUtils.smoothInputWithCubic(leftXInput, joystickSensitivity) * maxTranslationalSpeedMetersPerSecond;
+      }
+
+      // flip drive input based on alliance since robot's movement is always
+      // relative to the blue alliance (AKA facing towards red alliance)
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var sign = fieldRelative.getAsBoolean() && alliance == Alliance.Red ? -1 : 1;
+      holdAngleWhileDriving(sign * xSpeed, sign * ySpeed, headingToHold, 1, fieldRelative.getAsBoolean());
+    }, this::stop);
     var cmd = Commands.sequence(setHeading, holdHeading);
-    return cmd.withName("SwerveHoldCurrentHeading");
+    return cmd.withName("SwerveHoldCurrentHeadingWhileDriving");
   }
 
   /**
