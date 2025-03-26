@@ -66,7 +66,12 @@
       "name": "PrepareReceive",
       "waypointRelativePos": 0.9,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareReceive"
+        }
+      }
     }
   ],
   "globalConstraints": {
