@@ -61,7 +61,12 @@
       "name": "PrepareReceive",
       "waypointRelativePos": 0.7562457798784294,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PrepareStow"
+        }
+      }
     },
     {
       "name": "StartCoralIntake",

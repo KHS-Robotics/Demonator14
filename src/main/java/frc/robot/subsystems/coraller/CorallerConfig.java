@@ -13,8 +13,8 @@ final class CorallerConfig {
     public static final double kElevatorEncoderVelocityConversionFactor = kElevatorEncoderPositionConversionFactor
         / 60.0;
 
-    public static final double kElevatorAbsoluteEncoderMinVoltage = 0.3918;
-    public static final double kElevatorAbsoluteEncoderMaxVoltage = 1.6100;
+    public static final double kElevatorAbsoluteEncoderMinVoltage = 0.622;
+    public static final double kElevatorAbsoluteEncoderMaxVoltage = 1.700;
   }
 
   protected final class AnglerConfig {
