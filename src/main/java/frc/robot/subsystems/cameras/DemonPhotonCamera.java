@@ -105,6 +105,7 @@ public class DemonPhotonCamera extends SubsystemBase {
   public void periodic() {
     // make sure to call once per loop to get consistent results
     updateLatestVisionResults();
+    clearVisionResultsOnDisconnect();
   }
 
   public Command hasVisibleTarget(Supplier<Integer> fiducialId) {
@@ -336,6 +337,17 @@ public class DemonPhotonCamera extends SubsystemBase {
         default:
           DriverStation.reportWarning("Unsupported Photon pipeline mode: " + currentPipelineMode, false);
       }
+    }
+  }
+
+  /**
+   * Clears all currently cached vision results when the camera is disconnected.
+   */
+  private void clearVisionResultsOnDisconnect() {
+    if (!camera.isConnected()) {
+      aprilTagUpdate = Optional.empty();
+      algaeTargets = Optional.empty();
+      bestAlgaeTarget = Optional.empty();
     }
   }
 
