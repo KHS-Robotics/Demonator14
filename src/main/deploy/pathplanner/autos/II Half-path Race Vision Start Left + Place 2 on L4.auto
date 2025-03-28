@@ -36,7 +36,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SeesI"
+                  "name": "SeesIButLikeBetter"
                 }
               }
             ]
@@ -99,14 +99,14 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SeesLeftCoralStation"
+                  "name": "SeesLeftCoralStationButLikeBetter"
                 }
               }
             ]
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {

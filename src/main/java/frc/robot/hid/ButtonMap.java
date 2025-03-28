@@ -30,8 +30,8 @@ public class ButtonMap {
   public static final int ALGAE_DEPLOY_BUTTON = 13;
 
   // Climber
-  public static final int REEL_IN_BUTTON = 16;
-  public static final int REEL_OUT_BUTTON = 11;
+  public static final int REEL_OUT_BUTTON = 16;
+  public static final int REEL_IN_BUTTON = 11;
   public static final int ENGAGEANCHOR_BUTTON = 15;
   public static final int UNENGAGEANCHOR_BUTTON = 12;
 }

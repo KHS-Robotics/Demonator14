@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -16,6 +17,7 @@ import frc.robot.RobotMap;
 
 public class Reel extends SubsystemBase {
   private final SparkMax reel;
+  private final RelativeEncoder encoder;
   private ReelState reelState = ReelState.OFF;
 
   public Reel() {
@@ -31,21 +33,23 @@ public class Reel extends SubsystemBase {
     reel.configure(reelConfig, SparkBase.ResetMode.kResetSafeParameters,
         SparkBase.PersistMode.kPersistParameters);
 
-    SmartDashboard.putData(this);
-  }
+    encoder = reel.getEncoder();
 
-  public Command reelIn() {
-    var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
-    var reelIn = startEnd(() -> setReel(12), this::stop);
-    var cmd = Commands.sequence(deployAlgae, reelIn);
-    return cmd.withName("ClimberReelIn");
+    SmartDashboard.putData(this);
   }
 
   public Command reelOut() {
     var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
-    var reelOut = startEnd(() -> setReel(-12), this::stop);
-    var cmd = Commands.sequence(deployAlgae, reelOut);
+    var reelIn = startEnd(() -> setReel(12), this::stop);
+    var cmd = Commands.sequence(deployAlgae, reelIn);
     return cmd.withName("ClimberReelOut");
+  }
+
+  public Command reelIn() {
+    var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
+    var reelOut = startEnd(() -> setReel(-8), this::stop);
+    var cmd = Commands.sequence(deployAlgae, reelOut);
+    return cmd.withName("ClimberReelIn");
   }
 
   private void setReel(double voltage) {
@@ -64,6 +68,7 @@ public class Reel extends SubsystemBase {
     builder.setSafeState(this::stop);
     builder.setActuator(true);
     builder.addStringProperty("ReelState", () -> reelState.toString(), null);
+    builder.addDoubleProperty("Position", () -> encoder.getPosition(), null);
   }
 
   private enum ReelState {

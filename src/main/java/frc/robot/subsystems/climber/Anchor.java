@@ -48,7 +48,7 @@ public class Anchor extends SubsystemBase {
     var anchorConfig = new SparkFlexConfig()
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(10)
-      .inverted(false)
+      .inverted(true)
       .apply(encoderConfig)
       .apply(pidConfig);
     anchor = new SparkFlex(RobotMap.CLIMBER_ANCHOR_ID, MotorType.kBrushless);
