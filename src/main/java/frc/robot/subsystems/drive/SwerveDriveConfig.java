@@ -66,5 +66,5 @@ public final class SwerveDriveConfig {
 
   public static final double DRIVE_PATHING_ROTATION_P = 1.5;
   public static final double DRIVE_PATHING_ROTATION_I = 0.0;
-  public static final double DRIVE_PATHING_ROTATION_D = 0.9;
+  public static final double DRIVE_PATHING_ROTATION_D = 0.8;
 }
