@@ -312,12 +312,24 @@ public class RobotContainer {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 9 : 22;
       return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
-    }).withTimeout(0.5));
+    }));
     NamedCommands.registerCommand("SeesFButLikeBetter", kFrontLeftPhotonCamera.hasVisibleTarget(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 9 : 22;
       return id;
     }));
+
+    NamedCommands.registerCommand("SeesE", Commands.waitUntil(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 9 : 22;
+      return kFrontRightPhotonCamera.getAprilTagById(id).isPresent();
+    }));
+    NamedCommands.registerCommand("SeesEButLikeBetter", kFrontRightPhotonCamera.hasVisibleTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 9 : 22;
+      return id;
+    }));
+
     NamedCommands.registerCommand("SeesK", Commands.waitUntil(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 6 : 19;
@@ -335,6 +347,17 @@ public class RobotContainer {
       return kFrontRightPhotonCamera.getAprilTagById(id).isPresent();
     }));
     NamedCommands.registerCommand("SeesIButLikeBetter", kFrontRightPhotonCamera.hasVisibleTarget(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 11 : 20;
+      return id;
+    }));
+
+    NamedCommands.registerCommand("SeesJ", Commands.waitUntil(() -> {
+      var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
+      var id = alliance == Alliance.Red ? 11 : 20;
+      return kFrontLeftPhotonCamera.getAprilTagById(id).isPresent();
+    }));
+    NamedCommands.registerCommand("SeesJButLikeBetter", kFrontLeftPhotonCamera.hasVisibleTarget(() -> {
       var alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Blue;
       var id = alliance == Alliance.Red ? 11 : 20;
       return id;
