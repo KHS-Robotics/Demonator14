@@ -91,12 +91,8 @@ public class OperatorStick extends Joystick {
 
   // Climber
 
-  public Trigger reelOutClimber() {
-    return new Trigger(() -> this.getRawButton(ButtonMap.REEL_OUT_BUTTON));
-  }
-
-  public Trigger reelInClimber() {
-    return new Trigger(() -> this.getRawButton(ButtonMap.REEL_IN_BUTTON));
+  public Trigger climb() {
+    return new Trigger(() -> this.getRawButton(ButtonMap.CLIMB_BUTTON));
   }
 
   public Trigger engageAnchor() {

@@ -60,7 +60,7 @@ public final class CameraConfig {
     public static final Transform3d kRobotToFrontLeftCamera = new Transform3d(Units.inchesToMeters(10.5),
         Units.inchesToMeters(7), Units.inchesToMeters(16.5), new Rotation3d(0, Math.toRadians(20), 0));
     public static final Transform3d kRobotToFrontTopCamera = new Transform3d(Units.inchesToMeters(10.5),
-        Units.inchesToMeters(7), Units.inchesToMeters(16.5), new Rotation3d(0, Math.toRadians(20), 0));
+        Units.inchesToMeters(7), Units.inchesToMeters(40.125), new Rotation3d(0, Math.toRadians(20), 0));
     /**
      * The layout of the AprilTags on the field.
      * <p>

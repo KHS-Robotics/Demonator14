@@ -16,9 +16,13 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
 public class Reel extends SubsystemBase {
+  private ReelState reelState = ReelState.OFF;
+  private enum ReelState {
+    OFF, REELING;
+  }
+
   private final SparkMax reel;
   private final RelativeEncoder encoder;
-  private ReelState reelState = ReelState.OFF;
 
   public Reel() {
     super(Climber.class.getSimpleName() + "/" + Reel.class.getSimpleName());
@@ -26,7 +30,7 @@ public class Reel extends SubsystemBase {
     var reelConfig = new SparkMaxConfig()
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)
-        .inverted(true)
+        .inverted(false)
         .closedLoopRampRate(0.5)
         .openLoopRampRate(0.5);
     reel = new SparkMax(RobotMap.CLIMBER_REEL_ID, MotorType.kBrushless);
@@ -38,22 +42,15 @@ public class Reel extends SubsystemBase {
     SmartDashboard.putData(this);
   }
 
-  public Command reelOut() {
+  public Command start() {
     var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
-    var reelIn = startEnd(() -> setReel(12), this::stop);
-    var cmd = Commands.sequence(deployAlgae, reelIn);
-    return cmd.withName("ClimberReelOut");
-  }
-
-  public Command reelIn() {
-    var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
-    var reelOut = startEnd(() -> setReel(-8), this::stop);
-    var cmd = Commands.sequence(deployAlgae, reelOut);
-    return cmd.withName("ClimberReelIn");
+    var runReel = startEnd(() -> setReel(8), this::stop);
+    var cmd = Commands.sequence(deployAlgae, runReel);
+    return cmd.withName("ClimberStartReel");
   }
 
   private void setReel(double voltage) {
-    reelState = voltage > 0 ? ReelState.REELING_IN : voltage < 0 ? ReelState.REELING_OUT : ReelState.OFF;
+    reelState = voltage != 0 ? ReelState.REELING : ReelState.OFF;
     reel.setVoltage(voltage);
   }
 
@@ -69,21 +66,5 @@ public class Reel extends SubsystemBase {
     builder.setActuator(true);
     builder.addStringProperty("ReelState", () -> reelState.toString(), null);
     builder.addDoubleProperty("Position", () -> encoder.getPosition(), null);
-  }
-
-  private enum ReelState {
-    OFF("Off"),
-    REELING_IN("Reeling In"),
-    REELING_OUT("Reeling Out");
-
-    private final String state;
-
-    private ReelState(String s) {
-      state = s;
-    }
-
-    public String toString() {
-      return this.state;
-    }
   }
 }

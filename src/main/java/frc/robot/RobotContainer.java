@@ -217,8 +217,7 @@ public class RobotContainer {
     // Climber
     kOperatorStick.engageAnchor().onTrue(kClimber.kAnchor.engageAnchor());
     kOperatorStick.disengageAnchor().onTrue(kClimber.kAnchor.disengageAnchor());
-    kOperatorStick.reelOutClimber().whileTrue(kClimber.kReel.reelOut());
-    kOperatorStick.reelInClimber().whileTrue(kClimber.kReel.reelIn());
+    kOperatorStick.climb().whileTrue(kClimber.kReel.start());
   }
 
   /** https://pathplanner.dev/home.html */
