@@ -150,13 +150,21 @@ public class LEDStrip {
   }
 
   /**
-   * Get the current alliance from the FMS.
-   *
-   * Sets a solid color for the entire LED strip
+   * Sets a solid color for the entire LED strip.
+   * 
+   * <p>
    * 
    * Examples:
-   *  setSolidColor(Color.blue);
-   *  setSolidColor(new Color(76, 187, 23)); // Kelly Green, GO BIRDS!
+   * <p>
+   *  <code>
+   *    setSolidColor(Color.blue);
+   *  </code>
+   * <p>
+   *  <code>
+   *    setSolidColor(new Color(76, 187, 23)); // Kelly Green, GO BIRDS!
+   *  </code>
+   * 
+   * @param c the color to set
    */
   public void setSolidColor(Color c) {
     ticksPerSecond = 5;
@@ -193,20 +201,11 @@ public class LEDStrip {
     }
   }
 
-  // run square wave of alliance color
   public void runDisabled() {
-    ticksPerSecond = 20;
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      if (alliance.get() == Alliance.Blue) {
-        runBlue();
-      } else if (alliance.get() == Alliance.Red) {
-        runRed();
-      } else {
-        runSquareWave(Color.white, -0.4f, 8f);
-      }
-    } else {
+    if (isClimberEngaged.getAsBoolean()) {
       runRainbow();
+    } else {
+      runAllianceColor();
     }
   }
 
