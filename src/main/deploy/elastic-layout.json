@@ -112,7 +112,7 @@
           {
             "title": "Operator Stick",
             "x": 768.0,
-            "y": 256.0,
+            "y": 384.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -129,7 +129,7 @@
           {
             "title": "Xbox Controller",
             "x": 768.0,
-            "y": 128.0,
+            "y": 256.0,
             "width": 384.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -247,9 +247,9 @@
           },
           {
             "title": "Elevator Override",
-            "x": 768.0,
+            "x": 640.0,
             "y": 384.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -266,7 +266,7 @@
             "title": "Elevator TalonTach",
             "x": 512.0,
             "y": 384.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
@@ -277,6 +277,19 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto Chooser",
+              "period": 0.06,
+              "sort_options": false
             }
           }
         ]
@@ -452,8 +465,8 @@
           },
           {
             "title": "Right",
-            "x": 640.0,
-            "y": 256.0,
+            "x": 512.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -500,145 +513,16 @@
               "true_icon": "None",
               "false_icon": "None"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Overview",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "title": "Angler Error",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Angler/PIDController/error",
-              "period": 0.033,
-              "data_type": "double",
-              "show_submit_button": false
-            }
           },
           {
-            "title": "Angler Setpoint",
-            "x": 128.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Angler/Setpoint",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Angler IsAtSetpoint",
-            "x": 384.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Angler/IsAtSetpoint",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Elevator Setpoint",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Elevator/SetPointFromGround",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Elevator IsAtSetpoint",
-            "x": 384.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Elevator/IsAtSetpoint",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Elevator Error",
-            "x": 256.0,
-            "y": 256.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Elevator/PIDController/error",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "HasCoral",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Intake/HasCoral",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Coral IntakeState",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Intake/IntakeState",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Elevator Limit Switch",
+            "title": "Left Works",
             "x": 640.0,
             "y": 256.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/Coraller/Elevator/IsAtBottom",
+              "topic": "/SmartDashboard/Cameras/Right/Connected",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -648,191 +532,37 @@
             }
           },
           {
-            "title": "Elevator Height",
-            "x": 0.0,
-            "y": 256.0,
+            "title": "Right Works",
+            "x": 640.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/Coraller/Elevator/HeightFromGround",
+              "topic": "/SmartDashboard/Cameras/Left/Connected",
               "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           },
           {
-            "title": "Angler Angle",
-            "x": 0.0,
+            "title": "Station Works",
+            "x": 640.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/Angler/Angle",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Algae Wrist Angle",
-            "x": 0.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/Angle",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Algae Wrist Setpoint",
-            "x": 128.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/Setpoint",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Algae Wrist Error",
-            "x": 256.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/PIDController/error",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Algae Wrist IsAtSetpoint",
-            "x": 384.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/IsAtSetpoint",
+              "topic": "/SmartDashboard/Cameras/Top/Connected",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
-            }
-          },
-          {
-            "title": "HasAlgae",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Intake/HasAlgae",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Algae IntakeState",
-            "x": 256.0,
-            "y": 512.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Intake/IntakeState",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Camera LowerFront NumAprilTags",
-            "x": 768.0,
-            "y": 512.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Cameras/4342_AprilTag_1/NumAprilTags",
-              "period": 0.06,
-              "data_type": "int",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Camera Limelight NumAprilTags",
-            "x": 896.0,
-            "y": 512.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Cameras/limelight/NumAprilTags",
-              "period": 0.06,
-              "data_type": "int",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Coraller Command",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Coraller/.command",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Algae Collector Command",
-            "x": 896.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/.command",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Swerve Command",
-            "x": 384.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/SwerveDrive/.command",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
             }
           }
         ]
@@ -844,7 +574,7 @@
         "layouts": [
           {
             "title": "Module-FrontLeft",
-            "x": 640.0,
+            "x": 0.0,
             "y": 0.0,
             "width": 256.0,
             "height": 384.0,
@@ -916,7 +646,7 @@
           },
           {
             "title": "Module-FrontRight",
-            "x": 896.0,
+            "x": 256.0,
             "y": 0.0,
             "width": 256.0,
             "height": 384.0,
@@ -988,8 +718,8 @@
           },
           {
             "title": "Module-RearLeft",
-            "x": 640.0,
-            "y": 384.0,
+            "x": 512.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 384.0,
             "type": "List Layout",
@@ -1060,8 +790,8 @@
           },
           {
             "title": "Module-RearRight",
-            "x": 896.0,
-            "y": 384.0,
+            "x": 768.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 384.0,
             "type": "List Layout",
@@ -1135,7 +865,7 @@
           {
             "title": ".command",
             "x": 0.0,
-            "y": 0.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1147,23 +877,9 @@
             }
           },
           {
-            "title": "SwerveDrive",
-            "x": 0.0,
-            "y": 128.0,
-            "width": 640.0,
-            "height": 640.0,
-            "type": "SwerveDrive",
-            "properties": {
-              "topic": "/SmartDashboard/SwerveDrive",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "rotation_unit": "Degrees"
-            }
-          },
-          {
             "title": "Pose-X",
             "x": 256.0,
-            "y": 0.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1177,7 +893,7 @@
           {
             "title": "Pose-Y",
             "x": 384.0,
-            "y": 0.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1191,7 +907,7 @@
           {
             "title": "Pose-Theta",
             "x": 512.0,
-            "y": 0.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1204,8 +920,8 @@
           },
           {
             "title": "NavX",
-            "x": 1280.0,
-            "y": 0.0,
+            "x": 640.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -1737,20 +1453,6 @@
             "type": "Text Display",
             "properties": {
               "topic": "/SmartDashboard/AlgaeCollector/Wrist/Angle",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "izone",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/AlgaeCollector/Wrist/PIDController/izone",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
