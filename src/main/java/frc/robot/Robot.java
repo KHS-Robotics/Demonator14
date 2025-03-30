@@ -87,6 +87,8 @@ public class Robot extends TimedRobot {
   /** This method is called once each time the robot enters autonomous mode. */
   @Override
   public void autonomousInit() {
+    RobotContainer.kRearLimelightCamera.setEnableAprilTagUpdates(DriverStation.isFMSAttached());
+
     // Get selected auto from SmartDashboard
     // https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html#starting-an-autonomous-command
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -95,7 +97,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-    RobotContainer.kRearLimelightCamera.setEnableAprilTagUpdates(false);
   }
 
   /** This method is called periodically during autonomous mode. */

@@ -109,7 +109,7 @@ public class DemonPhotonCamera extends SubsystemBase {
   }
 
   public Command hasVisibleTarget(Supplier<Integer> fiducialId) {
-    return hasVisibleTarget(fiducialId, 0.33);
+    return hasVisibleTarget(fiducialId, 0.20);
   }
 
   public Command hasVisibleTarget(Supplier<Integer> fiducialId, double debounceTime) {
