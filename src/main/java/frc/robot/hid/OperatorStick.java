@@ -92,7 +92,9 @@ public class OperatorStick extends Joystick {
   // Climber
 
   public Trigger climb() {
-    return new Trigger(() -> this.getRawButton(ButtonMap.CLIMB_BUTTON));
+    var sideButton = new Trigger(() -> this.getRawButton(ButtonMap.CLIMB_BUTTON));
+    var povButton = new Trigger(() -> this.getPOV() == 180);
+    return sideButton.or(povButton);
   }
 
   public Trigger engageAnchor() {

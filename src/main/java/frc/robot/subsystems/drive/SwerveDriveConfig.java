@@ -28,7 +28,7 @@ public final class SwerveDriveConfig {
   public static final double VISION_Y_P = 2;
   public static final double VISION_REEF_TARGET_X_DISTANCE_METERS = 0.15;
   public static final double VISION_REEF_TARGET_Y_DISTANCE_METERS = 0.02;
-  public static final double VISION_CORAL_STATION_TARGET_X_DISTANCE_METERS = 0.74;
+  public static final double VISION_CORAL_STATION_TARGET_X_DISTANCE_METERS = 0.73;
   public static final double VISION_CORAL_STATION_TARGET_Y_DISTANCE_METERS = -0.20;
 
   // individual offsets after calibrating each module

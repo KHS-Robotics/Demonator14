@@ -7,6 +7,7 @@ package frc.robot.hid;
 public class ButtonMap {
   public static class POV {
     public static final int OUTTAKE_L4 = 0;
+    public static final int CLIMB = 180;
     public static final int DISABLE_ELEVATOR_OVERRIDE = 90;
     public static final int ENABLE_ELEVATOR_OVERRIDE = 270;
   }
