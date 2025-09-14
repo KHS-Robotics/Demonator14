@@ -67,17 +67,6 @@
           "name": "PrepareReceive"
         }
       }
-    },
-    {
-      "name": "StartCoralIntake",
-      "waypointRelativePos": 0.8813559322033877,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StartCoralIntake"
-        }
-      }
     }
   ],
   "globalConstraints": {

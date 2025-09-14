@@ -44,7 +44,7 @@ public class Reel extends SubsystemBase {
 
   public Command start() {
     var deployAlgae = RobotContainer.kAlgaeCollector.deploy();
-    var runReel = startEnd(() -> setReel(8), this::stop);
+    var runReel = startEnd(() -> setReel(12), this::stop);
     var cmd = Commands.sequence(deployAlgae, runReel);
     return cmd.withName("ClimberStartReel");
   }
